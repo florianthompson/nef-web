@@ -7,7 +7,7 @@ function getSupabaseAdmin() {
 
   if (!url || !key) {
     throw new Error(
-      `Missing Supabase config: URL=${url ? "set" : "MISSING"}, SECRET_KEY=${key ? "set" : "MISSING"}`
+      `Missing Supabase config: URL=${url ? "set" : "MISSING"}, KEY=${key ? "set" : "MISSING"}`
     );
   }
 
@@ -15,6 +15,14 @@ function getSupabaseAdmin() {
     auth: {
       autoRefreshToken: false,
       persistSession: false,
+    },
+    db: {
+      schema: "public",
+    },
+    global: {
+      headers: {
+        Authorization: `Bearer ${key}`,
+      },
     },
   });
 }
