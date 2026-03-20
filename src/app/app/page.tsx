@@ -330,8 +330,8 @@ export default function AppHomePage() {
       });
 
       if (!res.ok) {
-        const err = await res.json();
-        console.error("Submit error:", err);
+        const text = await res.text();
+        console.error("Submit error:", res.status, text);
         setSubmitting(false);
         return;
       }
