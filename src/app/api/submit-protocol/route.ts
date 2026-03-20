@@ -11,7 +11,12 @@ function getSupabaseAdmin() {
     );
   }
 
-  return createClient(url, key);
+  return createClient(url, key, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+    },
+  });
 }
 
 export async function POST(req: NextRequest) {
