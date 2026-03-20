@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 
 export default function LoginPage() {
@@ -16,7 +17,7 @@ export default function LoginPage() {
     setError(null);
     setLoading(true);
 
-    const { error: authError } = await supabase.auth.signInWithPassword({
+    const { data, error: authError } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
@@ -31,17 +32,25 @@ export default function LoginPage() {
       return;
     }
 
-    router.replace("/dashboard");
+    // Fetch role to redirect appropriately
+    const { data: profile } = await supabase
+      .from("users")
+      .select("role")
+      .eq("id", data.user.id)
+      .single();
+
+    if (profile?.role === "admin") {
+      router.replace("/dashboard");
+    } else {
+      router.replace("/app");
+    }
   }
 
   const isValid = email.length > 0 && password.length > 0;
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-bg px-4">
-      <form
-        onSubmit={handleSubmit}
-        className="w-full max-w-sm space-y-6"
-      >
+      <form onSubmit={handleSubmit} className="w-full max-w-sm space-y-6">
         <div className="text-center">
           <span className="mb-4 inline-block rounded-lg bg-red px-3 py-2 font-mono text-sm font-extrabold text-white">
             NEF
@@ -84,6 +93,13 @@ export default function LoginPage() {
         >
           {loading ? "Laden…" : "Einloggen"}
         </button>
+
+        <p className="text-center text-sm text-text-muted">
+          Noch kein Account?{" "}
+          <Link href="/signup" className="text-red hover:underline">
+            Registrieren
+          </Link>
+        </p>
       </form>
     </div>
   );

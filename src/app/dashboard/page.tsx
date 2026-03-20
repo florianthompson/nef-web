@@ -104,7 +104,35 @@ export function SubmissionsTable({
       ) : submissions.length === 0 ? (
         <p className="text-text-muted">Keine Protokolle vorhanden.</p>
       ) : (
-        <div className="overflow-hidden rounded-lg border border-border">
+        <>
+        {/* Mobile: card layout */}
+        <div className="space-y-3 sm:hidden">
+          {submissions.map((s) => (
+            <Link
+              key={s.id}
+              href={`/dashboard/${s.id}`}
+              className="block rounded-lg border border-border p-4 transition-colors hover:border-red"
+            >
+              <div className="mb-2 flex items-center justify-between">
+                <span className="text-sm font-medium">
+                  {s.user_first_name} {s.user_last_name}
+                </span>
+                <span className="font-mono text-xs text-text-muted">
+                  {formatDate(s.created_at)}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-text-muted">
+                  {s.vehicle_name ?? "–"}
+                </span>
+                <span className="text-xs text-red">Ansehen →</span>
+              </div>
+            </Link>
+          ))}
+        </div>
+
+        {/* Desktop: table layout */}
+        <div className="hidden overflow-hidden rounded-lg border border-border sm:block">
           <table className="w-full text-left text-sm">
             <thead>
               <tr className="border-b border-border bg-surface">
@@ -148,6 +176,7 @@ export function SubmissionsTable({
             </tbody>
           </table>
         </div>
+        </>
       )}
     </div>
   );

@@ -23,6 +23,8 @@ import {
   ShieldIcon,
   LogOutIcon,
   StickyNoteIcon,
+  UsersIcon,
+  SmartphoneIcon,
 } from "lucide-react";
 
 function DashboardSidebar() {
@@ -67,25 +69,47 @@ function DashboardSidebar() {
             </SidebarMenuItem>
 
             {isAdmin && (
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  isActive={pathname === "/dashboard/alle"}
-                  render={<Link href="/dashboard/alle" />}
-                >
-                  <ShieldIcon />
-                  <span>Alle Protokolle</span>
-                  <span className="ml-auto rounded bg-red/10 px-1.5 py-0.5 text-[10px] font-semibold text-red">
-                    ADMIN
-                  </span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
+              <>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    isActive={pathname === "/dashboard/alle"}
+                    render={<Link href="/dashboard/alle" />}
+                  >
+                    <ShieldIcon />
+                    <span>Alle Protokolle</span>
+                    <span className="ml-auto rounded bg-red/10 px-1.5 py-0.5 text-[10px] font-semibold text-red">
+                      ADMIN
+                    </span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    isActive={pathname === "/dashboard/team"}
+                    render={<Link href="/dashboard/team" />}
+                  >
+                    <UsersIcon />
+                    <span>Team</span>
+                    <span className="ml-auto rounded bg-red/10 px-1.5 py-0.5 text-[10px] font-semibold text-red">
+                      ADMIN
+                    </span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </>
             )}
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
 
       <SidebarFooter className="border-t border-sidebar-border p-4">
-        <div className="mb-3 text-xs text-text-muted">
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton render={<Link href="/app" />}>
+              <SmartphoneIcon />
+              <span>Protokoll ausfüllen</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+        <div className="mt-3 mb-3 text-xs text-text-muted">
           {profile ? `${profile.firstName} ${profile.lastName}` : "…"}
         </div>
         <button
