@@ -310,81 +310,35 @@ export default function AppHomePage() {
   }
 
   async function handleSubmit() {
-    if (!protocol || !user || !selectedVehicle) return;
+    if (!protocol || !user || !selectedVehicle || !profile) return;
     setSubmitting(true);
     setShowConfirm(false);
 
-    // Save to user_protocols
-    const { data: upData, error: upErr } = await supabase
-      .from("user_protocols")
-      .insert({
-        protocol_id: protocol.id,
-        user_id: user.id,
-        vehicle_id: selectedVehicle.id,
-      })
-      .select("id")
-      .single();
+    try {
+      const res = await fetch("/api/submit-protocol", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          protocolId: protocol.id,
+          userId: user.id,
+          vehicleId: selectedVehicle.id,
+          categories: protocol.categories,
+          shiftNote,
+          teamId: profile.teamId,
+          authorName: profile.firstName,
+        }),
+      });
 
-    if (upErr || !upData) {
-      console.error("Error saving protocol:", upErr);
+      if (!res.ok) {
+        const err = await res.json();
+        console.error("Submit error:", err);
+        setSubmitting(false);
+        return;
+      }
+    } catch (e) {
+      console.error("Submit error:", e);
       setSubmitting(false);
       return;
-    }
-
-    for (const category of protocol.categories) {
-      const { data: catData, error: catErr } = await supabase
-        .from("user_protocol_categories")
-        .insert({
-          user_protocol_id: upData.id,
-          title: category.title,
-          position: category.position,
-          type: category.type,
-          is_required: category.is_required,
-        })
-        .select("id")
-        .single();
-
-      if (catErr || !catData) continue;
-
-      for (const item of category.items) {
-        const { data: itemData } = await supabase
-          .from("user_protocol_items")
-          .insert({
-            user_protocol_category_id: catData.id,
-            title: item.title,
-            position: item.position,
-            type: item.type,
-            is_required: item.is_required,
-            is_completed: item.is_completed,
-          })
-          .select("id")
-          .single();
-
-        if (!itemData) continue;
-
-        for (const sub of item.subItems) {
-          await supabase.from("user_protocol_items").insert({
-            user_protocol_category_id: catData.id,
-            parent_item_id: itemData.id,
-            title: sub.title,
-            position: sub.position,
-            type: sub.type,
-            is_required: sub.is_required,
-            is_completed: sub.is_completed,
-          });
-        }
-      }
-    }
-
-    // Save shift note
-    if (shiftNote.trim() && profile) {
-      await supabase.from("notes").insert({
-        author_name: profile.firstName,
-        value: shiftNote.trim(),
-        is_resolved: false,
-        team_id: profile.teamId,
-        vehicle_id: selectedVehicle.id,
-      });
     }
 
     setSubmitting(false);
@@ -697,6 +651,14 @@ export default function AppHomePage() {
         <SendIcon className="h-4 w-4" />
         Protokoll absenden ({checkedItems}/{totalItems})
       </button>
+
+      {/* Submitting Overlay */}
+      {submitting && (
+        <div className="fixed inset-0 z-[60] flex flex-col items-center justify-center bg-bg/90">
+          <div className="mb-4 h-8 w-8 animate-spin rounded-full border-2 border-text-muted border-t-red" />
+          <p className="text-sm font-medium">Protokoll wird gesendet…</p>
+        </div>
+      )}
 
       {/* Confirm Modal */}
       {showConfirm && (
