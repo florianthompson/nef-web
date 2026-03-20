@@ -128,11 +128,11 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
       <DashboardSidebar />
-      <SidebarInset>
+      <SidebarInset className="overflow-x-hidden">
         <header className="flex h-12 items-center border-b border-border px-4">
           <SidebarTrigger />
         </header>
-        <main className="mx-auto w-full max-w-5xl px-6 py-8">
+        <main className="mx-auto w-full max-w-5xl overflow-x-auto px-4 py-8 sm:px-6">
           {children}
         </main>
       </SidebarInset>

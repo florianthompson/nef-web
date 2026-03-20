@@ -132,8 +132,8 @@ export function SubmissionsTable({
         </div>
 
         {/* Desktop: table layout */}
-        <div className="hidden overflow-hidden rounded-lg border border-border sm:block">
-          <table className="w-full text-left text-sm">
+        <div className="hidden overflow-x-auto rounded-lg border border-border sm:block">
+          <table className="w-full min-w-[500px] text-left text-sm">
             <thead>
               <tr className="border-b border-border bg-surface">
                 <th className="px-4 py-3 font-medium text-text-muted">
