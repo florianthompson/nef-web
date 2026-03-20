@@ -379,12 +379,12 @@ export default function AppHomePage() {
         <p className="mb-6 font-mono text-sm">
           <span className="text-green">{checkedItems} geprüft</span>
           {totalItems - checkedItems > 0 && (
-            <span className="text-red"> · {totalItems - checkedItems} offen</span>
+            <span className="text-red"> · {totalItems - checkedItems} fehlend</span>
           )}
         </p>
         {unchecked.length > 0 && (
           <div className="mb-6 rounded-lg border border-border p-4 text-left">
-            <p className="mb-2 text-xs font-medium text-text-muted">Nicht geprüft:</p>
+            <p className="mb-2 text-xs font-medium text-text-muted">Fehlend:</p>
             {unchecked.map((u, i) => (
               <p key={i} className="text-sm text-red">
                 {u.category} → {u.title}
@@ -672,7 +672,7 @@ export default function AppHomePage() {
               <span className="text-green">{checkedItems} geprüft</span>
               {totalItems - checkedItems > 0 && (
                 <span className="text-red">
-                  {" "}· {totalItems - checkedItems} nicht geprüft
+                  {" "}· {totalItems - checkedItems} fehlend
                 </span>
               )}
             </p>

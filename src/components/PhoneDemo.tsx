@@ -233,7 +233,7 @@ export default function PhoneDemo() {
               </div>
             </div>
             <p className="text-center text-[11px] text-amber mt-2 font-medium">
-              &#9888; 59 Positionen nicht gepr&uuml;ft — wird bei Abgabe markiert
+              &#9888; 59 fehlende Positionen — wird bei Abgabe als fehlend markiert
             </p>
           </div>
         </div>
