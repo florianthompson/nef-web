@@ -21,7 +21,7 @@ function AppNav() {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-bg/95 backdrop-blur-sm">
-      <div className="mx-auto flex max-w-lg">
+      <div className="mx-auto flex max-w-sm px-4">
         {tabs.map((tab) => {
           const isActive =
             tab.href === "/app"
@@ -68,7 +68,7 @@ function AppNav() {
 
 function AppShell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-bg text-text">
+    <div className="min-h-screen overflow-x-hidden bg-bg text-text">
       <div className="mx-auto max-w-lg pb-20">{children}</div>
       <AppNav />
     </div>
