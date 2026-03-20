@@ -19,7 +19,7 @@ function AppNav() {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-bg/95 backdrop-blur-sm">
+    <nav className="shrink-0 border-t border-border bg-bg/95 backdrop-blur-sm" style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
       <div className="mx-auto flex max-w-sm px-4">
         {tabs.map((tab) => {
           const isActive =
@@ -67,8 +67,12 @@ function AppNav() {
 
 function AppShell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen overflow-x-hidden bg-bg text-text">
-      <div className="mx-auto max-w-lg pb-20">{children}</div>
+    <div className="flex h-[100dvh] flex-col overflow-hidden bg-bg text-text">
+      <div className="flex-1 overflow-y-auto overscroll-none">
+        <div className="mx-auto max-w-lg pb-[calc(4rem+env(safe-area-inset-bottom))]">
+          {children}
+        </div>
+      </div>
       <AppNav />
     </div>
   );
