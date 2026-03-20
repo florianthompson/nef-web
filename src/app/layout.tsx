@@ -33,7 +33,7 @@ export default function RootLayout({
       lang="de"
       className={cn(dmSans.variable, jetbrainsMono.variable, "font-sans", geist.variable)}
     >
-      <body>{children}</body>
+      <body suppressHydrationWarning>{children}</body>
     </html>
   );
 }
