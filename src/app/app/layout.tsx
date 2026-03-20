@@ -15,7 +15,6 @@ function AppNav() {
 
   const tabs = [
     { href: "/app", icon: ClipboardListIcon, label: "Protokoll" },
-    { href: "/app/verlauf", icon: HistoryIcon, label: "Verlauf" },
     { href: "/app/profil", icon: UserIcon, label: "Profil" },
   ];
 
