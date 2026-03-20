@@ -3,7 +3,13 @@
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/lib/auth";
-import { CheckCircleIcon, ArrowRightCircleIcon } from "lucide-react";
+import {
+  CheckCircleIcon,
+  ArrowRightCircleIcon,
+  Trash2Icon,
+  ClockIcon,
+  UserIcon,
+} from "lucide-react";
 
 type Note = {
   id: string;
@@ -11,6 +17,10 @@ type Note = {
   value: string;
   created_at: string;
   is_resolved: boolean;
+  resolved_by: string | null;
+  resolved_at: string | null;
+  deleted_by: string | null;
+  deleted_at: string | null;
   vehicle_id: string | null;
   vehicle_name?: string;
   delegated: boolean;
@@ -20,9 +30,11 @@ export default function NotizenPage() {
   const { profile, loading: authLoading } = useAuth();
   const [notes, setNotes] = useState<Note[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<"open" | "delegated" | "resolved">(
+  const [filter, setFilter] = useState<"open" | "delegated" | "resolved" | "deleted">(
     "open"
   );
+
+  const fullName = profile ? `${profile.firstName} ${profile.lastName}`.trim() : "";
 
   const loadNotes = useCallback(async () => {
     if (!profile) return;
@@ -67,6 +79,10 @@ export default function NotizenPage() {
         value: n.value,
         created_at: n.created_at,
         is_resolved: n.is_resolved,
+        resolved_by: n.resolved_by ?? null,
+        resolved_at: n.resolved_at ?? null,
+        deleted_by: n.deleted_by ?? null,
+        deleted_at: n.deleted_at ?? null,
         vehicle_id: n.vehicle_id,
         vehicle_name: vehiclesMap.get(n.vehicle_id) ?? undefined,
         delegated: isDelegated,
@@ -83,16 +99,48 @@ export default function NotizenPage() {
     loadNotes();
   }, [authLoading, profile, loadNotes]);
 
+  const isDeleted = (n: Note) => !!n.deleted_at;
+
   const filtered = notes.filter((n) => {
+    if (filter === "deleted") return isDeleted(n);
+    if (isDeleted(n)) return false;
     if (filter === "open") return !n.is_resolved && !n.delegated;
     if (filter === "delegated") return !n.is_resolved && n.delegated;
     return n.is_resolved;
   });
 
+  const counts = {
+    open: notes.filter((n) => !isDeleted(n) && !n.is_resolved && !n.delegated).length,
+    delegated: notes.filter((n) => !isDeleted(n) && !n.is_resolved && n.delegated).length,
+    resolved: notes.filter((n) => !isDeleted(n) && n.is_resolved).length,
+    deleted: notes.filter((n) => isDeleted(n)).length,
+  };
+
   async function markResolved(id: string) {
-    await supabase.from("notes").update({ is_resolved: true }).eq("id", id);
+    const now = new Date().toISOString();
+    await supabase
+      .from("notes")
+      .update({ is_resolved: true, resolved_by: fullName, resolved_at: now })
+      .eq("id", id);
     setNotes((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, is_resolved: true } : n))
+      prev.map((n) =>
+        n.id === id
+          ? { ...n, is_resolved: true, resolved_by: fullName, resolved_at: now }
+          : n
+      )
+    );
+  }
+
+  async function markDeleted(id: string) {
+    const now = new Date().toISOString();
+    await supabase
+      .from("notes")
+      .update({ deleted_by: fullName, deleted_at: now })
+      .eq("id", id);
+    setNotes((prev) =>
+      prev.map((n) =>
+        n.id === id ? { ...n, deleted_by: fullName, deleted_at: now } : n
+      )
     );
   }
 
@@ -118,23 +166,30 @@ export default function NotizenPage() {
           <FilterButton
             active={filter === "open"}
             onClick={() => setFilter("open")}
-            count={notes.filter((n) => !n.is_resolved && !n.delegated).length}
+            count={counts.open}
           >
             Offen
           </FilterButton>
           <FilterButton
             active={filter === "delegated"}
             onClick={() => setFilter("delegated")}
-            count={notes.filter((n) => !n.is_resolved && n.delegated).length}
+            count={counts.delegated}
           >
             Zentrale
           </FilterButton>
           <FilterButton
             active={filter === "resolved"}
             onClick={() => setFilter("resolved")}
-            count={notes.filter((n) => n.is_resolved).length}
+            count={counts.resolved}
           >
             Erledigt
+          </FilterButton>
+          <FilterButton
+            active={filter === "deleted"}
+            onClick={() => setFilter("deleted")}
+            count={counts.deleted}
+          >
+            Gelöscht
           </FilterButton>
         </div>
       </div>
@@ -150,7 +205,7 @@ export default function NotizenPage() {
         <div className="space-y-3">
           {filtered.map((note) => (
             <div key={note.id} className="rounded-lg border border-border p-4">
-              <div className="mb-2 flex items-center gap-2">
+              <div className="mb-2 flex flex-wrap items-center gap-2">
                 <span className="text-sm font-medium">{note.author_name}</span>
                 <span className="font-mono text-xs text-text-muted">
                   {formatDate(note.created_at)}
@@ -165,16 +220,59 @@ export default function NotizenPage() {
                     → Zentrale
                   </span>
                 )}
-                {note.is_resolved && (
+                {note.is_resolved && !isDeleted(note) && (
                   <span className="rounded bg-green/10 px-1.5 py-0.5 text-[10px] font-medium text-green">
                     Erledigt
                   </span>
                 )}
+                {isDeleted(note) && (
+                  <span className="rounded bg-red/10 px-1.5 py-0.5 text-[10px] font-medium text-red">
+                    Gelöscht
+                  </span>
+                )}
               </div>
-              <p className="mb-3 text-sm text-text-muted">{note.value}</p>
+              <p className={`text-sm ${isDeleted(note) ? "text-text-muted line-through" : "text-text-muted"}`}>
+                {note.value}
+              </p>
 
-              {!note.is_resolved && (
-                <div className="flex gap-2">
+              {/* Audit trail */}
+              {(note.resolved_at || note.deleted_at) && (
+                <div className="mt-3 space-y-1 border-t border-border pt-3">
+                  {note.resolved_at && (
+                    <div className="flex items-center gap-1.5 text-[11px] text-text-muted">
+                      <CheckCircleIcon className="h-3 w-3 text-green" />
+                      <span>
+                        Erledigt von <span className="font-medium text-text">{note.resolved_by}</span>
+                        {" "}am {formatDate(note.resolved_at)}
+                      </span>
+                    </div>
+                  )}
+                  {note.deleted_at && (
+                    <div className="flex items-center gap-1.5 text-[11px] text-text-muted">
+                      <Trash2Icon className="h-3 w-3 text-red" />
+                      <span>
+                        Gelöscht von <span className="font-medium text-text">{note.deleted_by}</span>
+                        {" "}am {formatDate(note.deleted_at)}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Created trail — always show on resolved/deleted */}
+              {(note.is_resolved || isDeleted(note)) && (
+                <div className={`flex items-center gap-1.5 text-[11px] text-text-muted ${!note.resolved_at && !note.deleted_at ? "mt-3 border-t border-border pt-3" : "mt-1"}`}>
+                  <ClockIcon className="h-3 w-3" />
+                  <span>
+                    Erstellt von <span className="font-medium text-text">{note.author_name}</span>
+                    {" "}am {formatDate(note.created_at)}
+                  </span>
+                </div>
+              )}
+
+              {/* Actions */}
+              {!note.is_resolved && !isDeleted(note) && (
+                <div className="mt-3 flex gap-2">
                   <button
                     onClick={() => markResolved(note.id)}
                     className="flex items-center gap-1.5 rounded-md bg-white px-3 py-1.5 text-xs font-semibold text-black transition-opacity hover:opacity-80"
@@ -191,6 +289,13 @@ export default function NotizenPage() {
                       An Zentrale
                     </button>
                   )}
+                  <button
+                    onClick={() => markDeleted(note.id)}
+                    className="ml-auto flex items-center gap-1.5 rounded-md border border-red/20 px-3 py-1.5 text-xs font-semibold text-red transition-opacity hover:opacity-80"
+                  >
+                    <Trash2Icon className="h-3.5 w-3.5" />
+                    Löschen
+                  </button>
                 </div>
               )}
             </div>
