@@ -62,7 +62,6 @@ html,
 body {
   scroll-behavior: smooth;
   overflow-x: hidden;
-  overscroll-behavior: none;
   -webkit-overflow-scrolling: touch;
 }
 
