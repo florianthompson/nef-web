@@ -11,22 +11,16 @@ export default function Nav() {
       </div>
       <div className="flex items-center gap-1 sm:gap-3">
         <a
-          href="/demo"
-          className="text-white/80 hover:text-white font-bold text-sm no-underline px-3 py-2.5 transition-colors max-sm:hidden"
-        >
-          Demo
-        </a>
-        <a
           href="/login"
           className="text-white/80 hover:text-white font-bold text-sm no-underline px-3 py-2.5 transition-colors"
         >
           Anmelden
         </a>
         <a
-          href="#waitlist"
+          href="/demo"
           className="bg-red text-white border-none px-[22px] py-2.5 rounded-[10px] font-bold text-sm cursor-pointer transition-all duration-200 no-underline hover:-translate-y-px hover:shadow-[0_4px_24px_rgba(239,68,68,0.3)]"
         >
-          Auf Warteliste &rarr;
+          Demo &rarr;
         </a>
       </div>
     </nav>

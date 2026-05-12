@@ -37,25 +37,16 @@ export default function Hero() {
         style={{ animation: "fadeUp 0.6s ease 0.3s both" }}
       >
         <a
-          href="#waitlist"
+          href="/demo"
           className="bg-red text-white border-none px-9 py-4 rounded-[14px] font-extrabold text-[17px] cursor-pointer transition-all duration-200 no-underline inline-flex items-center gap-2.5 hover:-translate-y-0.5 hover:shadow-[0_8px_32px_rgba(239,68,68,0.35)]"
         >
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-            <path
-              d="M3 9.5L7 13.5L15 5"
-              stroke="white"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-          Benachrichtigt werden
+          Demo testen &rarr;
         </a>
         <a
           href="#demo"
           className="bg-surface text-text border border-border px-9 py-4 rounded-[14px] font-bold text-[17px] cursor-pointer transition-all duration-200 no-underline hover:border-[rgba(255,255,255,0.15)] hover:bg-[rgba(255,255,255,0.04)]"
         >
-          Demo ansehen &darr;
+          Mehr ansehen &darr;
         </a>
       </div>
     </section>
