@@ -1,149 +1,135 @@
+export type DemoSubItem = {
+  id: string;
+  title: string;
+  is_completed: boolean;
+  expiryDate: string | null;
+};
+
 export type DemoItem = {
   id: string;
   title: string;
   is_completed: boolean;
-  parent_item_id: string | null;
+  subItems: DemoSubItem[];
 };
 
 export type DemoCategory = {
   id: string;
   title: string;
+  type: "standard" | "narcotics";
   items: DemoItem[];
 };
 
-export type DemoProtocol = {
+export type DemoVehicle = {
   id: string;
-  created_at: string;
-  user_first_name: string;
-  user_last_name: string;
-  vehicle_name: string;
-  categories: DemoCategory[];
+  name: string;
+  isDefault: boolean;
+};
+
+export type DemoNoteComment = {
+  id: string;
+  authorName: string;
+  value: string;
 };
 
 export type DemoNote = {
   id: string;
-  author_name: string;
+  authorName: string;
   value: string;
-  created_at: string;
-  is_resolved: boolean;
-  resolved_by: string | null;
-  resolved_at: string | null;
-  deleted_by: string | null;
-  deleted_at: string | null;
-  vehicle_name: string | null;
-  delegated: boolean;
+  createdAt: string;
+  vehicleId: string;
+  comments: DemoNoteComment[];
 };
 
-const now = new Date();
 const hoursAgo = (h: number) =>
-  new Date(now.getTime() - h * 60 * 60 * 1000).toISOString();
+  new Date(Date.now() - h * 60 * 60 * 1000).toISOString();
 
-export const DEMO_USER = {
-  firstName: "Max",
-  lastName: "Müller",
-} as const;
+const inDays = (d: number) =>
+  new Date(Date.now() + d * 86400000).toISOString().split("T")[0];
 
-export const DEMO_PROTOCOL: DemoProtocol = {
-  id: "demo-protocol",
-  created_at: hoursAgo(3),
-  user_first_name: DEMO_USER.firstName,
-  user_last_name: DEMO_USER.lastName,
-  vehicle_name: "NEF 1-83-1",
-  categories: [
-    {
-      id: "cat-1",
-      title: "Fahrerraum",
-      items: [
-        { id: "i-1", title: "Tankfüllung > 75%", is_completed: true, parent_item_id: null },
-        { id: "i-2", title: "Innenraum sauber & desinfiziert", is_completed: false, parent_item_id: null },
-        { id: "i-3", title: "Funkgerät funktionsfähig", is_completed: true, parent_item_id: null },
-      ],
-    },
-    {
-      id: "cat-2",
-      title: "Notfallausrüstung",
-      items: [
-        { id: "i-4", title: "Defibrillator", is_completed: true, parent_item_id: null },
-        { id: "i-5", title: "Pads vorhanden", is_completed: true, parent_item_id: "i-4" },
-        { id: "i-6", title: "Akku geladen", is_completed: false, parent_item_id: "i-4" },
-        { id: "i-7", title: "Beatmungsbeutel", is_completed: true, parent_item_id: null },
-        { id: "i-8", title: "Sauerstoffflasche > 100 bar", is_completed: true, parent_item_id: null },
-        { id: "i-9", title: "Absauggerät", is_completed: true, parent_item_id: null },
-      ],
-    },
-    {
-      id: "cat-3",
-      title: "Medikamente",
-      items: [
-        { id: "i-10", title: "Adrenalin 1:1000", is_completed: true, parent_item_id: null },
-        { id: "i-11", title: "Atropin 0,5 mg", is_completed: true, parent_item_id: null },
-        { id: "i-12", title: "Glukose 40%", is_completed: false, parent_item_id: null },
-        { id: "i-13", title: "Midazolam", is_completed: true, parent_item_id: null },
-      ],
-    },
-    {
-      id: "cat-4",
-      title: "Verbandsmaterial",
-      items: [
-        { id: "i-14", title: "Verbandspäckchen klein", is_completed: true, parent_item_id: null },
-        { id: "i-15", title: "Verbandspäckchen groß", is_completed: true, parent_item_id: null },
-        { id: "i-16", title: "Rettungsdecke", is_completed: true, parent_item_id: null },
-      ],
-    },
-  ],
-};
+export const DEMO_VEHICLES: DemoVehicle[] = [
+  { id: "v1", name: "NEF 1-83-1", isDefault: true },
+  { id: "v2", name: "NEF 1-83-2", isDefault: false },
+];
+
+export const DEMO_CATEGORIES: DemoCategory[] = [
+  {
+    id: "cat-1",
+    title: "Fahrerraum",
+    type: "standard",
+    items: [
+      { id: "i-1", title: "Tankfüllung > 75 %", is_completed: false, subItems: [] },
+      { id: "i-2", title: "Innenraum sauber & desinfiziert", is_completed: false, subItems: [] },
+      { id: "i-3", title: "Funkgerät funktionsfähig", is_completed: false, subItems: [] },
+      { id: "i-4", title: "Beleuchtung & Blaulicht geprüft", is_completed: false, subItems: [] },
+    ],
+  },
+  {
+    id: "cat-2",
+    title: "Notfallausrüstung",
+    type: "standard",
+    items: [
+      {
+        id: "i-5",
+        title: "Defibrillator",
+        is_completed: false,
+        subItems: [
+          { id: "si-1", title: "Pads vorhanden", is_completed: false, expiryDate: inDays(120) },
+          { id: "si-2", title: "Akku geladen", is_completed: false, expiryDate: null },
+          { id: "si-3", title: "Selbsttest erfolgreich", is_completed: false, expiryDate: null },
+        ],
+      },
+      { id: "i-6", title: "Beatmungsbeutel", is_completed: false, subItems: [] },
+      { id: "i-7", title: "Sauerstoffflasche > 100 bar", is_completed: false, subItems: [] },
+      { id: "i-8", title: "Absauggerät", is_completed: false, subItems: [] },
+    ],
+  },
+  {
+    id: "cat-3",
+    title: "Medikamente",
+    type: "standard",
+    items: [
+      {
+        id: "i-9",
+        title: "Notfallmedikamente",
+        is_completed: false,
+        subItems: [
+          { id: "si-4", title: "Adrenalin 1:1000", is_completed: false, expiryDate: inDays(220) },
+          { id: "si-5", title: "Atropin 0,5 mg", is_completed: false, expiryDate: inDays(15) },
+          { id: "si-6", title: "Glukose 40 %", is_completed: false, expiryDate: inDays(400) },
+          { id: "si-7", title: "Midazolam 5 mg", is_completed: false, expiryDate: inDays(180) },
+        ],
+      },
+    ],
+  },
+  {
+    id: "cat-4",
+    title: "Betäubungsmittel",
+    type: "narcotics",
+    items: [
+      { id: "i-10", title: "Fentanyl 0,5 mg", is_completed: false, subItems: [] },
+      { id: "i-11", title: "Morphin 10 mg", is_completed: false, subItems: [] },
+      { id: "i-12", title: "Ketamin S 25 mg", is_completed: false, subItems: [] },
+    ],
+  },
+];
 
 export const DEMO_NOTES: DemoNote[] = [
   {
     id: "n-1",
-    author_name: "Max Müller",
-    value: "Akku Defibrillator nur noch bei 30 %. Ersatz aus Reserve eingelegt.",
-    created_at: hoursAgo(3),
-    is_resolved: false,
-    resolved_by: null,
-    resolved_at: null,
-    deleted_by: null,
-    deleted_at: null,
-    vehicle_name: "NEF 1-83-1",
-    delegated: false,
+    authorName: "Anna Weber",
+    value: "Verbandsschere klein fehlt seit gestern — bitte nachbestellen.",
+    createdAt: hoursAgo(20),
+    vehicleId: "v1",
+    comments: [
+      { id: "c-1", authorName: "Zentrale", value: "Ist bestellt, Lieferung morgen." },
+    ],
   },
   {
     id: "n-2",
-    author_name: "Anna Weber",
-    value: "Verbandsschere klein fehlt seit gestern. Bitte nachbestellen.",
-    created_at: hoursAgo(20),
-    is_resolved: false,
-    resolved_by: null,
-    resolved_at: null,
-    deleted_by: null,
-    deleted_at: null,
-    vehicle_name: "NEF 1-83-1",
-    delegated: true,
-  },
-  {
-    id: "n-3",
-    author_name: "Jonas Becker",
-    value: "Tankdeckel klemmte beim Tanken — gangbar gemacht.",
-    created_at: hoursAgo(48),
-    is_resolved: true,
-    resolved_by: "Jonas Becker",
-    resolved_at: hoursAgo(46),
-    deleted_by: null,
-    deleted_at: null,
-    vehicle_name: "NEF 1-83-1",
-    delegated: false,
-  },
-  {
-    id: "n-4",
-    author_name: "Lisa Schmidt",
-    value: "Funkgerät 2 zeitweise stumm. Werkstatt informiert.",
-    created_at: hoursAgo(72),
-    is_resolved: true,
-    resolved_by: "Zentrale",
-    resolved_at: hoursAgo(50),
-    deleted_by: null,
-    deleted_at: null,
-    vehicle_name: "NEF 1-83-1",
-    delegated: false,
+    authorName: "Jonas Becker",
+    value: "Tankdeckel klemmt manchmal beim Öffnen.",
+    createdAt: hoursAgo(48),
+    vehicleId: "v1",
+    comments: [],
   },
 ];
