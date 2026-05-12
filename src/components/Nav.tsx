@@ -9,7 +9,13 @@ export default function Nav() {
           Protokoll
         </span>
       </div>
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-1 sm:gap-3">
+        <a
+          href="/demo"
+          className="text-white/80 hover:text-white font-bold text-sm no-underline px-3 py-2.5 transition-colors max-sm:hidden"
+        >
+          Demo
+        </a>
         <a
           href="/login"
           className="text-white/80 hover:text-white font-bold text-sm no-underline px-3 py-2.5 transition-colors"
