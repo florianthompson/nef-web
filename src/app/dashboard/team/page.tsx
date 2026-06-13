@@ -55,7 +55,7 @@ export default function TeamPage() {
       typeof window !== "undefined"
         ? window.location.origin
         : "";
-    return `${base}/signup?team=${profile?.teamId}`;
+    return `${base}/onboarding?team=${profile?.teamId}`;
   }
 
   async function copyInviteLink() {
