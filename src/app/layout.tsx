@@ -25,6 +25,9 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ?? "https://nef-web.vercel.app"
+  ),
   title: "NEF Protokoll — Digitale Schichtübergabe für Rettungsdienste",
   description:
     "Das digitale Übergabeprotokoll für Rettungsdienste. Fahrzeuge, Medikamente und Ausrüstung — alles geprüft, dokumentiert und in Echtzeit synchronisiert.",
@@ -35,7 +38,11 @@ export const metadata: Metadata = {
     statusBarStyle: "black-translucent",
   },
   icons: {
+    icon: "/favicon.ico",
     apple: "/apple-touch-icon.png",
+  },
+  openGraph: {
+    images: ["/icon-512.png"],
   },
 };
 
