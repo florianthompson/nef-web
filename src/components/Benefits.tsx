@@ -12,12 +12,6 @@ const benefits = [
     desc: "Offene Mängel werden der nächsten Schicht angezeigt. Jede Crew sieht sofort, was noch aussteht — mit Bestätigungsfunktion.",
   },
   {
-    icon: "\ud83c\udfe2",
-    bg: "rgba(139,92,246,0.1)",
-    title: "Leitstelle-Zuweisung",
-    desc: "Aufgaben die Disposition, Beschaffung oder Werkstatt erfordern, werden direkt an die Leitstelle weitergeleitet — mit Tracking.",
-  },
-  {
     icon: "\ud83d\ude97",
     bg: "rgba(34,197,94,0.1)",
     title: "Fahrzeug-Zuordnung",
