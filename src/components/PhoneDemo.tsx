@@ -102,14 +102,6 @@ export default function PhoneDemo() {
                 </svg>
                 1 offen
               </div>
-              <div className="flex items-center gap-1 text-[10px] font-semibold px-2 py-[3px] rounded-full text-purple bg-[rgba(139,92,246,0.1)]">
-                <svg width="11" height="11" viewBox="0 0 13 13" fill="none">
-                  <rect x="1" y="3" width="11" height="8" rx="1.5" stroke="currentColor" strokeWidth="1.2" />
-                  <path d="M4 1v2M9 1v2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
-                  <circle cx="6.5" cy="7" r="1.5" stroke="currentColor" strokeWidth="1.2" />
-                </svg>
-                2 Leitstelle
-              </div>
             </div>
           </div>
 
