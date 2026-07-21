@@ -7,7 +7,10 @@ export const dynamic = "force-dynamic";
 const TOKEN = "28c35f07214c66df2ee8eb9009995f45";
 
 export async function GET(req: NextRequest) {
-  if (req.headers.get("x-stats-token") !== TOKEN) {
+  const provided =
+    req.headers.get("x-stats-token") ??
+    req.nextUrl.searchParams.get("token");
+  if (provided !== TOKEN) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
