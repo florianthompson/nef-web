@@ -394,113 +394,127 @@ function EditSheet({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60" onClick={onClose}>
+    <div
+      className="fixed inset-0 z-[80] flex items-end justify-center bg-black/70 backdrop-blur-sm"
+      onClick={onClose}
+    >
       <div
-        className="w-full max-w-lg rounded-t-2xl border border-border bg-bg p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))]"
+        className="flex max-h-[90dvh] w-full max-w-lg flex-col rounded-t-2xl border-t border-white/10 bg-surface shadow-[0_-8px_40px_rgba(0,0,0,0.6)]"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="mb-4 flex items-start justify-between">
-          <div>
+        {/* Grab handle */}
+        <div className="flex shrink-0 justify-center pb-1 pt-2.5">
+          <div className="h-1 w-10 rounded-full bg-white/15" />
+        </div>
+
+        {/* Header */}
+        <div className="flex shrink-0 items-start justify-between px-5 pb-3 pt-1">
+          <div className="min-w-0">
             <p className="font-mono text-[9.5px] uppercase tracking-[0.12em] text-text-muted">
               {vehicle.name} · Medikamente
             </p>
-            <h2 className="mt-1 text-lg font-bold">{med.title}</h2>
+            <h2 className="mt-1 truncate text-lg font-bold">{med.title}</h2>
           </div>
-          <button onClick={onClose} className="p-1 text-text-muted">
+          <button
+            onClick={onClose}
+            aria-label="Schließen"
+            className="-mr-1 shrink-0 rounded-lg p-2 text-text-muted hover:bg-surface2"
+          >
             <XIcon className="h-5 w-5" />
           </button>
         </div>
 
-        {/* Current state */}
-        <div
-          className={`mb-4 rounded-lg border p-3 text-xs ${
-            currentDate
-              ? "border-border bg-surface"
-              : "border-red/20 bg-red/5"
-          }`}
-        >
-          {currentDate ? (
-            <>Bisheriges MHD <b>{formatDate(currentDate)}</b></>
-          ) : (
-            <>Kein MHD hinterlegt — wird als Ersteintrag protokolliert.</>
+        {/* Scrollable body */}
+        <div className="min-h-0 flex-1 overflow-y-auto px-5 pb-4">
+          {/* Current state */}
+          <div
+            className={`mb-4 rounded-lg border p-3 text-xs ${
+              currentDate ? "border-border bg-surface2" : "border-red/20 bg-red/5"
+            }`}
+          >
+            {currentDate ? (
+              <>Bisheriges MHD <b>{formatDate(currentDate)}</b></>
+            ) : (
+              <>Kein MHD hinterlegt — wird als Ersteintrag protokolliert.</>
+            )}
+          </div>
+
+          {/* Date */}
+          <label className="mb-1.5 block text-[10.5px] text-text-muted">Neues MHD</label>
+          <input
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            className="mb-1.5 w-full rounded-lg border border-border bg-surface2 px-4 py-3 font-mono text-base text-text focus:border-red focus:outline-none"
+          />
+          <p className="mb-4 text-[10px] leading-snug text-text-muted">
+            Liegen mehrere Packungen im Fahrzeug: das Datum der Packung eintragen, die
+            zuerst abläuft.
+          </p>
+
+          {/* Reason */}
+          <label className="mb-1.5 block text-[10.5px] text-text-muted">
+            Grund <span className="opacity-60">(optional)</span>
+          </label>
+          <div className="mb-4 flex flex-wrap gap-1.5">
+            {REASONS.map((r) => (
+              <button
+                key={r}
+                onClick={() => setReason((cur) => (cur === r ? null : r))}
+                className={`rounded-full border px-3 py-2 text-[11px] transition-colors ${
+                  reason === r
+                    ? "border-red/40 bg-red/10 font-semibold text-red"
+                    : "border-border bg-surface2 text-text-muted"
+                }`}
+              >
+                {r}
+              </button>
+            ))}
+          </div>
+
+          {/* History */}
+          {history.length > 0 && (
+            <>
+              <p className="mb-2 mt-1 px-0.5 font-mono text-[9.5px] uppercase tracking-[0.12em] text-text-muted">
+                Verlauf
+              </p>
+              <div className="ml-1 border-l border-border pl-3.5">
+                {history.map((h, i) => (
+                  <div key={i} className="py-1.5">
+                    <p className="font-mono text-[10px] tabular-nums text-text-muted">
+                      {formatDate(h.changed_at.slice(0, 10))}
+                    </p>
+                    <p className="text-[11.5px]">
+                      MHD {formatDate(h.expiry_date)}
+                      {h.reason && ` · ${h.reason}`}
+                    </p>
+                    <p className="text-[10.5px] text-text-muted">{h.changed_by_name}</p>
+                  </div>
+                ))}
+              </div>
+            </>
           )}
         </div>
 
-        {/* Date */}
-        <label className="mb-1.5 block text-[10.5px] text-text-muted">Neues MHD</label>
-        <input
-          type="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-          className="mb-1.5 w-full rounded-lg border border-border bg-surface px-4 py-3 font-mono text-sm text-text focus:border-red focus:outline-none"
-        />
-        <p className="mb-4 text-[10px] leading-snug text-text-muted">
-          Liegen mehrere Packungen im Fahrzeug: das Datum der Packung eintragen, die
-          zuerst abläuft.
-        </p>
-
-        {/* Reason */}
-        <label className="mb-1.5 block text-[10.5px] text-text-muted">
-          Grund <span className="opacity-60">(optional)</span>
-        </label>
-        <div className="mb-4 flex flex-wrap gap-1.5">
-          {REASONS.map((r) => (
-            <button
-              key={r}
-              onClick={() => setReason((cur) => (cur === r ? null : r))}
-              className={`rounded-full border px-3 py-1.5 text-[11px] transition-colors ${
-                reason === r
-                  ? "border-red/40 bg-red/10 font-semibold text-red"
-                  : "border-border bg-surface2 text-text-muted"
-              }`}
-            >
-              {r}
-            </button>
-          ))}
+        {/* Sticky footer: signer + save always reachable */}
+        <div className="shrink-0 border-t border-border bg-surface px-5 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-3">
+          <div className="mb-3 flex items-center gap-2 text-[11px]">
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-red/15 text-[10px] font-bold text-red">
+              {authorName.charAt(0)}
+            </span>
+            <span>
+              {authorName} <span className="text-text-muted">· wird protokolliert</span>
+            </span>
+          </div>
+          {error && <p className="mb-2 text-xs text-red">{error}</p>}
+          <button
+            onClick={save}
+            disabled={!date || saving}
+            className="w-full rounded-lg bg-red py-3.5 text-sm font-bold text-white transition-opacity disabled:opacity-40"
+          >
+            {saving ? "Speichern…" : "Austausch speichern"}
+          </button>
         </div>
-
-        {/* Signer */}
-        <div className="mb-4 flex items-center gap-2 rounded-lg border border-border bg-surface px-3 py-2.5 text-[11px]">
-          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-red/15 text-[10px] font-bold text-red">
-            {authorName.charAt(0)}
-          </span>
-          <span>
-            {authorName} <span className="text-text-muted">· wird protokolliert</span>
-          </span>
-        </div>
-
-        {error && <p className="mb-3 text-xs text-red">{error}</p>}
-
-        <button
-          onClick={save}
-          disabled={!date || saving}
-          className="w-full rounded-lg bg-red py-3.5 text-sm font-bold text-white transition-opacity disabled:opacity-40"
-        >
-          {saving ? "Speichern…" : "Austausch speichern"}
-        </button>
-
-        {/* History */}
-        {history.length > 0 && (
-          <>
-            <p className="mb-2 mt-5 px-0.5 font-mono text-[9.5px] uppercase tracking-[0.12em] text-text-muted">
-              Verlauf
-            </p>
-            <div className="ml-1 border-l border-border pl-3.5">
-              {history.map((h, i) => (
-                <div key={i} className="py-1.5">
-                  <p className="font-mono text-[10px] tabular-nums text-text-muted">
-                    {formatDate(h.changed_at.slice(0, 10))}
-                  </p>
-                  <p className="text-[11.5px]">
-                    MHD {formatDate(h.expiry_date)}
-                    {h.reason && ` · ${h.reason}`}
-                  </p>
-                  <p className="text-[10.5px] text-text-muted">{h.changed_by_name}</p>
-                </div>
-              ))}
-            </div>
-          </>
-        )}
       </div>
     </div>
   );
