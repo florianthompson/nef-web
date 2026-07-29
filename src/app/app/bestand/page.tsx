@@ -395,20 +395,15 @@ function EditSheet({
 
   return (
     <div
-      className="fixed inset-0 z-[80] flex items-end justify-center bg-black/70 backdrop-blur-sm"
+      className="fixed inset-0 z-[80] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
       onClick={onClose}
     >
       <div
-        className="flex max-h-[90dvh] w-full max-w-lg flex-col rounded-t-2xl border-t border-white/10 bg-surface shadow-[0_-8px_40px_rgba(0,0,0,0.6)]"
+        className="flex max-h-[85dvh] w-full max-w-md flex-col overflow-hidden rounded-2xl border border-white/10 bg-surface shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Grab handle */}
-        <div className="flex shrink-0 justify-center pb-1 pt-2.5">
-          <div className="h-1 w-10 rounded-full bg-white/15" />
-        </div>
-
         {/* Header */}
-        <div className="flex shrink-0 items-start justify-between px-5 pb-3 pt-1">
+        <div className="flex shrink-0 items-start justify-between px-5 pb-3 pt-4">
           <div className="min-w-0">
             <p className="font-mono text-[9.5px] uppercase tracking-[0.12em] text-text-muted">
               {vehicle.name} · Medikamente
@@ -496,8 +491,8 @@ function EditSheet({
           )}
         </div>
 
-        {/* Sticky footer: signer + save always reachable */}
-        <div className="shrink-0 border-t border-border bg-surface px-5 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-3">
+        {/* Pinned footer: signer + save always reachable */}
+        <div className="shrink-0 border-t border-border bg-surface px-5 py-4">
           <div className="mb-3 flex items-center gap-2 text-[11px]">
             <span className="flex h-6 w-6 items-center justify-center rounded-full bg-red/15 text-[10px] font-bold text-red">
               {authorName.charAt(0)}
