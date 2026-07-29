@@ -37,10 +37,10 @@ export default function Hero() {
         style={{ animation: "fadeUp 0.6s ease 0.3s both" }}
       >
         <a
-          href="/demo"
+          href="/login"
           className="bg-red text-white border-none px-9 py-4 rounded-[14px] font-extrabold text-[17px] cursor-pointer transition-all duration-200 no-underline inline-flex items-center gap-2.5 hover:-translate-y-0.5 hover:shadow-[0_8px_32px_rgba(239,68,68,0.35)]"
         >
-          Demo testen &rarr;
+          Anmelden &rarr;
         </a>
         <a
           href="#demo"
