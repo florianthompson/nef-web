@@ -1,8 +1,11 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/lib/auth";
+import { canSeeBestand } from "@/lib/featureFlags";
+import { categoryTracksExpiry, expiryStatus, formatMonthYear } from "@/lib/expiry";
 import {
   CarIcon,
   WrenchIcon,
@@ -71,6 +74,8 @@ export default function AppHomePage() {
   const [shiftNote, setShiftNote] = useState("");
   const [openSections, setOpenSections] = useState<Set<number>>(new Set());
   const [loading, setLoading] = useState(true);
+  // vehicleId -> itemId -> latest MHD (Bestand rollout only)
+  const [expiryMap, setExpiryMap] = useState<Record<string, Record<string, string>>>({});
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -178,6 +183,25 @@ export default function AppHomePage() {
     setVehicles(vList);
     if (vList.length > 0) setSelectedVehicle(vList[0]);
 
+    // MHD badges (Bestand rollout only). Latest event per item per vehicle.
+    // Degrades to empty if item_expiry_events doesn't exist yet.
+    if (canSeeBestand(user?.id) && vList.length > 0) {
+      const { data: events } = await supabase
+        .from("item_expiry_events")
+        .select("item_id, vehicle_id, expiry_date, changed_at")
+        .in("vehicle_id", vList.map((v) => v.id))
+        .order("changed_at", { ascending: false });
+
+      const map: Record<string, Record<string, string>> = {};
+      for (const e of events ?? []) {
+        map[e.vehicle_id] ??= {};
+        if (!(e.item_id in map[e.vehicle_id])) {
+          map[e.vehicle_id][e.item_id] = e.expiry_date;
+        }
+      }
+      setExpiryMap(map);
+    }
+
     // Fetch notes
     const { data: notesData } = await supabase
       .from("notes")
@@ -197,7 +221,7 @@ export default function AppHomePage() {
     );
 
     setLoading(false);
-  }, [profile]);
+  }, [profile, user?.id]);
 
   useEffect(() => {
     if (authLoading || !profile) return;
@@ -208,6 +232,13 @@ export default function AppHomePage() {
   const visibleCategories = (protocol?.categories ?? []).filter(
     (c) => c.type !== "text"
   );
+
+  // Expired medications for the selected vehicle (Bestand rollout only).
+  const vehicleExpiry = selectedVehicle ? expiryMap[selectedVehicle.id] ?? {} : {};
+  const expiredMeds = visibleCategories
+    .filter((c) => categoryTracksExpiry(c.title))
+    .flatMap((c) => c.items.flatMap((i) => i.subItems))
+    .filter((s) => expiryStatus(vehicleExpiry[s.id] ?? null) === "expired");
 
   const totalItems = visibleCategories.reduce(
     (sum, c) =>
@@ -488,6 +519,24 @@ export default function AppHomePage() {
         </div>
       </div>
 
+      {/* Abgelaufene Medikamente (Bestand rollout) */}
+      {expiredMeds.length > 0 && (
+        <Link
+          href="/app/bestand"
+          className="mb-6 flex items-center gap-3 rounded-lg border border-red/20 bg-red/5 px-4 py-3 no-underline"
+        >
+          <span className="h-2 w-2 flex-shrink-0 rounded-full bg-red" />
+          <span className="flex-1 text-xs leading-tight text-text">
+            <b className="font-bold text-red">
+              {expiredMeds.length} Medikament{expiredMeds.length > 1 ? "e" : ""} abgelaufen
+            </b>
+            <br />
+            {expiredMeds.map((m) => m.title).join(", ")}
+          </span>
+          <span className="text-red">›</span>
+        </Link>
+      )}
+
       {/* Checklist Sections */}
       <div className="mb-6 space-y-3">
         {visibleCategories.map((cat, catIdx) => {
@@ -615,6 +664,25 @@ export default function AppHomePage() {
                               >
                                 {sub.title}
                               </span>
+                              {categoryTracksExpiry(cat.title) &&
+                                selectedVehicle &&
+                                expiryMap[selectedVehicle.id]?.[sub.id] &&
+                                (() => {
+                                  const d = expiryMap[selectedVehicle.id][sub.id];
+                                  const expired = expiryStatus(d) === "expired";
+                                  return (
+                                    <span
+                                      className={`ml-auto rounded border px-1.5 py-1 font-mono text-[9.5px] tabular-nums ${
+                                        expired
+                                          ? "border-red/25 bg-red/15 font-bold text-red"
+                                          : "border-white/[0.07] bg-white/[0.04] text-text-muted"
+                                      }`}
+                                    >
+                                      {formatMonthYear(d)}
+                                      {expired && " !"}
+                                    </span>
+                                  );
+                                })()}
                             </button>
                           ))}
                         </div>

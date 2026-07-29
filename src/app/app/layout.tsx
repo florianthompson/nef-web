@@ -3,18 +3,22 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AuthProvider, useAuth } from "@/lib/auth";
+import { canSeeBestand } from "@/lib/featureFlags";
 import {
   ClipboardListIcon,
-  HistoryIcon,
+  PillIcon,
   UserIcon,
 } from "lucide-react";
 
 function AppNav() {
   const pathname = usePathname();
-  const { profile } = useAuth();
+  const { user, profile } = useAuth();
 
   const tabs = [
     { href: "/app", icon: ClipboardListIcon, label: "Protokoll" },
+    ...(canSeeBestand(user?.id)
+      ? [{ href: "/app/bestand", icon: PillIcon, label: "Bestand" }]
+      : []),
     { href: "/app/profil", icon: UserIcon, label: "Profil" },
   ];
 
