@@ -1,4 +1,9 @@
+"use client";
+
+import { useSignedIn } from "@/lib/useSession";
+
 export default function Hero() {
+  const signedIn = useSignedIn();
   return (
     <section className="relative px-10 pt-40 pb-[100px] max-w-[1200px] mx-auto text-center overflow-hidden max-md:px-5 max-md:pt-[130px] max-md:pb-[60px]">
       {/* Red glow */}
@@ -37,10 +42,10 @@ export default function Hero() {
         style={{ animation: "fadeUp 0.6s ease 0.3s both" }}
       >
         <a
-          href="/login"
+          href={signedIn ? "/app" : "/login"}
           className="bg-red text-white border-none px-9 py-4 rounded-[14px] font-extrabold text-[17px] cursor-pointer transition-all duration-200 no-underline inline-flex items-center gap-2.5 hover:-translate-y-0.5 hover:shadow-[0_8px_32px_rgba(239,68,68,0.35)]"
         >
-          Anmelden &rarr;
+          {signedIn ? "NEF öffnen" : "Anmelden"} &rarr;
         </a>
         <a
           href="#demo"
