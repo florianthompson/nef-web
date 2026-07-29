@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/lib/auth";
@@ -228,6 +228,32 @@ export default function AppHomePage() {
     loadData();
   }, [authLoading, profile, loadData]);
 
+  // Re-fetch the protocol when the app is re-shown after being backgrounded
+  // (iOS PWAs resume old state instead of remounting), so template edits are
+  // picked up without a manual refresh. Skipped while a check is in progress or
+  // the protocol was just submitted, to avoid discarding the user's work.
+  const dirtyRef = useRef(false);
+  useEffect(() => {
+    function maybeReload() {
+      if (
+        document.visibilityState === "visible" &&
+        !dirtyRef.current &&
+        !submitted
+      ) {
+        loadData();
+      }
+    }
+    function onPageShow(e: PageTransitionEvent) {
+      if (e.persisted) maybeReload();
+    }
+    document.addEventListener("visibilitychange", maybeReload);
+    window.addEventListener("pageshow", onPageShow);
+    return () => {
+      document.removeEventListener("visibilitychange", maybeReload);
+      window.removeEventListener("pageshow", onPageShow);
+    };
+  }, [loadData, submitted]);
+
   // Filter categories (exclude 'text' type for section display)
   const visibleCategories = (protocol?.categories ?? []).filter(
     (c) => c.type !== "text"
@@ -257,6 +283,11 @@ export default function AppHomePage() {
       ),
     0
   );
+
+  // Track in-progress checks so the visibility refetch never discards them.
+  useEffect(() => {
+    dirtyRef.current = checkedItems > 0;
+  }, [checkedItems]);
 
   const vehicleNotes = notes.filter(
     (n) => !n.vehicle_id || n.vehicle_id === selectedVehicle?.id
