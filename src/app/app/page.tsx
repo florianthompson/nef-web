@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/lib/auth";
 import { canSeeBestand } from "@/lib/featureFlags";
 import { categoryTracksExpiry, expiryStatus, formatMonthYear } from "@/lib/expiry";
+import { saveDraft, loadDraft, clearDraft } from "@/lib/protocolDraft";
 import {
   CarIcon,
   WrenchIcon,
@@ -15,6 +16,7 @@ import {
   CheckIcon,
   SendIcon,
   StickyNoteIcon,
+  XIcon,
 } from "lucide-react";
 
 type Item = {
@@ -76,6 +78,7 @@ export default function AppHomePage() {
   const [loading, setLoading] = useState(true);
   // vehicleId -> itemId -> latest MHD (Bestand rollout only)
   const [expiryMap, setExpiryMap] = useState<Record<string, Record<string, string>>>({});
+  const [draftRestored, setDraftRestored] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -94,6 +97,9 @@ export default function AppHomePage() {
       setLoading(false);
       return;
     }
+
+    // In-progress draft for this protocol on this device, if any.
+    const draft = user?.id ? loadDraft(user.id, protocolData.id) : null;
 
     const { data: categoriesData } = await supabase
       .from("categories")
@@ -161,6 +167,23 @@ export default function AppHomePage() {
       });
     }
 
+    // Overlay saved checks onto the fresh structure (by id). The live protocol
+    // is authoritative for structure; the draft only restores what was checked.
+    // Items removed from the protocol drop off; new items start unchecked.
+    if (draft) {
+      const checked = new Set(draft.checkedIds);
+      for (const cat of categories) {
+        for (const item of cat.items) {
+          item.is_completed = checked.has(item.id);
+          for (const sub of item.subItems) sub.is_completed = checked.has(sub.id);
+        }
+      }
+    }
+    setShiftNote(draft?.shiftNote ?? "");
+    setDraftRestored(
+      !!draft && (draft.checkedIds.length > 0 || draft.shiftNote.trim().length > 0)
+    );
+
     setProtocol({
       id: protocolData.id,
       title: protocolData.title,
@@ -181,7 +204,8 @@ export default function AppHomePage() {
     }));
     vList.sort((a, b) => (a.isDefault ? -1 : b.isDefault ? 1 : 0));
     setVehicles(vList);
-    if (vList.length > 0) setSelectedVehicle(vList[0]);
+    const draftVehicle = draft ? vList.find((v) => v.id === draft.vehicleId) : null;
+    setSelectedVehicle(draftVehicle ?? vList[0] ?? null);
 
     // MHD badges (Bestand rollout only). Latest event per item per vehicle.
     // Degrades to empty if item_expiry_events doesn't exist yet.
@@ -230,18 +254,11 @@ export default function AppHomePage() {
 
   // Re-fetch the protocol when the app is re-shown after being backgrounded
   // (iOS PWAs resume old state instead of remounting), so template edits are
-  // picked up without a manual refresh. Skipped while a check is in progress or
-  // the protocol was just submitted, to avoid discarding the user's work.
-  const dirtyRef = useRef(false);
+  // picked up without a manual refresh. In-progress checks aren't lost: loadData
+  // re-applies the saved draft over the fresh structure.
   useEffect(() => {
     function maybeReload() {
-      if (
-        document.visibilityState === "visible" &&
-        !dirtyRef.current &&
-        !submitted
-      ) {
-        loadData();
-      }
+      if (document.visibilityState === "visible" && !submitted) loadData();
     }
     function onPageShow(e: PageTransitionEvent) {
       if (e.persisted) maybeReload();
@@ -253,6 +270,27 @@ export default function AppHomePage() {
       window.removeEventListener("pageshow", onPageShow);
     };
   }, [loadData, submitted]);
+
+  // Persist the in-progress protocol locally on every change so it survives the
+  // app being closed. Skipped once submitted (the draft is cleared on submit).
+  useEffect(() => {
+    if (!protocol || !user?.id || submitted || loading) return;
+    const checkedIds: string[] = [];
+    for (const cat of protocol.categories) {
+      for (const item of cat.items) {
+        if (item.is_completed) checkedIds.push(item.id);
+        for (const sub of item.subItems) {
+          if (sub.is_completed) checkedIds.push(sub.id);
+        }
+      }
+    }
+    saveDraft(user.id, {
+      protocolId: protocol.id,
+      vehicleId: selectedVehicle?.id ?? null,
+      shiftNote,
+      checkedIds,
+    });
+  }, [protocol, selectedVehicle, shiftNote, submitted, loading, user?.id]);
 
   // Filter categories (exclude 'text' type for section display)
   const visibleCategories = (protocol?.categories ?? []).filter(
@@ -283,11 +321,6 @@ export default function AppHomePage() {
       ),
     0
   );
-
-  // Track in-progress checks so the visibility refetch never discards them.
-  useEffect(() => {
-    dirtyRef.current = checkedItems > 0;
-  }, [checkedItems]);
 
   const vehicleNotes = notes.filter(
     (n) => !n.vehicle_id || n.vehicle_id === selectedVehicle?.id
@@ -403,11 +436,15 @@ export default function AppHomePage() {
       return;
     }
 
+    if (user) clearDraft(user.id);
+    setDraftRestored(false);
     setSubmitting(false);
     setSubmitted(true);
   }
 
   function resetProtocol() {
+    if (user) clearDraft(user.id);
+    setDraftRestored(false);
     setSubmitted(false);
     setShiftNote("");
     setLoading(true);
@@ -474,6 +511,35 @@ export default function AppHomePage() {
         <h1 className="text-lg font-bold">Schichtprotokoll</h1>
         <p className="text-xs text-text-muted">Fahrzeug-Übergabecheck</p>
       </div>
+
+      {/* Continued draft */}
+      {draftRestored && (
+        <div className="mb-6 rounded-lg border border-border bg-surface2 px-4 py-3">
+          <div className="flex items-start gap-2">
+            <span className="flex-1 text-xs text-text-muted">
+              Fortsetzung — dein bisheriger Fortschritt wurde wiederhergestellt.
+            </span>
+            <button
+              onClick={() => setDraftRestored(false)}
+              aria-label="Ausblenden"
+              className="text-text-muted"
+            >
+              <XIcon className="h-4 w-4" />
+            </button>
+          </div>
+          <button
+            onClick={() => {
+              if (user) clearDraft(user.id);
+              setDraftRestored(false);
+              setLoading(true);
+              loadData();
+            }}
+            className="mt-2 text-xs font-semibold text-red"
+          >
+            Neu beginnen
+          </button>
+        </div>
+      )}
 
       {/* Vehicle Selector */}
       <div className="relative mb-6">
