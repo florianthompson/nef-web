@@ -20,6 +20,10 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Feature flags
+
+`NEXT_PUBLIC_FEATURE_MHD=true` enables the MHD / Bestand feature (default: hidden). Set it in the Vercel env and redeploy; the user allowlist in `src/lib/featureFlags.ts` still applies.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
