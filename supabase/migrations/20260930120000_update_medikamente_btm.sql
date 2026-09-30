@@ -6,7 +6,10 @@
 -- references items(id) ON DELETE CASCADE; only products that no longer exist are
 -- deleted, and only if they have no MHD history. Submitted protocols store title
 -- copies, so history is unaffected.
--- Prod snapshot at authoring time: 69 sub-items -> 10 deleted, 7 inserted = 66.
+-- Items with Soll 0 but Bestand > 0 (Flumazenil, Glucose 10 %, Naloxon nasal,
+-- Paracetamol - 500 mg) are kept because the protocol mirrors the Ist-Zustand;
+-- only Soll 0 / Bestand 0 (Alteplase) stays off the list.
+-- Prod snapshot at authoring time: 69 sub-items -> 7 deleted, 8 inserted = 70.
 -- Run in the Supabase SQL editor.
 
 begin;
@@ -54,6 +57,7 @@ begin
     ('Epinephrin (Adrenalin) - Stechampulle', 'Epinephrin - 25 mg/25 ml'),
     ('Gelatinelösung 4%', 'Gelatinelösung 4 %'),
     ('Glucose 5%', 'Glucose 5 %'),
+    ('Glucose 10%', 'Glucose 10 %'),
     ('Glucose 40%', 'Glucose 40 %'),
     ('Glycerolnitrat', 'Glyceroltrinitrat'),
     ('Lidocain 2%', 'Lidocain 2 %'),
@@ -61,6 +65,7 @@ begin
     ('Magnesiumsulfat 10%', 'Magnesiumsulfat 20 %'),
     ('Midazolam - 15mg / 3ml', 'Midazolam'),
     ('Naloxon - Ampulle', 'Naloxon'),
+    ('Naloxon - Nasal', 'Naloxon nasal'),
     ('Natriumchlorid 0,9% - Ampulle', 'NaCl 0,9 % - 10 ml'),
     ('Natriumchlorid 0,9% - Durchstechflasche', 'NaCl 0,9 % - 100 ml'),
     ('Natriumhydrogencarbonat 8,4%', 'Natriumhydrogencarbonat 8,4 %'),
@@ -82,12 +87,9 @@ begin
   -- 2. Delete removed products, guarded by MHD history
   for r in select * from (values
     ('Epinephrin (Adrenalin) - Inhalationslösung'),
-    ('Flumazenil'),
-    ('Glucose 10%'),
     ('HES 6% (130.000/0,4)'),
     ('Lorazepam - Ampulle'),
     ('Midazolam - 5mg/5ml'),
-    ('Naloxon - Nasal'),
     ('Nitrendipin'),
     ('Suxamethonium'),
     ('Thiopental')
@@ -116,6 +118,7 @@ begin
     ('Oxymetazolin'),
     ('Paracetamol - 75 mg Suppositorium'),
     ('Paracetamol - 250 mg Suppositorium'),
+    ('Paracetamol - 500 mg'),
     ('Xylometazolin')
   ) as t(title)
   loop
@@ -128,7 +131,7 @@ begin
       (v_cat, v_parent, r.title, 0, 'select', true, false, '', true);
   end loop;
 
-  -- 4. Final alphabetical positions 0..65
+  -- 4. Final alphabetical positions 0..69
   for r in select * from (values
     ('Acetylsalicylsäure', 0),
     ('Adenosin', 1),
@@ -151,51 +154,55 @@ begin
     ('Epinephrin - 25 mg/25 ml', 18),
     ('Esketamin', 19),
     ('Fenoterol', 20),
-    ('Furosemid', 21),
-    ('Gelatinelösung 4 %', 22),
-    ('Glucose 5 %', 23),
-    ('Glucose 40 %', 24),
-    ('Glyceroltrinitrat', 25),
-    ('Haloperidol', 26),
-    ('Heparin', 27),
-    ('Hydroxocobalamin', 28),
-    ('Ipratropiumbromid', 29),
-    ('Levetiracetam', 30),
-    ('Lidocain 2 %', 31),
-    ('Lorazepam', 32),
-    ('Magnesiumsulfat 20 %', 33),
-    ('Medizinische Kohle', 34),
-    ('Metamizol', 35),
-    ('Methylthioniniumchlorid', 36),
-    ('Metoprolol', 37),
-    ('Midazolam', 38),
-    ('NaCl 0,9 % - 10 ml', 39),
-    ('NaCl 0,9 % - 100 ml', 40),
-    ('Naloxon', 41),
-    ('Natriumchlorid 10 %', 42),
-    ('Natriumhydrogencarbonat 8,4 %', 43),
-    ('Natriumthiosulfat 10 %', 44),
-    ('Noradrenalin', 45),
-    ('Obidoxim', 46),
-    ('Ondansetron', 47),
-    ('Oxymetazolin', 48),
-    ('Oxytocin', 49),
-    ('Paracetamol - 75 mg Suppositorium', 50),
-    ('Paracetamol - 125 mg Suppositorium', 51),
-    ('Paracetamol - 250 mg Suppositorium', 52),
-    ('Prednisolon', 53),
-    ('Prednison', 54),
-    ('Promethazin', 55),
-    ('Propofol', 56),
-    ('Reproterol', 57),
-    ('Rocuronium', 58),
-    ('Salbutamol', 59),
-    ('Simeticon', 60),
-    ('Tenecteplase', 61),
-    ('Thiamin', 62),
-    ('Tranexamsäure', 63),
-    ('Urapidil', 64),
-    ('Xylometazolin', 65)
+    ('Flumazenil', 21),
+    ('Furosemid', 22),
+    ('Gelatinelösung 4 %', 23),
+    ('Glucose 5 %', 24),
+    ('Glucose 10 %', 25),
+    ('Glucose 40 %', 26),
+    ('Glyceroltrinitrat', 27),
+    ('Haloperidol', 28),
+    ('Heparin', 29),
+    ('Hydroxocobalamin', 30),
+    ('Ipratropiumbromid', 31),
+    ('Levetiracetam', 32),
+    ('Lidocain 2 %', 33),
+    ('Lorazepam', 34),
+    ('Magnesiumsulfat 20 %', 35),
+    ('Medizinische Kohle', 36),
+    ('Metamizol', 37),
+    ('Methylthioniniumchlorid', 38),
+    ('Metoprolol', 39),
+    ('Midazolam', 40),
+    ('NaCl 0,9 % - 10 ml', 41),
+    ('NaCl 0,9 % - 100 ml', 42),
+    ('Naloxon', 43),
+    ('Naloxon nasal', 44),
+    ('Natriumchlorid 10 %', 45),
+    ('Natriumhydrogencarbonat 8,4 %', 46),
+    ('Natriumthiosulfat 10 %', 47),
+    ('Noradrenalin', 48),
+    ('Obidoxim', 49),
+    ('Ondansetron', 50),
+    ('Oxymetazolin', 51),
+    ('Oxytocin', 52),
+    ('Paracetamol - 75 mg Suppositorium', 53),
+    ('Paracetamol - 125 mg Suppositorium', 54),
+    ('Paracetamol - 250 mg Suppositorium', 55),
+    ('Paracetamol - 500 mg', 56),
+    ('Prednisolon', 57),
+    ('Prednison', 58),
+    ('Promethazin', 59),
+    ('Propofol', 60),
+    ('Reproterol', 61),
+    ('Rocuronium', 62),
+    ('Salbutamol', 63),
+    ('Simeticon', 64),
+    ('Tenecteplase', 65),
+    ('Thiamin', 66),
+    ('Tranexamsäure', 67),
+    ('Urapidil', 68),
+    ('Xylometazolin', 69)
   ) as t(title, pos)
   loop
     update items set position = r.pos
@@ -207,14 +214,14 @@ begin
   end loop;
 
   select count(*) into n from items where parent_item_id = v_parent;
-  if n <> 66 then
-    raise exception 'Expected 66 Medikamente sub-items after update, found %', n;
+  if n <> 70 then
+    raise exception 'Expected 70 Medikamente sub-items after update, found %', n;
   end if;
 end $$;
 
 commit;
 
--- Verification (expect 66 rows, positions 0..65, no gaps):
+-- Verification (expect 70 rows, positions 0..69, no gaps):
 -- select i.position, i.title, i.expiry_date
 --   from items i
 --   join categories c on c.id = i.category_id

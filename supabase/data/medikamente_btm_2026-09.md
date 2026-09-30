@@ -2,7 +2,7 @@
 
 Quelle: NEF Gmund Medikamentenvergleich. Stärke/Form, Soll, Box und Hinweis haben kein Feld in der DB (`items`) und stehen nur hier. Migration: `supabase/migrations/20260930120000_update_medikamente_btm.sql`.
 
-## Medikamente (66)
+## Medikamente (70)
 
 | Titel in der App | Stärke / Form | Soll | Box | Hinweis |
 |---|---|---|---|---|
@@ -27,9 +27,11 @@ Quelle: NEF Gmund Medikamentenvergleich. Stärke/Form, Soll, Box und Hinweis hab
 | Epinephrin - 25 mg/25 ml | 25 mg/25 ml | 1 | Roter Rucksack |  |
 | Esketamin | 50 mg/2 ml | 2 | Roter Rucksack |  |
 | Fenoterol | 25 µg/1 ml | 1 | Roter Rucksack |  |
+| Flumazenil | 0,5 mg/5 ml | 0 | Roter Rucksack | Ist-Zustand: Bestand 1 |
 | Furosemid | 40 mg/4 ml | 1 | Roter Rucksack |  |
 | Gelatinelösung 4 % | 500 ml | 2 | Infusionen und Lösungsmittel |  |
 | Glucose 5 % | 250 ml | 1 | Infusionen und Lösungsmittel |  |
+| Glucose 10 % | 100 ml | 0 | Infusionen und Lösungsmittel | Ist-Zustand: Bestand 1 |
 | Glucose 40 % | 4 g/10 ml | 5 | Roter Rucksack |  |
 | Glyceroltrinitrat | 0,4 mg/Hub | 1 | Roter Rucksack |  |
 | Haloperidol | 5 mg/1 ml | 1 | Roter Rucksack |  |
@@ -48,6 +50,7 @@ Quelle: NEF Gmund Medikamentenvergleich. Stärke/Form, Soll, Box und Hinweis hab
 | NaCl 0,9 % - 10 ml | 10 ml | 4 | Infusionen und Lösungsmittel |  |
 | NaCl 0,9 % - 100 ml | 100 ml | 2 | Infusionen und Lösungsmittel |  |
 | Naloxon | 0,4 mg/1 ml | 2 | Roter Rucksack |  |
+| Naloxon nasal | 1,8 mg je Gerät | 0 | Roter Rucksack | würde in Tox-Box gehören, ist aber im roten Rucksack; Ist-Zustand: Bestand 1 |
 | Natriumchlorid 10 % | 100 ml | 1 | Antidota des NEF |  |
 | Natriumhydrogencarbonat 8,4 % | 100 ml | 2 | Antidota des NEF |  |
 | Natriumthiosulfat 10 % | 100 ml | 1 | Antidota des NEF |  |
@@ -59,6 +62,7 @@ Quelle: NEF Gmund Medikamentenvergleich. Stärke/Form, Soll, Box und Hinweis hab
 | Paracetamol - 75 mg Suppositorium | 75 mg Suppositorium | 1 | Kinderrucksack |  |
 | Paracetamol - 125 mg Suppositorium | 125 mg Suppositorium | 1 | Kinderrucksack |  |
 | Paracetamol - 250 mg Suppositorium | 250 mg Suppositorium | 1 | Kinderrucksack |  |
+| Paracetamol - 500 mg | 500 mg | 0 | Kinderrucksack | Ist-Zustand: Bestand 2 |
 | Prednisolon | 250 mg | 2 | Roter Rucksack |  |
 | Prednison | 100 mg Suppositorium | 1 | Kinderrucksack |  |
 | Promethazin | 50 mg/2 ml | 1 | Roter Rucksack |  |
@@ -86,7 +90,3 @@ Quelle: NEF Gmund Medikamentenvergleich. Stärke/Form, Soll, Box und Hinweis hab
 | Medikament | Stärke / Form | Box | Hinweis |
 |---|---|---|---|
 | Alteplase | 50 mg | Roter Rucksack | Nur vorgesehen, wenn keine Tenecteplase vollständig ist |
-| Flumazenil | 0,5 mg/5 ml | Roter Rucksack |  |
-| Naloxon nasal | 1,8 mg je Gerät | Roter Rucksack | würde in Tox-Box gehören, ist aber im roten Rucksack |
-| Glucose 10 % | 100 ml | Infusionen und Lösungsmittel |  |
-| Paracetamol | 500 mg | Kinderrucksack |  |

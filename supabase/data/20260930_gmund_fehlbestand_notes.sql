@@ -1,6 +1,6 @@
--- One-off data script: open "Fehlt:" / "Entfernen:" notes for RK Gmund 76/1.
+-- One-off data script: open "Fehlt:" notes for RK Gmund 76/1.
 --
--- Purpose: record the discrepancies between Soll and Bestand found in the
+-- Purpose: record the shortfalls (Bestand below Soll) found in the
 -- NEF Gmund Medikamentenvergleich (2026-09) as open notes, so they show up in
 -- the app for the Gmund vehicle (team 'Notärzte Tegernsee').
 -- Source: NEF Gmund Medikamentenvergleich, 2026-09.
@@ -49,7 +49,7 @@ begin
   insert into public.notes (team_id, vehicle_id, author_name, value, is_resolved, status)
   select v_team_id, v_vehicle_id, 'Florian Thompson', n.value, false, 'open'
   from (values
-    -- group 1: Bestand below Soll (23)
+    -- Bestand below Soll (23)
     ('Fehlt: Ceftriaxon 2 g, Soll 1, Bestand 0 (Roter Rucksack)'),
     ('Fehlt: Epinephrin 25 mg/25 ml, Soll 1, Bestand 0 (Roter Rucksack)'),
     ('Fehlt: Fenoterol 25 µg/1 ml, Soll 1, Bestand 0 (Roter Rucksack)'),
@@ -72,12 +72,7 @@ begin
     ('Fehlt: Xylometazolin 0,025 %, Soll 1, Bestand 0 (Kinderrucksack)'),
     ('Fehlt: 4-DMAP 250 mg/5 ml, Soll 1, Bestand 0 (Antidota)'),
     ('Fehlt: Natriumchlorid 10 % 100 ml, Soll 1, Bestand 0 (Antidota)'),
-    ('Fehlt: Obidoxim 250 mg/1 ml, Soll 1, Bestand 0 (Antidota)'),
-    -- group 2: Soll 0 but in stock (shouldn't be on the vehicle) (4: 3 Entfernen + 1 Umlagern)
-    ('Entfernen: Flumazenil 0,5 mg/5 ml, Soll 0, Bestand 1 (Roter Rucksack)'),
-    ('Umlagern in Tox-Box: Naloxon nasal 1,8 mg je Gerät, Soll 0 im Roten Rucksack, Bestand 1 (gehört in die Tox-Box)'),
-    ('Entfernen: Glucose 10 % 100 ml, Soll 0, Bestand 1 (Infusionen)'),
-    ('Entfernen: Paracetamol 500 mg, Soll 0, Bestand 2 (Kinderrucksack)')
+    ('Fehlt: Obidoxim 250 mg/1 ml, Soll 1, Bestand 0 (Antidota)')
   ) as n(value)
   where not exists (
     select 1
@@ -93,7 +88,7 @@ $$;
 
 commit;
 
--- Verification (expected: 27 rows after the first run):
+-- Verification (expected: 23 rows after the first run):
 -- select n.created_at, n.value
 -- from public.notes n
 -- join public.vehicles v on v.id = n.vehicle_id
@@ -102,5 +97,5 @@ commit;
 --   and v.name = 'RK Gmund 76/1'
 --   and n.is_resolved = false
 --   and n.deleted_at is null
---   and (n.value like 'Fehlt:%' or n.value like 'Entfernen:%' or n.value like 'Umlagern in Tox-Box:%')
+--   and n.value like 'Fehlt:%'
 -- order by n.value;
