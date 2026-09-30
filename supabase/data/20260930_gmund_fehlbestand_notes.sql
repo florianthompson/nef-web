@@ -73,9 +73,9 @@ begin
     ('Fehlt: 4-DMAP 250 mg/5 ml, Soll 1, Bestand 0 (Antidota)'),
     ('Fehlt: Natriumchlorid 10 % 100 ml, Soll 1, Bestand 0 (Antidota)'),
     ('Fehlt: Obidoxim 250 mg/1 ml, Soll 1, Bestand 0 (Antidota)'),
-    -- group 2: Soll 0 but in stock (shouldn't be on the vehicle) (4)
+    -- group 2: Soll 0 but in stock (shouldn't be on the vehicle) (4: 3 Entfernen + 1 Umlagern)
     ('Entfernen: Flumazenil 0,5 mg/5 ml, Soll 0, Bestand 1 (Roter Rucksack)'),
-    ('Entfernen: Naloxon nasal 1,8 mg je Gerät, Soll 0, Bestand 1 (Roter Rucksack). Hinweis: würde in die Tox-Box gehören, ist aber im roten Rucksack'),
+    ('Umlagern in Tox-Box: Naloxon nasal 1,8 mg je Gerät, Soll 0 im Roten Rucksack, Bestand 1 (gehört in die Tox-Box)'),
     ('Entfernen: Glucose 10 % 100 ml, Soll 0, Bestand 1 (Infusionen)'),
     ('Entfernen: Paracetamol 500 mg, Soll 0, Bestand 2 (Kinderrucksack)')
   ) as n(value)
@@ -102,5 +102,5 @@ commit;
 --   and v.name = 'RK Gmund 76/1'
 --   and n.is_resolved = false
 --   and n.deleted_at is null
---   and (n.value like 'Fehlt:%' or n.value like 'Entfernen:%')
+--   and (n.value like 'Fehlt:%' or n.value like 'Entfernen:%' or n.value like 'Umlagern in Tox-Box:%')
 -- order by n.value;
