@@ -42,6 +42,12 @@ type Category = {
   items: Item[];
 };
 
+// Checkable leaves of a category: items without sub-items, or the sub-items of
+// a group (the group row itself is not counted).
+function leafItems(cat: Category): Item[] {
+  return cat.items.flatMap((i) => (i.subItems.length > 0 ? i.subItems : [i]));
+}
+
 type Protocol = {
   id: string;
   title: string;
@@ -305,20 +311,11 @@ export default function AppHomePage() {
     .filter((s) => expiryStatus(vehicleExpiry[s.id] ?? null) === "expired");
 
   const totalItems = visibleCategories.reduce(
-    (sum, c) =>
-      sum + c.items.reduce((s, i) => s + 1 + i.subItems.length, 0),
+    (sum, c) => sum + leafItems(c).length,
     0
   );
   const checkedItems = visibleCategories.reduce(
-    (sum, c) =>
-      sum +
-      c.items.reduce(
-        (s, i) =>
-          s +
-          (i.is_completed ? 1 : 0) +
-          i.subItems.filter((si) => si.is_completed).length,
-        0
-      ),
+    (sum, c) => sum + leafItems(c).filter((i) => i.is_completed).length,
     0
   );
 
@@ -388,15 +385,11 @@ export default function AppHomePage() {
   }
 
   function getCategoryProgress(cat: Category) {
-    const total = cat.items.reduce((s, i) => s + 1 + i.subItems.length, 0);
-    const checked = cat.items.reduce(
-      (s, i) =>
-        s +
-        (i.is_completed ? 1 : 0) +
-        i.subItems.filter((si) => si.is_completed).length,
-      0
-    );
-    return { total, checked };
+    const leaves = leafItems(cat);
+    return {
+      total: leaves.length,
+      checked: leaves.filter((i) => i.is_completed).length,
+    };
   }
 
   // Check if category is narcotics (position 3 = Betäubungsmittel)
@@ -689,7 +682,14 @@ export default function AppHomePage() {
                   )}
 
                   {/* Items */}
-                  {cat.items.map((item, itemIdx) => (
+                  {cat.items.map((item, itemIdx) => {
+                    // Group header is redundant if it repeats the category
+                    // title or is the category's only item.
+                    const hideGroupHeader =
+                      cat.items.length === 1 ||
+                      item.title.trim().toLowerCase() ===
+                        cat.title.trim().toLowerCase();
+                    return (
                     <div key={item.id}>
                       {/* Parent item */}
                       {item.subItems.length === 0 ? (
@@ -716,21 +716,23 @@ export default function AppHomePage() {
                         </button>
                       ) : (
                         <div>
-                          <div className="flex items-center gap-3 bg-surface2 px-4 py-2">
-                            <span
-                              className={`text-xs font-medium ${
-                                item.is_completed
-                                  ? "text-green"
-                                  : "text-text-muted"
-                              }`}
-                            >
-                              {item.title}
-                            </span>
-                            <span className="ml-auto font-mono text-[10px] text-text-muted">
-                              {item.subItems.filter((s) => s.is_completed).length}/
-                              {item.subItems.length}
-                            </span>
-                          </div>
+                          {!hideGroupHeader && (
+                            <div className="flex items-center gap-3 bg-surface2 px-4 py-2">
+                              <span
+                                className={`text-xs font-medium ${
+                                  item.is_completed
+                                    ? "text-green"
+                                    : "text-text-muted"
+                                }`}
+                              >
+                                {item.title}
+                              </span>
+                              <span className="ml-auto font-mono text-[10px] text-text-muted">
+                                {item.subItems.filter((s) => s.is_completed).length}/
+                                {item.subItems.length}
+                              </span>
+                            </div>
+                          )}
                           {/* Sub-items */}
                           {item.subItems.map((sub, subIdx) => (
                             <button
@@ -738,7 +740,9 @@ export default function AppHomePage() {
                               onClick={() =>
                                 toggleSubItem(catIdx, itemIdx, subIdx)
                               }
-                              className="flex w-full items-center gap-3 py-2 pl-10 pr-4 text-left transition-colors hover:bg-surface2"
+                              className={`flex w-full items-center gap-3 py-2 pr-4 text-left transition-colors hover:bg-surface2 ${
+                                hideGroupHeader ? "pl-4" : "pl-10"
+                              }`}
                             >
                               <span
                                 className={`inline-flex h-5 w-5 flex-shrink-0 items-center justify-center rounded border text-xs ${
@@ -780,7 +784,8 @@ export default function AppHomePage() {
                         </div>
                       )}
                     </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>
