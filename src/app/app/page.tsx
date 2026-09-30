@@ -687,11 +687,6 @@ export default function AppHomePage() {
                       Alles OK
                     </button>
                   )}
-                  {isNarc && (
-                    <div className="border-b border-border bg-amber/5 px-4 py-2 text-center text-xs font-medium text-amber">
-                      Einzeln prüfen
-                    </div>
-                  )}
 
                   {/* Items */}
                   {cat.items.map((item, itemIdx) => (
