@@ -3,11 +3,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AuthProvider, useAuth } from "@/lib/auth";
+import { AppHeader } from "@/components/app/AppHeader";
 import { canSeeBestand } from "@/lib/featureFlags";
 import {
   ClipboardListIcon,
   PillIcon,
-  UserIcon,
 } from "lucide-react";
 
 function AppNav() {
@@ -19,7 +19,6 @@ function AppNav() {
     ...(canSeeBestand(user?.id)
       ? [{ href: "/app/bestand", icon: PillIcon, label: "Bestand" }]
       : []),
-    { href: "/app/profil", icon: UserIcon, label: "Profil" },
   ];
 
   return (
@@ -72,6 +71,7 @@ function AppNav() {
 function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex h-[100dvh] flex-col overflow-hidden bg-bg text-text">
+      <AppHeader />
       <div className="flex-1 overflow-y-auto overscroll-none">
         <div className="mx-auto max-w-lg pb-[calc(4rem+env(safe-area-inset-bottom))]">
           {children}

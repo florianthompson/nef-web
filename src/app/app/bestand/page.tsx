@@ -160,9 +160,6 @@ export default function BestandPage() {
     <div className="px-4 py-6">
       {/* Header */}
       <div className="mb-6 text-center">
-        <span className="mb-2 inline-block rounded-lg bg-red px-2.5 py-1.5 font-mono text-xs font-bold text-white">
-          NEF
-        </span>
         <h1 className="text-lg font-bold">Bestand</h1>
         <p className="text-xs text-text-muted">Haltbarkeit &amp; Austausch</p>
       </div>
