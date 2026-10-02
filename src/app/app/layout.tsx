@@ -92,7 +92,7 @@ function AppShell({ children }: { children: React.ReactNode }) {
         <div
           className={`mx-auto max-w-lg ${
             showNav
-              ? "pb-[calc(4rem+env(safe-area-inset-bottom))]"
+              ? "pb-6"
               : "pb-[calc(1.5rem+env(safe-area-inset-bottom))]"
           }`}
         >
