@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "ticket": "HAZ-128",
+  "repo": "florianthompson/nef-web",
+  "kind": "nef-web",
+  "branch": "haz-128-nef-escaped-checkmark",
+  "commitSha": "20fc6e7e33b5d2d4bf0c55ee12ab0451d623499f",
+  "pr": {
+    "url": "https://github.com/florianthompson/nef-web/pull/8",
+    "number": 8,
+    "state": "OPEN",
+    "isDraft": false,
+    "merged": false,
+    "mergedAt": null
+  },
+  "urls": {
+    "preview": "https://nef-web-git-haz-128-c8ae39-florian-thompsons-projects-c1c41a9c.vercel.app",
+    "live": null
+  },
+  "screenshots": [
+    {
+      "path": "desktop-home.png",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 3122,
+      "deviceScaleFactor": 1,
+      "route": "/"
+    },
+    {
+      "path": "mobile390-home.png",
+      "viewport": "mobile390",
+      "width": 780,
+      "height": 8194,
+      "deviceScaleFactor": 2,
+      "route": "/"
+    }
+  ],
+  "checks": [
+    {
+      "name": "no literal \\u2713 escape in PhoneDemo",
+      "command": "! grep -nF '\\u2713' src/components/PhoneDemo.tsx",
+      "exitCode": 0,
+      "durationMs": 3,
+      "summary": ""
+    }
+  ],
+  "console": {
+    "errors": []
+  },
+  "createdAt": "2026-10-03T11:49:44+02:00",
+  "createdBy": "executor (Grok Bot) for Florian Thompson"
+}
