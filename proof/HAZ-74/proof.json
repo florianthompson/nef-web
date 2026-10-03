@@ -4,12 +4,12 @@
   "repo": "florianthompson/nef-web",
   "kind": "nef-web",
   "branch": "haz-74-proof-json",
-  "commitSha": "34d5d7dfb30133493f29b8e986ae4a613eba67d5",
+  "commitSha": "73493f987797a505d5af973564cb773fb9d7839e",
   "pr": {
     "url": "https://github.com/florianthompson/nef-web/pull/6",
     "number": 6,
     "state": "OPEN",
-    "isDraft": true,
+    "isDraft": false,
     "merged": false,
     "mergedAt": null
   },
@@ -22,7 +22,7 @@
       "path": "desktop-home.png",
       "viewport": "desktop",
       "width": 1440,
-      "height": 2950,
+      "height": 3122,
       "deviceScaleFactor": 1,
       "route": "/"
     },
@@ -30,7 +30,7 @@
       "path": "mobile390-home.png",
       "viewport": "mobile390",
       "width": 780,
-      "height": 7478,
+      "height": 8194,
       "deviceScaleFactor": 2,
       "route": "/"
     }
@@ -40,13 +40,13 @@
       "name": "validator tests",
       "command": "node --test scripts/proof/*.test.mjs",
       "exitCode": 0,
-      "durationMs": 117,
-      "summary": "# Subtest: shopify-theme may omit pr and sha when repo is none\nok 17 - shopify-theme may omit pr and sha when repo is none\n  ---\n  duration_ms: 0.317267\n  type: 'test'\n  ...\n1..17\n# tests 17\n# suites 0\n# pass 17\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 82.829335"
+      "durationMs": 121,
+      "summary": "# Subtest: shopify-theme may omit pr and sha when repo is none\nok 17 - shopify-theme may omit pr and sha when repo is none\n  ---\n  duration_ms: 0.343299\n  type: 'test'\n  ...\n1..17\n# tests 17\n# suites 0\n# pass 17\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 81.225234"
     }
   ],
   "console": {
     "errors": []
   },
-  "createdAt": "2026-10-03T09:41:38+02:00",
+  "createdAt": "2026-10-03T12:47:33+02:00",
   "createdBy": "Dev (Grok Bot)"
 }
