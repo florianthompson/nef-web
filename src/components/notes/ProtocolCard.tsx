@@ -22,8 +22,8 @@ export function ProtocolCard({
     const sd = new Date(submitted.at);
     const when = `${dm(sd)} ${hm(sd)}`;
     return (
-      <div className="pcard done pin" data-tour="pcard">
-        <div className="pc-body" data-tour="protocol-open" onClick={onOpen}>
+      <div className="pcard done pin">
+        <div className="pc-body" onClick={onOpen}>
           <CheckIcon className="ic" />
           <div>
             <b>Bereits abgeschlossen</b>
@@ -54,7 +54,7 @@ export function ProtocolCard({
 
   const pct = total > 0 ? (checked / total) * 100 : 0;
   return (
-    <div className="pcard pin" data-tour="pcard">
+    <div className="pcard pin">
       <div className="l">
         <div className="r1">
           <span>Schichtprotokoll</span>
@@ -69,7 +69,7 @@ export function ProtocolCard({
           Verlauf
         </button>
       </div>
-      <button type="button" className="btn btn-s btn-sm" data-tour="protocol-open" onClick={onOpen}>
+      <button type="button" className="btn btn-s btn-sm" onClick={onOpen}>
         Protokoll ausfüllen
       </button>
     </div>

@@ -99,7 +99,6 @@ export function Checklist({
                       <button
                         type="button"
                         className="btn btn-s"
-                        data-tour={cat.title.toLowerCase().includes("medikament") ? "allok" : undefined}
                         onClick={() => onAllOk(cat.id)}
                       >
                         Alles OK
@@ -168,7 +167,7 @@ export function Checklist({
       </div>
       {!locked && (
         <div className="sbar">
-          <button type="button" className="btn btn-p" data-tour="submit-btn" onClick={onSubmit}>
+          <button type="button" className="btn btn-p" onClick={onSubmit}>
             Protokoll abschließen
           </button>
         </div>

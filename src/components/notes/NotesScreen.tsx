@@ -28,7 +28,6 @@ import { Feed } from "./Feed";
 import { HistoryDetail, HistoryList } from "./HistoryView";
 import { ProtocolCard } from "./ProtocolCard";
 import { SubmitSheet } from "./SubmitSheet";
-import { Tour } from "./Tour";
 
 export function NotesScreen() {
   const { user, profile, loading: authLoading } = useAuth();
@@ -46,7 +45,6 @@ export function NotesScreen() {
   const [openNotes, setOpenNotes] = useState(0);
   const [noteCounts, setNoteCounts] = useState<Record<string, number>>({});
   const [openItemId, setOpenItemId] = useState<string | null>(null);
-  const [tour, setTour] = useState(false);
   const [now, setNow] = useState(() => Date.now());
   const [editingNew, setEditingNew] = useState(false);
 
@@ -229,12 +227,6 @@ export function NotesScreen() {
             )}
           </div>
         )}
-        <button type="button" className="veh tbtn" aria-label="Tour starten" onClick={() => setTour(true)}>
-          <svg className="ic" viewBox="0 0 24 24" aria-hidden="true">
-            <polygon points="8,5 19,12 8,19" />
-          </svg>
-          Tour starten
-        </button>
         <AvatarMenu />
       </header>
 
@@ -293,8 +285,6 @@ export function NotesScreen() {
           onConfirm={() => void submit()}
         />
       )}
-
-      {tour && <Tour onClose={() => setTour(false)} />}
     </div>
   );
 }

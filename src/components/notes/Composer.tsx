@@ -417,7 +417,6 @@ export function Composer({
           <textarea
             ref={taRef}
             id="composer-input"
-            data-tour="composer"
             value={text}
             disabled={busy}
             rows={1}
@@ -444,7 +443,6 @@ export function Composer({
           type="button"
           className="rb"
           id="mic"
-          data-tour="mic"
           onClick={() => void voice.start()}
           disabled={busy}
           aria-label="Sprachaufnahme"
