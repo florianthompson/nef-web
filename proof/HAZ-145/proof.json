@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "ticket": "HAZ-145",
+  "repo": "florianthompson/nef-web",
+  "kind": "nef-web",
+  "proofKind": "non-ui",
+  "result": "npm test 85/86 pass, 1 skipped (proof_gate.mjs absent in repo copy), 0 fail. tsc, build and check:dashes exit 0.",
+  "branch": "florian/haz-145-nef-web-copy-new-proof-gate-from-bot-brain-ui-non-ui-proof",
+  "commitSha": "b16568db07ac0c9ce42ae0e179bb60e2d0c5f90a",
+  "pr": {
+    "url": "https://github.com/florianthompson/nef-web/pull/13",
+    "number": 13,
+    "state": "OPEN",
+    "isDraft": true,
+    "merged": false,
+    "mergedAt": null
+  },
+  "urls": { "preview": null, "live": null },
+  "screenshots": [],
+  "checks": [
+    { "name": "tests", "command": "npm test", "exitCode": 0, "durationMs": 700, "summary": "tests 86, pass 85, fail 0, skipped 1" },
+    { "name": "tsc", "command": "npx tsc --noEmit", "exitCode": 0, "durationMs": 5000, "summary": "no errors" },
+    { "name": "dashes", "command": "npm run check:dashes", "exitCode": 0, "durationMs": 200, "summary": "no dashes found" }
+  ],
+  "console": { "errors": [] },
+  "createdAt": "2026-10-03T16:12:13Z",
+  "createdBy": "Claude (pstack trial HAZ-160)"
+}
