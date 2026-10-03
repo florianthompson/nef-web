@@ -18,6 +18,32 @@ type UserProfile = {
   teamId: string;
 };
 
+const PROFILE_COLUMNS = "first_name, last_name, role, team_id";
+type ProfileRow = { first_name: string; last_name: string; role: string; team_id: string };
+
+function toProfile(row: ProfileRow): UserProfile {
+  return {
+    firstName: row.first_name,
+    lastName: row.last_name,
+    role: row.role as "admin" | "member",
+    teamId: row.team_id,
+  };
+}
+
+// The login page already reads the profile row to pick the landing page. Handing it over
+// saves the provider the same query right after the redirect.
+let primed: { userId: string; row: ProfileRow } | null = null;
+
+export async function fetchProfileForLogin(userId: string): Promise<ProfileRow | null> {
+  const { data } = await supabase
+    .from("users")
+    .select(PROFILE_COLUMNS)
+    .eq("id", userId)
+    .maybeSingle();
+  if (data) primed = { userId, row: data as ProfileRow };
+  return (data as ProfileRow | null) ?? null;
+}
+
 type AuthContextType = {
   user: User | null;
   profile: UserProfile | null;
@@ -70,20 +96,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!user) return;
 
+    const hit = primed && primed.userId === user.id ? primed.row : null;
+    primed = null;
+    if (hit) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setProfile(toProfile(hit));
+      setLoading(false);
+      return;
+    }
+
     supabase
       .from("users")
-      .select("first_name, last_name, role, team_id")
+      .select(PROFILE_COLUMNS)
       .eq("id", user.id)
       .single()
       .then(({ data, error }) => {
-        if (!error && data) {
-          setProfile({
-            firstName: data.first_name,
-            lastName: data.last_name,
-            role: data.role as "admin" | "member",
-            teamId: data.team_id,
-          });
-        }
+        if (!error && data) setProfile(toProfile(data as ProfileRow));
         setLoading(false);
       });
   }, [user]);
