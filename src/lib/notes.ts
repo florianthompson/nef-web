@@ -1,4 +1,5 @@
 import { supabase } from "./supabase";
+import { loadTeamCatalog } from "./catalog";
 
 export const NOTE_CATEGORIES = [
   "Medikamente",
@@ -75,7 +76,7 @@ function isMissingColumn(error: PgError): boolean {
 
 type Row = Record<string, unknown>;
 
-function toNote(r: Row, vehicles: Map<string, string>): Note {
+function toNote(r: Row): Note {
   const vehicleId = (r.vehicle_id as string | null) ?? null;
   return {
     id: r.id as string,
@@ -87,7 +88,7 @@ function toNote(r: Row, vehicles: Map<string, string>): Note {
     resolved_by: (r.resolved_by as string | null) ?? null,
     resolved_at: (r.resolved_at as string | null) ?? null,
     vehicle_id: vehicleId,
-    vehicle_name: vehicleId ? (vehicles.get(vehicleId) ?? null) : null,
+    vehicle_name: (r.vehicles as { name: string } | null)?.name ?? null,
     item_id: (r.item_id as string | null) ?? null,
     category: (r.category as string | null) ?? null,
     due_at: (r.due_at as string | null) ?? null,
@@ -106,7 +107,7 @@ export async function loadNotes(
   const run = (cols: string) =>
     supabase
       .from("notes")
-      .select(cols)
+      .select(`${cols}, vehicles(name)`)
       .eq("team_id", teamId)
       .is("deleted_at", null)
       .order("created_at", { ascending: false });
@@ -121,20 +122,7 @@ export async function loadNotes(
   if (res.error) return { notes: [], error: res.error.message };
 
   const rows = (res.data ?? []) as unknown as Row[];
-  const vehicleIds = [
-    ...new Set(rows.map((r) => r.vehicle_id as string | null).filter(Boolean)),
-  ] as string[];
-  const vehicles = new Map<string, string>();
-  if (vehicleIds.length) {
-    const { data } = await supabase
-      .from("vehicles")
-      .select("id, name")
-      .in("id", vehicleIds);
-    (data ?? []).forEach((v: { id: string; name: string }) =>
-      vehicles.set(v.id, v.name)
-    );
-  }
-  return { notes: rows.map((r) => toNote(r, vehicles)), error: null };
+  return { notes: rows.map(toNote), error: null };
 }
 
 export async function loadComments(noteId: string): Promise<NoteComment[]> {
@@ -216,26 +204,12 @@ function categoryOf(title: string): NoteCategory {
 
 /** The team's items (sub-items such as single medications included), for picker and display. */
 export async function loadItemOptions(teamId: string): Promise<ItemOption[]> {
-  const { data: protocols } = await supabase
-    .from("protocols")
-    .select("id")
-    .eq("team_id", teamId);
-  const protocolIds = (protocols ?? []).map((p: { id: string }) => p.id);
-  if (!protocolIds.length) return [];
-  const { data: cats } = await supabase
-    .from("categories")
-    .select("id, title, position")
-    .in("protocol_id", protocolIds)
-    .order("position");
-  const catRows = (cats ?? []) as { id: string; title: string }[];
+  const catalog = await loadTeamCatalog(teamId).catch(() => null);
+  if (!catalog) return [];
+  const catRows = catalog.categories as unknown as { id: string; title: string }[];
   if (!catRows.length) return [];
   const catById = new Map(catRows.map((c) => [c.id, c.title]));
-  const { data: items } = await supabase
-    .from("items")
-    .select("id, title, category_id, parent_item_id, position")
-    .in("category_id", catRows.map((c) => c.id))
-    .order("position");
-  const itemRows = (items ?? []) as {
+  const itemRows = catalog.categories.flatMap((c) => c.items) as unknown as {
     id: string;
     title: string;
     category_id: string;

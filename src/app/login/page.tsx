@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
+import { fetchProfileForLogin } from "@/lib/auth";
 import { loginErrorMessage, NO_PROFILE_MESSAGE } from "@/lib/authErrors.mjs";
 
 export default function LoginPage() {
@@ -36,11 +37,7 @@ export default function LoginPage() {
     }
 
     // Fetch role to redirect appropriately
-    const { data: profile } = await supabase
-      .from("users")
-      .select("role")
-      .eq("id", data.user.id)
-      .maybeSingle();
+    const profile = await fetchProfileForLogin(data.user.id);
 
     if (!profile) {
       // Signed in but no users row: sign out so /app does not bounce back here.

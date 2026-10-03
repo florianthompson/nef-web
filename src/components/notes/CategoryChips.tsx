@@ -30,7 +30,7 @@ export function CategoryChips({
 }) {
   const shown = CATEGORY_FILTERS.filter((c) => c === "Alle" || counts[c] > 0);
   return (
-    <div className="chips" data-tour="chips">
+    <div className="chips">
       {shown.map((c) => {
         const on = value === c;
         return (

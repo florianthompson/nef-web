@@ -1,0 +1,96 @@
+{
+ "schemaVersion": 1,
+ "ticket": "HAZ-136",
+ "repo": "florianthompson/nef-web",
+ "kind": "nef-web",
+ "branch": "florian/haz-136-nef-protokoll-page-loads-in-8-to-10-seconds-speed-it-up",
+ "commitSha": "f06efb1783deaadaeac1af2551073d95e332ec25",
+ "pr": {
+  "url": "https://github.com/florianthompson/nef-web/pull/12",
+  "number": 12,
+  "state": "OPEN",
+  "isDraft": true,
+  "merged": false,
+  "mergedAt": null
+ },
+ "urls": {
+  "preview": "https://nef-rbsyadrij-florian-thompsons-projects-c1c41a9c.vercel.app",
+  "live": null
+ },
+ "screenshots": [
+  {
+   "path": "protokoll-desktop-loaded.png",
+   "viewport": "desktop",
+   "width": 2880,
+   "height": 1800,
+   "deviceScaleFactor": 2,
+   "route": "/app"
+  },
+  {
+   "path": "protokoll-desktop-checklist.png",
+   "viewport": "desktop",
+   "width": 2880,
+   "height": 1800,
+   "deviceScaleFactor": 2,
+   "route": "/app"
+  },
+  {
+   "path": "protokoll-390-loaded.png",
+   "viewport": "mobile390",
+   "width": 780,
+   "height": 1688,
+   "deviceScaleFactor": 2,
+   "route": "/app"
+  },
+  {
+   "path": "protokoll-390-checklist.png",
+   "viewport": "mobile390",
+   "width": 780,
+   "height": 1688,
+   "deviceScaleFactor": 2,
+   "route": "/app"
+  }
+ ],
+ "checks": [
+  {
+   "name": "typecheck",
+   "command": "npx tsc --noEmit",
+   "exitCode": 0,
+   "durationMs": 0,
+   "summary": "clean"
+  },
+  {
+   "name": "production build",
+   "command": "npm run build",
+   "exitCode": 0,
+   "durationMs": 0,
+   "summary": "ok"
+  },
+  {
+   "name": "dash check",
+   "command": "npm run check:dashes",
+   "exitCode": 0,
+   "durationMs": 0,
+   "summary": "ok"
+  },
+  {
+   "name": "tests",
+   "command": "npm test",
+   "exitCode": 0,
+   "durationMs": 0,
+   "summary": "pass 59, fail 0"
+  },
+  {
+   "name": "eslint touched files",
+   "command": "npx eslint src/lib src/app/login src/components/notes",
+   "exitCode": 0,
+   "durationMs": 0,
+   "summary": "clean"
+  }
+ ],
+ "console": {
+  "errors": []
+ },
+ "createdAt": "2026-10-03T14:12:48Z",
+ "createdBy": "Claude Code (box)"
+}
