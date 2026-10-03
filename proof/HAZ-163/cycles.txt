@@ -1,0 +1,190 @@
+== chromium normal https://nef-3x9qskax1-florian-thompsons-projects-c1c41a9c.vercel.app
+   10.7 [stub] 10012 getUserMedia, live tracks before 0
+   10.7 [stub] 10012 SR.start
+   10.7 [stub] 10013 MR.start 0
+   11.2 [stub] 10460 MR.stop() 0 state recording
+   11.2 [stub] 10476 MR.onstop 0
+   [req] 11.2 POST https://nef-3x9qskax1-florian-thompsons-projects-c1c41a9c.vercel.app/api/notes/transcribe
+   [route] POST transcribe
+cycle 1 (chromium, clear=selectall): cleared; live tracks=0
+   11.3 [stub] 10573 getUserMedia, live tracks before 0
+   11.3 [stub] 10573 SR.start
+   11.3 [stub] 10573 MR.start 1
+   11.8 [stub] 11025 MR.stop() 1 state recording
+   11.8 [stub] 11043 MR.onstop 1
+   [req] 11.8 POST https://nef-3x9qskax1-florian-thompsons-projects-c1c41a9c.vercel.app/api/notes/transcribe
+   [route] POST transcribe
+cycle 2 (chromium, clear=backspace): cleared; live tracks=0
+   12.0 [stub] 11241 getUserMedia, live tracks before 0
+   12.0 [stub] 11241 SR.start
+   12.0 [stub] 11241 MR.start 2
+   12.4 [stub] 11692 MR.stop() 2 state recording
+   12.4 [stub] 11709 MR.onstop 2
+   [req] 12.4 POST https://nef-3x9qskax1-florian-thompsons-projects-c1c41a9c.vercel.app/api/notes/transcribe
+   [route] POST transcribe
+cycle 3 (chromium, clear=selectall): cleared; live tracks=0
+   12.5 [stub] 11806 getUserMedia, live tracks before 0
+   12.5 [stub] 11806 SR.start
+   12.5 [stub] 11806 MR.start 3
+   13.0 [stub] 12258 MR.stop() 3 state recording
+   13.0 [stub] 12276 MR.onstop 3
+   [req] 13.0 POST https://nef-3x9qskax1-florian-thompsons-projects-c1c41a9c.vercel.app/api/notes/transcribe
+   [route] POST transcribe
+cycle 4 (chromium, clear=backspace): cleared; live tracks=0
+   13.2 [stub] 12438 getUserMedia, live tracks before 0
+   13.2 [stub] 12439 SR.start
+   13.2 [stub] 12439 MR.start 4
+   13.6 [stub] 12891 MR.stop() 4 state recording
+   13.6 [stub] 12909 MR.onstop 4
+   [req] 13.6 POST https://nef-3x9qskax1-florian-thompsons-projects-c1c41a9c.vercel.app/api/notes/transcribe
+   [route] POST transcribe
+cycle 5 (chromium, clear=selectall): cleared; live tracks=0
+   13.7 [stub] 13005 getUserMedia, live tracks before 0
+   13.7 [stub] 13006 SR.start
+   13.7 [stub] 13006 MR.start 5
+after cycle 5: recording again OK
+writes seen: none
+RESULT PASS chromium normal
+== chromium ios-autostop https://nef-3x9qskax1-florian-thompsons-projects-c1c41a9c.vercel.app
+   4.2 [stub] 3595 getUserMedia, live tracks before 0
+   4.2 [stub] 3596 SR.start
+   4.2 [stub] 3596 MR.start 0
+   4.7 [stub] 4044 MR.stop() 0 state recording
+   4.7 [stub] 4060 MR.onstop 0
+   [req] 4.7 POST https://nef-3x9qskax1-florian-thompsons-projects-c1c41a9c.vercel.app/api/notes/transcribe
+   [route] POST transcribe
+cycle 1 (chromium, clear=selectall): cleared; live tracks=0
+   4.8 [stub] 4174 getUserMedia, live tracks before 0
+   4.8 [stub] 4175 SR.start
+   4.8 [stub] 4175 MR.start 1
+   5.2 [stub] 4594 track ended, recorder stops by itself 1
+   5.2 [stub] 4605 MR.onstop 1
+   [req] 5.2 POST https://nef-3x9qskax1-florian-thompsons-projects-c1c41a9c.vercel.app/api/notes/transcribe
+   [route] POST transcribe
+cycle 2 (chromium, clear=backspace): cleared; live tracks=0
+   5.4 [stub] 4824 getUserMedia, live tracks before 0
+   5.4 [stub] 4824 SR.start
+   5.4 [stub] 4824 MR.start 2
+   5.9 [stub] 5288 MR.stop() 2 state recording
+   5.9 [stub] 5299 MR.onstop 2
+   [req] 5.9 POST https://nef-3x9qskax1-florian-thompsons-projects-c1c41a9c.vercel.app/api/notes/transcribe
+   [route] POST transcribe
+cycle 3 (chromium, clear=selectall): cleared; live tracks=0
+   6.0 [stub] 5407 getUserMedia, live tracks before 0
+   6.0 [stub] 5407 SR.start
+   6.0 [stub] 5407 MR.start 3
+   6.4 [stub] 5828 track ended, recorder stops by itself 3
+   6.5 [stub] 5839 MR.onstop 3
+   [req] 6.5 POST https://nef-3x9qskax1-florian-thompsons-projects-c1c41a9c.vercel.app/api/notes/transcribe
+   [route] POST transcribe
+cycle 4 (chromium, clear=backspace): cleared; live tracks=0
+   6.6 [stub] 6023 getUserMedia, live tracks before 0
+   6.6 [stub] 6024 SR.start
+   6.6 [stub] 6024 MR.start 4
+   8.7 [stub] 8043 MR.stop() 4 state recording
+   8.7 [stub] 8060 MR.onstop 4
+   [req] 8.7 POST https://nef-3x9qskax1-florian-thompsons-projects-c1c41a9c.vercel.app/api/notes/transcribe
+   [route] POST transcribe
+cycle 5 (chromium, clear=selectall): shot proof/HAZ-163/mic-after-clear-cycle5-desktop.png; cleared; live tracks=0
+   8.8 [stub] 8157 getUserMedia, live tracks before 0
+   8.8 [stub] 8157 SR.start
+   8.8 [stub] 8157 MR.start 5
+after cycle 5: recording again OK
+writes seen: none
+RESULT PASS chromium ios-autostop
+== webkit normal https://nef-3x9qskax1-florian-thompsons-projects-c1c41a9c.vercel.app
+   [pageerror] TypeError: undefined is not an object (evaluating 'navigator.storage.persisted')
+   5.7 [stub] 3345 getUserMedia, live tracks before 0
+   5.7 [stub] 3346 SR.start
+   5.7 [stub] 3346 MR.start 0
+   6.2 [stub] 3802 MR.stop() 0 state recording
+   6.2 [stub] 3814 MR.onstop 0
+   [req] 6.2 POST https://nef-3x9qskax1-florian-thompsons-projects-c1c41a9c.vercel.app/api/notes/transcribe
+   [route] POST transcribe
+cycle 1 (webkit, clear=selectall): cleared; live tracks=0
+   6.3 [stub] 3943 getUserMedia, live tracks before 0
+   6.3 [stub] 3944 SR.start
+   6.3 [stub] 3944 MR.start 1
+   6.8 [stub] 4396 MR.stop() 1 state recording
+   6.8 [stub] 4408 MR.onstop 1
+   [req] 6.8 POST https://nef-3x9qskax1-florian-thompsons-projects-c1c41a9c.vercel.app/api/notes/transcribe
+   [route] POST transcribe
+cycle 2 (webkit, clear=backspace): cleared; live tracks=0
+   7.0 [stub] 4651 getUserMedia, live tracks before 0
+   7.1 [stub] 4651 SR.start
+   7.1 [stub] 4651 MR.start 2
+   7.5 [stub] 5104 MR.stop() 2 state recording
+   7.5 [stub] 5114 MR.onstop 2
+   [req] 7.5 POST https://nef-3x9qskax1-florian-thompsons-projects-c1c41a9c.vercel.app/api/notes/transcribe
+   [route] POST transcribe
+cycle 3 (webkit, clear=selectall): cleared; live tracks=0
+   7.6 [stub] 5214 getUserMedia, live tracks before 0
+   7.6 [stub] 5214 SR.start
+   7.6 [stub] 5214 MR.start 3
+   8.1 [stub] 5672 MR.stop() 3 state recording
+   8.1 [stub] 5685 MR.onstop 3
+   [req] 8.1 POST https://nef-3x9qskax1-florian-thompsons-projects-c1c41a9c.vercel.app/api/notes/transcribe
+   [route] POST transcribe
+cycle 4 (webkit, clear=backspace): cleared; live tracks=0
+   8.3 [stub] 5911 getUserMedia, live tracks before 0
+   8.3 [stub] 5911 SR.start
+   8.3 [stub] 5912 MR.start 4
+   8.8 [stub] 6364 MR.stop() 4 state recording
+   8.8 [stub] 6375 MR.onstop 4
+   [req] 8.8 POST https://nef-3x9qskax1-florian-thompsons-projects-c1c41a9c.vercel.app/api/notes/transcribe
+   [route] POST transcribe
+cycle 5 (webkit, clear=selectall): cleared; live tracks=0
+   8.9 [stub] 6475 getUserMedia, live tracks before 0
+   8.9 [stub] 6475 SR.start
+   8.9 [stub] 6476 MR.start 5
+after cycle 5: recording again OK
+writes seen: none
+RESULT PASS webkit normal
+== webkit ios-autostop https://nef-3x9qskax1-florian-thompsons-projects-c1c41a9c.vercel.app
+   [pageerror] TypeError: undefined is not an object (evaluating 'navigator.storage.persisted')
+   4.3 [stub] 2854 getUserMedia, live tracks before 0
+   4.3 [stub] 2855 SR.start
+   4.3 [stub] 2855 MR.start 0
+   4.8 [stub] 3304 MR.stop() 0 state recording
+   4.8 [stub] 3315 MR.onstop 0
+   [req] 4.8 POST https://nef-3x9qskax1-florian-thompsons-projects-c1c41a9c.vercel.app/api/notes/transcribe
+   [route] POST transcribe
+cycle 1 (webkit, clear=selectall): cleared; live tracks=0
+   4.9 [stub] 3446 getUserMedia, live tracks before 0
+   4.9 [stub] 3447 SR.start
+   4.9 [stub] 3447 MR.start 1
+   5.3 [stub] 3861 track ended, recorder stops by itself 1
+   5.3 [stub] 3872 MR.onstop 1
+   [req] 5.4 POST https://nef-3x9qskax1-florian-thompsons-projects-c1c41a9c.vercel.app/api/notes/transcribe
+   [route] POST transcribe
+cycle 2 (webkit, clear=backspace): cleared; live tracks=0
+   5.6 [stub] 4139 getUserMedia, live tracks before 0
+   5.6 [stub] 4139 SR.start
+   5.6 [stub] 4139 MR.start 2
+   6.1 [stub] 4592 MR.stop() 2 state recording
+   6.1 [stub] 4604 MR.onstop 2
+   [req] 6.1 POST https://nef-3x9qskax1-florian-thompsons-projects-c1c41a9c.vercel.app/api/notes/transcribe
+   [route] POST transcribe
+cycle 3 (webkit, clear=selectall): cleared; live tracks=0
+   6.2 [stub] 4717 getUserMedia, live tracks before 0
+   6.2 [stub] 4717 SR.start
+   6.2 [stub] 4717 MR.start 3
+   6.6 [stub] 5133 track ended, recorder stops by itself 3
+   6.6 [stub] 5143 MR.onstop 3
+   [req] 6.6 POST https://nef-3x9qskax1-florian-thompsons-projects-c1c41a9c.vercel.app/api/notes/transcribe
+   [route] POST transcribe
+cycle 4 (webkit, clear=backspace): cleared; live tracks=0
+   6.9 [stub] 5395 getUserMedia, live tracks before 0
+   6.9 [stub] 5395 SR.start
+   6.9 [stub] 5395 MR.start 4
+   7.8 [stub] 6284 MR.stop() 4 state recording
+   7.8 [stub] 6294 MR.onstop 4
+   [req] 7.8 POST https://nef-3x9qskax1-florian-thompsons-projects-c1c41a9c.vercel.app/api/notes/transcribe
+   [route] POST transcribe
+cycle 5 (webkit, clear=selectall): shot proof/HAZ-163/mic-after-clear-cycle5-390.png; cleared; live tracks=0
+   7.9 [stub] 6396 getUserMedia, live tracks before 0
+   7.9 [stub] 6396 SR.start
+   7.9 [stub] 6396 MR.start 5
+after cycle 5: recording again OK
+writes seen: none
+RESULT PASS webkit ios-autostop
