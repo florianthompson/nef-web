@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
+import { loginErrorMessage, NO_PROFILE_MESSAGE } from "@/lib/authErrors.mjs";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -17,17 +18,19 @@ export default function LoginPage() {
     setError(null);
     setLoading(true);
 
-    const { data, error: authError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    let data;
+    let authError;
+    try {
+      ({ data, error: authError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      }));
+    } catch (err) {
+      authError = err as Error;
+    }
 
-    if (authError) {
-      setError(
-        authError.message.includes("Invalid login credentials")
-          ? "Kein Benutzer gefunden."
-          : authError.message
-      );
+    if (authError || !data?.user) {
+      setError(loginErrorMessage(authError));
       setLoading(false);
       return;
     }
@@ -37,7 +40,15 @@ export default function LoginPage() {
       .from("users")
       .select("role")
       .eq("id", data.user.id)
-      .single();
+      .maybeSingle();
+
+    if (!profile) {
+      // Signed in but no users row: sign out so /app does not bounce back here.
+      await supabase.auth.signOut();
+      setError(NO_PROFILE_MESSAGE);
+      setLoading(false);
+      return;
+    }
 
     if (profile?.role === "admin") {
       router.replace("/dashboard");

@@ -41,10 +41,10 @@ export default function MeineProtokollePage() {
         ),
       ];
 
-      const { data: vehiclesData } = await supabase
-        .from("vehicles")
-        .select("id, name")
-        .in("id", vehicleIds.length > 0 ? vehicleIds : ["__none__"]);
+      const { data: vehiclesData } =
+        vehicleIds.length > 0
+          ? await supabase.from("vehicles").select("id, name").in("id", vehicleIds)
+          : { data: [] };
 
       const vehiclesMap = new Map(
         (vehiclesData ?? []).map((v: any) => [v.id, v])
