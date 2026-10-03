@@ -183,12 +183,22 @@ export async function loadItemOptions(teamId: string): Promise<ItemOption[]> {
     parent_item_id: string | null;
   }[];
   const titleById = new Map(itemRows.map((i) => [i.id, i.title]));
-  return itemRows.map((i) => ({
-    id: i.id,
-    title: i.title,
-    category: categoryOf(catById.get(i.category_id) ?? ""),
-    parentTitle: i.parent_item_id ? (titleById.get(i.parent_item_id) ?? null) : null,
-  }));
+  // Container items (with children) are not selectable; their children are the leaf rows.
+  const parentIds = new Set(itemRows.map((i) => i.parent_item_id).filter(Boolean));
+  return itemRows
+    .filter((i) => !parentIds.has(i.id))
+    .map((i) => {
+      const parent = i.parent_item_id ? (titleById.get(i.parent_item_id) ?? null) : null;
+      const cat = catById.get(i.category_id) ?? "";
+      return {
+        id: i.id,
+        title: i.title,
+        category: categoryOf(cat),
+        // Subtitle only when it adds information (parent differs from the category title).
+        parentTitle:
+          parent && parent.trim().toLowerCase() !== cat.trim().toLowerCase() ? parent : null,
+      };
+    });
 }
 
 /** 'YYYY-MM-DD[THH:MM]' (Berlin wall time as typed on the device) -> ISO timestamp. */

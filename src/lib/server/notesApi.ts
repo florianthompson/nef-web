@@ -87,11 +87,19 @@ export async function loadTeamItems(
   const catTitle = new Map(catRows.map((c) => [c.id, c.title]));
   const { data: items } = await supabase
     .from("items")
-    .select("id, title, category_id")
+    .select("id, title, category_id, parent_item_id")
     .in("category_id", catRows.map((c) => c.id));
-  return ((items ?? []) as { id: string; title: string; category_id: string }[]).map(
-    (i) => ({ id: i.id, title: i.title, category: catTitle.get(i.category_id) ?? "" })
-  );
+  const rows = (items ?? []) as {
+    id: string;
+    title: string;
+    category_id: string;
+    parent_item_id: string | null;
+  }[];
+  // Container items (with children) are not assignable; only leaf items are listed.
+  const parentIds = new Set(rows.map((i) => i.parent_item_id).filter(Boolean));
+  return rows
+    .filter((i) => !parentIds.has(i.id))
+    .map((i) => ({ id: i.id, title: i.title, category: catTitle.get(i.category_id) ?? "" }));
 }
 
 export function mapCategory(title: string): string {

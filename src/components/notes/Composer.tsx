@@ -9,7 +9,7 @@ import {
   type NoteDraft,
   type NoteSource,
 } from "@/lib/notes";
-import { notesApi, transcribeSegments, transcribeTimeout, type ApiError } from "@/lib/notesClient";
+import { notesApi, PARSE_TIMEOUT_MS, transcribeSegments, transcribeTimeout, type ApiError } from "@/lib/notesClient";
 import { bufferAll, bufferDelete, bufferPut, type BufferedAudio } from "@/lib/audioBuffer";
 import { ReviewCard, type ReviewPart } from "./ReviewCard";
 import { fmtClock, useVoiceRecorder, VoiceWave, type Recording } from "./VoiceRecorder";
@@ -288,7 +288,7 @@ export function Composer({
     }
     const ctrl = new AbortController();
     const sd = (sortRef.current = { ctrl, skipped: false });
-    const timer = setTimeout(() => ctrl.abort(), transcribeTimeout(1));
+    const timer = setTimeout(() => ctrl.abort(), PARSE_TIMEOUT_MS);
     setProgress({ kind: "sort", seg: 1, total: 1 });
     let parts: ReviewPart[] | null = null;
     let failure: "skipped" | "busy" | "error" | null = null;

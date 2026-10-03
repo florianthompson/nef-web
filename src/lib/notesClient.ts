@@ -51,5 +51,7 @@ export async function transcribeSegments(
   return texts.filter(Boolean).join(" ");
 }
 
-export const transcribeTimeout = (segments: number) =>
+export const PARSE_TIMEOUT_MS = 15000;
+
+export const transcribeTimeout =(segments: number) =>
   6000 + 3000 * Math.max(0, segments - 1);
