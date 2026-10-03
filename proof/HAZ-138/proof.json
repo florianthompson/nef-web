@@ -4,7 +4,7 @@
   "repo": "florianthompson/nef-web",
   "kind": "nef-web",
   "branch": "haz-138-nef-notes-ui-v19",
-  "commitSha": "d4be1e17b3eed9e331fdd59203ca751549cf6592",
+  "commitSha": "9f95f7b58cc1b72f429cce3913147045f3fcb47e",
   "pr": {
     "url": "https://github.com/florianthompson/nef-web/pull/10",
     "number": 10,
@@ -123,6 +123,6 @@
   "console": {
     "errors": []
   },
-  "createdAt": "2026-10-03T15:00:00+02:00",
+  "createdAt": "2026-10-03T13:52:59Z",
   "createdBy": "Claude Code (box)"
 }
