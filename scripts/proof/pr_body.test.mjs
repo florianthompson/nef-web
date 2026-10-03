@@ -90,6 +90,13 @@ test('cli --github-event reads pull_request.body', () => {
   assert.doesNotMatch(r.stdout, /desktop screenshot/);
 });
 
+test('CLI reads a slow stdin pipe (gh pr view ... | node pr_body.mjs)', () => {
+  const file = new URL('pass-visual.md', dir).pathname;
+  const r = spawnSync('sh', ['-c', `(sleep 0.3; cat "${file}") | "${process.execPath}" "${script}"`], { encoding: 'utf8' });
+  assert.equal(r.status, 0, r.stderr);
+  assert.match(r.stdout, /PR BODY PROOF: PASS/);
+});
+
 // Repo copies in scripts/proof/ carry no proof_gate.mjs, so this test only runs in bot-brain.
 const gateFile = new URL('./proof_gate.mjs', import.meta.url);
 test('proof_gate checks the PR body', { skip: existsSync(gateFile) ? false : 'no proof_gate.mjs in this copy' }, () => {

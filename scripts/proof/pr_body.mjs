@@ -148,7 +148,14 @@ function usage() {
   ].join('\n');
 }
 
-function readBody(argv) {
+async function readStdin() {
+  // readFileSync(0) throws EAGAIN when the pipe writer is slower than node (gh ... | node pr_body.mjs).
+  const chunks = [];
+  for await (const chunk of stdin) chunks.push(chunk);
+  return Buffer.concat(chunks).toString('utf8');
+}
+
+async function readBody(argv) {
   const opt = (name) => {
     const i = argv.indexOf(name);
     return i >= 0 ? argv[i + 1] : null;
@@ -167,7 +174,7 @@ function readBody(argv) {
     err.code = 'USAGE';
     throw err;
   }
-  return readFileSync(0, 'utf8');
+  return readStdin();
 }
 
 export function reportBody(result) {
@@ -183,14 +190,14 @@ export function reportBody(result) {
   return lines.join('\n');
 }
 
-function main(argv) {
+async function main(argv) {
   if (argv.includes('--help') || argv.includes('-h')) {
     console.log(usage());
     return 0;
   }
   let body;
   try {
-    body = readBody(argv);
+    body = await readBody(argv);
   } catch (e) {
     console.error(e.code === 'USAGE' ? e.message : `pr_body: ${e.message}`);
     return 2;
@@ -201,5 +208,7 @@ function main(argv) {
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  process.exitCode = main(process.argv.slice(2));
+  main(process.argv.slice(2)).then((code) => {
+    process.exitCode = code;
+  });
 }
