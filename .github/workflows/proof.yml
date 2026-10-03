@@ -39,4 +39,4 @@ jobs:
             exit 0
           fi
           echo "$files"
-          echo "$files" | xargs node scripts/proof/validate.mjs
+          echo "$files" | xargs node scripts/proof/validate.mjs --head "$HEAD_SHA"

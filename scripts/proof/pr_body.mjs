@@ -1,22 +1,23 @@
 #!/usr/bin/env node
-// PR description proof (HAZ-129). Florian, 2026-10-03: every PR body needs
-// a desktop screenshot, a 390px screenshot, and a clickable preview link.
-// No exceptions. The proof gate and CI (proof.yml.template) both call this.
+// PR description proof (HAZ-129, HAZ-133).
 //
-// A screenshot is a markdown image `![alt](url)`, an HTML <img>, or a markdown
-// link [text](url). The alt text or the file name (last path segment) must
-// contain "desktop" or "390". The URL must be http or https.
+// Proof kind is `ui` or `non-ui`. A `Proof kind:` line in the body sets it.
+// Missing means ui. `--proof-kind` overrides that line (the gate passes
+// proof.json `proofKind`). If the body declares a different kind, the check fails.
 //
-// The preview link is a different http or https link (markdown link, autolink,
-// or bare URL). Screenshot URLs do not count as the preview.
+// ui: two different image embeds (markdown `![alt](url)` or HTML `<img>`),
+// one whose alt text or file name contains "desktop" and one that contains
+// "390", plus an http(s) preview link that is not one of those images.
+// A plain link, autolink or bare URL never counts as a shot. A shot whose
+// alt text or file name says output, test, terminal or code does not count.
 //
-// Work with no visual: mark shots of the result (test output, a doc, a terminal)
-// desktop and 390, or use one screenshot whose alt text or file name contains
-// "output", plus a preview or result link.
+// non-ui: a `Result:` line with text, plus at least one http(s) link that is
+// not an image. An embedded image labelled output, test, terminal or code fails.
+// Other images are allowed.
 //
 // Fenced code, inline code, and HTML comments are ignored.
 //
-//   node pr_body.mjs --body-file <markdown>
+//   node pr_body.mjs --body-file <markdown> [--proof-kind ui|non-ui]
 //   node pr_body.mjs --github-event "$GITHUB_EVENT_PATH"
 //   node pr_body.mjs --body-env PR_BODY
 // Exit 0 on pass, 1 on fail, 2 on usage or read errors.
@@ -25,11 +26,18 @@ import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { stdin } from 'node:process';
 
-const DESKTOP_MSG = 'missing a desktop screenshot: a markdown image, img tag, or link whose alt text or file name contains "desktop"';
-const MOBILE_MSG = 'missing a 390px screenshot: a markdown image, img tag, or link whose alt text or file name contains "390"';
-const BOTH_MSG = 'desktop and 390 are both on the same screenshot. Use two shots, or one output shot';
-const OUTPUT_HINT = 'For work with no visual, one screenshot whose alt text or file name contains "output" also counts';
+const KINDS = new Set(['ui', 'non-ui']);
+const IMG_FILE = /\.(png|jpe?g|webp|avif|gif)$/i;
+const BAD_LABEL = /(^|[^a-z0-9])(output|tests?|terminal|code)([^a-z0-9]|$)/i;
+
+const DESKTOP_MSG = 'missing a desktop screenshot: a markdown image or img tag whose alt text or file name contains "desktop"';
+const MOBILE_MSG = 'missing a 390px screenshot: a markdown image or img tag whose alt text or file name contains "390"';
+const BOTH_MSG = 'desktop and 390 are both on the same screenshot. Use two different images';
+const BAD_SHOT_MSG = 'a shot labelled output, test, terminal or code does not count as a UI shot';
 const PREVIEW_MSG = 'missing a clickable preview URL: an http or https link that is not one of the screenshots';
+const RESULT_MSG = 'non-ui body is missing a Result: line with non-empty text';
+const LINK_MSG = 'non-ui body is missing an http or https link that is not an image';
+const NON_UI_IMAGE_MSG = 'non-ui body embeds an image labelled output, test, terminal or code';
 
 function stripPassive(text) {
   return String(text ?? '')
@@ -69,7 +77,7 @@ function classify(text, rawUrl) {
     filename,
     desktop: /desktop/i.test(hay),
     mobile390: /390/.test(hay),
-    output: /output/i.test(hay),
+    badLabel: BAD_LABEL.test(hay),
   };
 }
 
@@ -80,12 +88,34 @@ function pull(src, re, onMatch) {
   });
 }
 
-/** @returns {{ ok: boolean, errors: string[], desktop: boolean, mobile390: boolean, output: boolean, preview: string|null }} */
-export function checkPrBody(body) {
+function readDeclaredKind(src) {
+  const m = src.match(/^[ \t]*proof kind:[ \t]*(\S+)[ \t]*$/im);
+  if (!m) return { kind: null, unknown: null };
+  const v = m[1].toLowerCase();
+  if (KINDS.has(v)) return { kind: v, unknown: null };
+  return { kind: null, unknown: m[1] };
+}
+
+function resultLine(src) {
+  const m = src.match(/^[ \t]*Result:[ \t]*(.*)$/im);
+  if (!m) return null;
+  const text = m[1].trim();
+  return text || null;
+}
+
+/** @returns {{ ok: boolean, errors: string[], kind: string, declaredKind: string|null, desktop: boolean, mobile390: boolean, output: boolean, preview: string|null, result: string|null, link: string|null }} */
+export function checkPrBody(body, { proofKind } = {}) {
   const errors = [];
   let src = stripPassive(body);
-  const items = [];
+  const declared = readDeclaredKind(src);
+  if (declared.unknown) errors.push(`unknown proof kind "${declared.unknown}". Use ui or non-ui`);
+  if (proofKind && !KINDS.has(proofKind)) errors.push(`unknown proof kind "${proofKind}". Use ui or non-ui`);
+  if (proofKind && declared.kind && proofKind !== declared.kind) {
+    errors.push(`Proof kind in the body is ${declared.kind} but proof.json says ${proofKind}`);
+  }
+  const kind = proofKind && KINDS.has(proofKind) ? proofKind : (declared.kind ?? 'ui');
 
+  const items = [];
   src = pull(src, /<img\b[^>]*>/gi, ([full]) => {
     items.push({ kind: 'img', text: attr(full, 'alt'), url: attr(full, 'src') });
   });
@@ -102,49 +132,78 @@ export function checkPrBody(body) {
     items.push({ kind: 'bare', text: '', url: full.replace(/[.,;:!?]+$/g, '') });
   });
 
-  const shots = [];
-  const previews = [];
+  const images = [];
+  const links = [];
   for (const item of items) {
     const info = classify(item.text, item.url);
     if (!info) continue;
-    if (info.desktop || info.mobile390 || info.output) shots.push(info);
-    else if (item.kind === 'link' || item.kind === 'autolink' || item.kind === 'bare') previews.push(info);
+    if (item.kind === 'img' || item.kind === 'image') images.push(info);
+    else links.push(info);
   }
 
-  const shotUrls = new Set(shots.map((s) => s.url));
-  const previewLinks = previews.filter((p) => !shotUrls.has(p.url));
+  if (kind === 'non-ui') {
+    const result = resultLine(stripPassive(body));
+    if (!result) errors.push(RESULT_MSG);
+    const badImages = images.filter((s) => s.badLabel);
+    if (badImages.length) errors.push(NON_UI_IMAGE_MSG);
+    const imageUrls = new Set(images.map((s) => s.url));
+    const plain = links.filter((p) => !imageUrls.has(p.url));
+    if (!plain.length) errors.push(LINK_MSG);
+    return {
+      ok: errors.length === 0,
+      errors,
+      kind,
+      declaredKind: declared.kind,
+      desktop: false,
+      mobile390: false,
+      output: badImages.length > 0,
+      preview: plain[0]?.url ?? null,
+      result,
+      link: plain[0]?.url ?? null,
+    };
+  }
 
-  const desktopRefs = shots.filter((s) => s.desktop);
-  const mobileRefs = shots.filter((s) => s.mobile390);
+  const qualifying = images.filter((s) => !s.badLabel);
+  const desktopRefs = qualifying.filter((s) => s.desktop);
+  const mobileRefs = qualifying.filter((s) => s.mobile390);
   const paired = desktopRefs.some((d) => mobileRefs.some((m) => m !== d));
-  const hasOutput = shots.some((s) => s.output);
+  const ignored = images.some((s) => s.badLabel && (s.desktop || s.mobile390 || s.badLabel));
 
-  if (!paired && !hasOutput) {
+  if (!paired) {
     if (desktopRefs.length && mobileRefs.length) errors.push(BOTH_MSG);
     else {
       if (!desktopRefs.length) errors.push(DESKTOP_MSG);
       if (!mobileRefs.length) errors.push(MOBILE_MSG);
     }
-    errors.push(OUTPUT_HINT);
+    if (ignored) errors.push(BAD_SHOT_MSG);
   }
+
+  const shotUrls = new Set(qualifying.filter((s) => s.desktop || s.mobile390).map((s) => s.url));
+  // A link to a screenshot file, or one whose text names a shot, is not a preview.
+  const shotLike = (p) => IMG_FILE.test(p.filename) || /desktop|390/i.test(p.text);
+  const previewLinks = links.filter((p) => !shotUrls.has(p.url) && !shotLike(p));
   if (!previewLinks.length) errors.push(PREVIEW_MSG);
 
   return {
     ok: errors.length === 0,
     errors,
+    kind,
+    declaredKind: declared.kind,
     desktop: paired,
     mobile390: paired,
-    output: hasOutput,
+    output: images.some((s) => s.badLabel),
     preview: previewLinks[0]?.url ?? null,
+    result: resultLine(stripPassive(body)),
+    link: previewLinks[0]?.url ?? null,
   };
 }
 
 function usage() {
   return [
-    'usage: node pr_body.mjs --body-file <markdown>',
-    '       node pr_body.mjs --github-event <event.json>',
-    '       node pr_body.mjs --body-env <NAME>',
-    '       node pr_body.mjs   (markdown on stdin)',
+    'usage: node pr_body.mjs --body-file <markdown> [--proof-kind ui|non-ui]',
+    '       node pr_body.mjs --github-event <event.json> [--proof-kind ui|non-ui]',
+    '       node pr_body.mjs --body-env <NAME> [--proof-kind ui|non-ui]',
+    '       node pr_body.mjs [--proof-kind ui|non-ui]   (markdown on stdin)',
   ].join('\n');
 }
 
@@ -179,10 +238,13 @@ async function readBody(argv) {
 
 export function reportBody(result) {
   const lines = [`PR BODY PROOF: ${result.ok ? 'PASS' : 'FAIL'}`];
-  if (result.ok) {
+  lines.push(`  kind: ${result.kind}`);
+  if (result.ok && result.kind === 'non-ui') {
+    lines.push(`  result: ${result.result}`);
+    lines.push(`  link: ${result.link ?? 'none'}`);
+  } else if (result.ok) {
     lines.push(`  desktop: ${result.desktop ? 'yes' : 'no'}`);
     lines.push(`  390px: ${result.mobile390 ? 'yes' : 'no'}`);
-    lines.push(`  output: ${result.output ? 'yes' : 'no'}`);
     lines.push(`  preview: ${result.preview ?? 'none'}`);
   } else {
     for (const e of result.errors) lines.push(`  FAIL  ${e}`);
@@ -195,6 +257,14 @@ async function main(argv) {
     console.log(usage());
     return 0;
   }
+  const kindFlag = (() => {
+    const i = argv.indexOf('--proof-kind');
+    return i >= 0 ? argv[i + 1] : null;
+  })();
+  if (argv.includes('--proof-kind') && !KINDS.has(kindFlag)) {
+    console.error('pr_body: --proof-kind must be ui or non-ui');
+    return 2;
+  }
   let body;
   try {
     body = await readBody(argv);
@@ -202,7 +272,7 @@ async function main(argv) {
     console.error(e.code === 'USAGE' ? e.message : `pr_body: ${e.message}`);
     return 2;
   }
-  const result = checkPrBody(body);
+  const result = checkPrBody(body, kindFlag ? { proofKind: kindFlag } : {});
   console.log(reportBody(result));
   return result.ok ? 0 : 1;
 }
