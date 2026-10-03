@@ -8,6 +8,7 @@ import { canSeeBestand } from "@/lib/featureFlags";
 import {
   ClipboardListIcon,
   PillIcon,
+  StickyNoteIcon,
 } from "lucide-react";
 
 type AppTab = {
@@ -40,6 +41,7 @@ function useAppTabs(): { tabs: AppTab[]; ready: boolean } {
 
   const tabs: AppTab[] = [
     { href: "/app", icon: ClipboardListIcon, label: "Protokoll" },
+    { href: "/app/notizen", icon: StickyNoteIcon, label: "Notizen" },
     ...(canSeeBestand(user?.id)
       ? [{ href: "/app/bestand", icon: PillIcon, label: "Bestand" }]
       : []),
@@ -84,16 +86,20 @@ function AppNav({ tabs }: { tabs: AppTab[] }) {
 function AppShell({ children }: { children: React.ReactNode }) {
   const { tabs, ready } = useAppTabs();
   const showNav = ready && tabs.length >= 2;
+  // the notes feed scrolls internally and pins its composer to the bottom
+  const fill = usePathname().startsWith("/app/notizen");
 
   return (
     <div className="flex h-[100dvh] flex-col overflow-hidden bg-bg text-text">
       <AppHeader />
-      <div className="flex-1 overflow-y-auto overscroll-none">
+      <div className={`flex-1 overscroll-none ${fill ? "min-h-0 overflow-hidden" : "overflow-y-auto"}`}>
         <div
-          className={`mx-auto max-w-lg ${
-            showNav
-              ? "pb-6"
-              : "pb-[calc(1.5rem+env(safe-area-inset-bottom))]"
+          className={`mx-auto max-w-lg ${fill ? "h-full" : ""} ${
+            fill
+              ? ""
+              : showNav
+                ? "pb-6"
+                : "pb-[calc(1.5rem+env(safe-area-inset-bottom))]"
           }`}
         >
           {children}
