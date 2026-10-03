@@ -476,9 +476,9 @@ export default function AppHomePage() {
           {selectedVehicle?.name} — {new Date().toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" })}
         </p>
         <p className="mb-6 font-mono text-sm">
-          <span className="text-green">{checkedItems} geprüft</span>
+          <span className="text-[#4ade80]">{checkedItems}/{totalItems} abgehakt</span>
           {totalItems - checkedItems > 0 && (
-            <span className="text-red"> · {totalItems - checkedItems} fehlend</span>
+            <span className="text-[#fb923c]"> · {totalItems - checkedItems} fehlt</span>
           )}
         </p>
         {unchecked.length > 0 && (
@@ -831,10 +831,15 @@ export default function AppHomePage() {
               {selectedVehicle?.name}
             </p>
             <p className="mb-4 font-mono text-sm">
-              <span className="text-green">{checkedItems} geprüft</span>
+              <span className="text-[#4ade80]">{checkedItems}/{totalItems} abgehakt</span>
               {totalItems - checkedItems > 0 && (
-                <span className="text-red">
-                  {" "}· {totalItems - checkedItems} fehlend
+                <span className="text-[#fb923c]">
+                  {" "}· {totalItems - checkedItems} fehlt
+                </span>
+              )}
+              {vehicleNotes.length > 0 && (
+                <span>
+                  {" "}· {vehicleNotes.length} offene Notiz{vehicleNotes.length > 1 ? "en" : ""}
                 </span>
               )}
             </p>
