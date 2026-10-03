@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "ticket": "HAZ-129",
+  "repo": "florianthompson/nef-web",
+  "kind": "generic",
+  "branch": "haz-129-pr-template",
+  "commitSha": "673b928023a34ea71d085cdf85c88842b9511217",
+  "pr": {
+    "url": "https://github.com/florianthompson/nef-web/pull/9",
+    "number": 9,
+    "state": "OPEN",
+    "isDraft": true,
+    "merged": false,
+    "mergedAt": null
+  },
+  "urls": {
+    "preview": null,
+    "live": "http://127.0.0.1:8812"
+  },
+  "screenshots": [
+    {
+      "path": "desktop-proof-html.png",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 900,
+      "deviceScaleFactor": 1,
+      "route": "/proof.html"
+    },
+    {
+      "path": "desktop-pr-template-html.png",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 900,
+      "deviceScaleFactor": 1,
+      "route": "/pr-template.html"
+    },
+    {
+      "path": "desktop-proof-workflow-html.png",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 1045,
+      "deviceScaleFactor": 1,
+      "route": "/proof-workflow.html"
+    },
+    {
+      "path": "mobile390-proof-html.png",
+      "viewport": "mobile390",
+      "width": 780,
+      "height": 1846,
+      "deviceScaleFactor": 2,
+      "route": "/proof.html"
+    },
+    {
+      "path": "mobile390-pr-template-html.png",
+      "viewport": "mobile390",
+      "width": 780,
+      "height": 1688,
+      "deviceScaleFactor": 2,
+      "route": "/pr-template.html"
+    },
+    {
+      "path": "mobile390-proof-workflow-html.png",
+      "viewport": "mobile390",
+      "width": 780,
+      "height": 2190,
+      "deviceScaleFactor": 2,
+      "route": "/proof-workflow.html"
+    }
+  ],
+  "checks": [
+    {
+      "name": "validator and PR body tests",
+      "command": "node --test scripts/proof/*.test.mjs",
+      "exitCode": 0,
+      "durationMs": 556,
+      "summary": "# Subtest: shopify-theme may omit pr and sha when repo is none\nok 47 - shopify-theme may omit pr and sha when repo is none\n  ---\n  duration_ms: 0.306899\n  type: 'test'\n  ...\n1..47\n# tests 47\n# suites 0\n# pass 46\n# fail 0\n# cancelled 0\n# skipped 1\n# todo 0\n# duration_ms 509.966581"
+    },
+    {
+      "name": "PR body check on this PR's live description",
+      "command": "gh pr view haz-129-pr-template --json body --jq .body | node scripts/proof/pr_body.mjs",
+      "exitCode": 0,
+      "durationMs": 1813,
+      "summary": "PR BODY PROOF: PASS\n  desktop: yes\n  390px: yes\n  output: yes\n  preview: https://github.com/florianthompson/nef-web/blob/haz-129-pr-template/.github/workflows/proof.yml"
+    },
+    {
+      "name": "PR body check on the unfilled template fails",
+      "command": "! node scripts/proof/pr_body.mjs --body-file .github/pull_request_template.md",
+      "exitCode": 0,
+      "durationMs": 33,
+      "summary": "PR BODY PROOF: FAIL\n  FAIL  missing a desktop screenshot: a markdown image, img tag, or link whose alt text or file name contains \"desktop\"\n  FAIL  missing a 390px screenshot: a markdown image, img tag, or link whose alt text or file name contains \"390\"\n  FAIL  For work with no visual, one screenshot whose alt text or file name contains \"output\" also counts\n  FAIL  missing a clickable preview URL: an http or https link that is not one of the screenshots"
+    }
+  ],
+  "console": {
+    "errors": []
+  },
+  "createdAt": "2026-10-03T12:28:17+02:00",
+  "createdBy": "Dev (Grok Bot)"
+}
