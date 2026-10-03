@@ -4,7 +4,7 @@
   "kind": "nef-web",
   "proofKind": "ui",
   "branch": "florian/haz-163-nef-notes-mic-does-not-record-again-after-clearing-the-text",
-  "commitSha": "90a367e965382aa91c67f84fa28196330f5960c9",
+  "commitSha": "a98f1229a67daf4f916a022e3a109d2b2954528f",
   "pr": {
     "url": "https://github.com/florianthompson/nef-web/pull/14",
     "number": 14,
@@ -14,13 +14,13 @@
     "mergedAt": null
   },
   "urls": {
-    "preview": "https://nef-3x9qskax1-florian-thompsons-projects-c1c41a9c.vercel.app",
+    "preview": "https://nef-agqbv3tc8-florian-thompsons-projects-c1c41a9c.vercel.app",
     "live": null
   },
   "console": {
     "errors": []
   },
-  "createdAt": "2026-10-03T17:22:18Z",
+  "createdAt": "2026-10-03T17:29:16Z",
   "createdBy": "Claude Code",
   "ticket": "HAZ-163",
   "screenshots": [
@@ -47,7 +47,7 @@
       "command": "npm test",
       "exitCode": 0,
       "durationMs": 1000,
-      "summary": "tests 97, pass 96, fail 0, skipped 1 (recorderCore 4/4, vehicleNotes 7/7)"
+      "summary": "tests 99, pass 98, fail 0, skipped 1 (recorderCore 4/4, vehicleNotes 7/7)"
     },
     {
       "name": "typecheck",
