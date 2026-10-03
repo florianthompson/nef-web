@@ -2,9 +2,9 @@
   "schemaVersion": 1,
   "ticket": "HAZ-129",
   "repo": "florianthompson/nef-web",
-  "kind": "generic",
+  "kind": "nef-web",
   "branch": "haz-129-pr-template",
-  "commitSha": "673b928023a34ea71d085cdf85c88842b9511217",
+  "commitSha": "2647d1ffc485d06f9a8aa389c58c92b9bf680160",
   "pr": {
     "url": "https://github.com/florianthompson/nef-web/pull/9",
     "number": 9,
@@ -14,57 +14,25 @@
     "mergedAt": null
   },
   "urls": {
-    "preview": null,
-    "live": "http://127.0.0.1:8812"
+    "preview": "https://nef-n8q7bu7m3-florian-thompsons-projects-c1c41a9c.vercel.app",
+    "live": null
   },
   "screenshots": [
     {
-      "path": "desktop-proof-html.png",
+      "path": "desktop-home.png",
       "viewport": "desktop",
       "width": 1440,
-      "height": 900,
+      "height": 3122,
       "deviceScaleFactor": 1,
-      "route": "/proof.html"
+      "route": "/"
     },
     {
-      "path": "desktop-pr-template-html.png",
-      "viewport": "desktop",
-      "width": 1440,
-      "height": 900,
-      "deviceScaleFactor": 1,
-      "route": "/pr-template.html"
-    },
-    {
-      "path": "desktop-proof-workflow-html.png",
-      "viewport": "desktop",
-      "width": 1440,
-      "height": 1045,
-      "deviceScaleFactor": 1,
-      "route": "/proof-workflow.html"
-    },
-    {
-      "path": "mobile390-proof-html.png",
+      "path": "mobile390-home.png",
       "viewport": "mobile390",
       "width": 780,
-      "height": 1846,
+      "height": 8146,
       "deviceScaleFactor": 2,
-      "route": "/proof.html"
-    },
-    {
-      "path": "mobile390-pr-template-html.png",
-      "viewport": "mobile390",
-      "width": 780,
-      "height": 1688,
-      "deviceScaleFactor": 2,
-      "route": "/pr-template.html"
-    },
-    {
-      "path": "mobile390-proof-workflow-html.png",
-      "viewport": "mobile390",
-      "width": 780,
-      "height": 2190,
-      "deviceScaleFactor": 2,
-      "route": "/proof-workflow.html"
+      "route": "/"
     }
   ],
   "checks": [
@@ -72,27 +40,27 @@
       "name": "validator and PR body tests",
       "command": "node --test scripts/proof/*.test.mjs",
       "exitCode": 0,
-      "durationMs": 556,
-      "summary": "# Subtest: shopify-theme may omit pr and sha when repo is none\nok 47 - shopify-theme may omit pr and sha when repo is none\n  ---\n  duration_ms: 0.306899\n  type: 'test'\n  ...\n1..47\n# tests 47\n# suites 0\n# pass 46\n# fail 0\n# cancelled 0\n# skipped 1\n# todo 0\n# duration_ms 509.966581"
+      "durationMs": 534,
+      "summary": "# Subtest: shopify-theme may omit pr and sha when repo is none\nok 47 - shopify-theme may omit pr and sha when repo is none\n  ---\n  duration_ms: 0.329364\n  type: 'test'\n  ...\n1..47\n# tests 47\n# suites 0\n# pass 46\n# fail 0\n# cancelled 0\n# skipped 1\n# todo 0\n# duration_ms 491.034909"
     },
     {
       "name": "PR body check on this PR's live description",
       "command": "gh pr view haz-129-pr-template --json body --jq .body | node scripts/proof/pr_body.mjs",
       "exitCode": 0,
-      "durationMs": 1813,
-      "summary": "PR BODY PROOF: PASS\n  desktop: yes\n  390px: yes\n  output: yes\n  preview: https://github.com/florianthompson/nef-web/blob/haz-129-pr-template/.github/workflows/proof.yml"
+      "durationMs": 795,
+      "summary": "PR BODY PROOF: PASS\n  desktop: yes\n  390px: yes\n  output: no\n  preview: https://nef-n8q7bu7m3-florian-thompsons-projects-c1c41a9c.vercel.app/"
     },
     {
       "name": "PR body check on the unfilled template fails",
       "command": "! node scripts/proof/pr_body.mjs --body-file .github/pull_request_template.md",
       "exitCode": 0,
-      "durationMs": 33,
+      "durationMs": 41,
       "summary": "PR BODY PROOF: FAIL\n  FAIL  missing a desktop screenshot: a markdown image, img tag, or link whose alt text or file name contains \"desktop\"\n  FAIL  missing a 390px screenshot: a markdown image, img tag, or link whose alt text or file name contains \"390\"\n  FAIL  For work with no visual, one screenshot whose alt text or file name contains \"output\" also counts\n  FAIL  missing a clickable preview URL: an http or https link that is not one of the screenshots"
     }
   ],
   "console": {
     "errors": []
   },
-  "createdAt": "2026-10-03T12:28:17+02:00",
+  "createdAt": "2026-10-03T13:06:45+02:00",
   "createdBy": "Dev (Grok Bot)"
 }
