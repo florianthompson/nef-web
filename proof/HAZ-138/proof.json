@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "ticket": "HAZ-138",
+  "repo": "florianthompson/nef-web",
+  "kind": "nef-web",
+  "branch": "haz-138-nef-notes-ui-v19",
+  "commitSha": "241d99d3c50eac4d88a8241abbe61e3c73e27ca9",
+  "pr": {
+    "url": "https://github.com/florianthompson/nef-web/pull/10",
+    "number": 10,
+    "state": "OPEN",
+    "isDraft": true,
+    "merged": false,
+    "mergedAt": null
+  },
+  "urls": {
+    "preview": "https://nef-web-git-haz-138-238eb4-florian-thompsons-projects-c1c41a9c.vercel.app",
+    "live": null
+  },
+  "screenshots": [
+    {
+      "path": "app-desktop-banner-on.png",
+      "viewport": "desktop",
+      "width": 2880,
+      "height": 1800,
+      "deviceScaleFactor": 2,
+      "route": "/app"
+    },
+    {
+      "path": "mock-desktop-banner-on.png",
+      "viewport": "desktop",
+      "width": 2880,
+      "height": 1800,
+      "deviceScaleFactor": 2,
+      "route": "docs/mock/v19/index.v19.html"
+    },
+    {
+      "path": "app-desktop-banner-off.png",
+      "viewport": "desktop",
+      "width": 2880,
+      "height": 1800,
+      "deviceScaleFactor": 2,
+      "route": "/app"
+    },
+    {
+      "path": "mock-desktop-banner-off.png",
+      "viewport": "desktop",
+      "width": 2880,
+      "height": 1800,
+      "deviceScaleFactor": 2,
+      "route": "docs/mock/v19/index.v19.html"
+    },
+    {
+      "path": "app-390-banner-on.png",
+      "viewport": "mobile390",
+      "width": 780,
+      "height": 1688,
+      "deviceScaleFactor": 2,
+      "route": "/app"
+    },
+    {
+      "path": "mock-390-banner-on.png",
+      "viewport": "mobile390",
+      "width": 780,
+      "height": 1688,
+      "deviceScaleFactor": 2,
+      "route": "docs/mock/v19/index.v19.html"
+    },
+    {
+      "path": "app-390-banner-off.png",
+      "viewport": "mobile390",
+      "width": 780,
+      "height": 1688,
+      "deviceScaleFactor": 2,
+      "route": "/app"
+    },
+    {
+      "path": "mock-390-banner-off.png",
+      "viewport": "mobile390",
+      "width": 780,
+      "height": 1688,
+      "deviceScaleFactor": 2,
+      "route": "docs/mock/v19/index.v19.html"
+    }
+  ],
+  "checks": [
+    {
+      "name": "typecheck",
+      "command": "npx tsc --noEmit",
+      "exitCode": 0,
+      "durationMs": 0,
+      "summary": "clean on 241d99d"
+    },
+    {
+      "name": "production build",
+      "command": "npm run build",
+      "exitCode": 0,
+      "durationMs": 0,
+      "summary": "next build ok on 241d99d"
+    },
+    {
+      "name": "dash check",
+      "command": "npm run check:dashes",
+      "exitCode": 0,
+      "durationMs": 0,
+      "summary": "ok"
+    },
+    {
+      "name": "proof tests",
+      "command": "node --test scripts/proof/*.test.mjs",
+      "exitCode": 0,
+      "durationMs": 0,
+      "summary": "pass 46, fail 0"
+    },
+    {
+      "name": "eslint touched files",
+      "command": "npx eslint src/components/notes/NotesScreen.tsx",
+      "exitCode": 0,
+      "durationMs": 0,
+      "summary": "clean"
+    }
+  ],
+  "console": {
+    "errors": []
+  },
+  "createdAt": "2026-10-03T15:00:00+02:00",
+  "createdBy": "Claude Code (box)"
+}
