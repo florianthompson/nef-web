@@ -14,7 +14,7 @@ export default function Hero() {
         style={{ animation: "fadeUp 0.6s ease both" }}
       >
         <div className="w-2 h-2 rounded-full bg-green" style={{ animation: "pulse-dot 2s ease infinite" }} />
-        In Entwicklung — Bald verf&uuml;gbar
+        In Entwicklung. Bald verf&uuml;gbar
       </div>
 
       <h1
@@ -33,7 +33,7 @@ export default function Hero() {
         style={{ animation: "fadeUp 0.6s ease 0.2s both" }}
       >
         Das digitale &Uuml;bergabeprotokoll f&uuml;r Rettungsdienste. Fahrzeuge,
-        Medikamente und Ausr&uuml;stung — alles gepr&uuml;ft, dokumentiert und in
+        Medikamente und Ausr&uuml;stung, alles gepr&uuml;ft, dokumentiert und in
         Echtzeit synchronisiert.
       </p>
 

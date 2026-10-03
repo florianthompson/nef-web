@@ -55,7 +55,7 @@ export default function OnboardingClient() {
           </span>
           <h1 className="text-2xl font-extrabold">Willkommen bei NEF</h1>
           <p className="mt-2 text-sm text-text-muted">
-            In zwei Schritten startklar — Account erstellen und die App auf den
+            In zwei Schritten startklar. Account erstellen und die App auf den
             Home-Bildschirm legen.
           </p>
           {teamName && (
@@ -95,7 +95,7 @@ export default function OnboardingClient() {
             </h2>
           </div>
           <p className="mb-4 text-sm text-text-muted">
-            So legst du NEF wie eine echte App auf deinen Startbildschirm — mit
+            So legst du NEF wie eine echte App auf deinen Startbildschirm, mit
             eigenem Icon und Vollbild.
           </p>
 
@@ -141,7 +141,7 @@ export default function OnboardingClient() {
               </Instruction>
               <Instruction n={4}>
                 Tippe oben rechts auf{" "}
-                <strong className="text-text">„Hinzufügen"</strong> — fertig.
+                <strong className="text-text">„Hinzufügen"</strong>, fertig.
               </Instruction>
             </ol>
           ) : (
@@ -170,7 +170,7 @@ export default function OnboardingClient() {
               <Instruction n={4}>
                 Bestätige mit{" "}
                 <strong className="text-text">„Hinzufügen"</strong> /
-                „Installieren" — fertig.
+                „Installieren", fertig.
               </Instruction>
             </ol>
           )}

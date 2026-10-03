@@ -63,7 +63,7 @@ export default function MeineProtokollePage() {
           id: row.id,
           created_at: row.created_at,
           vehicle_name: v?.name ?? null,
-          user_first_name: me?.first_name ?? "–",
+          user_first_name: me?.first_name ?? "-",
           user_last_name: me?.last_name ?? "",
         };
       });
@@ -123,7 +123,7 @@ export function SubmissionsTable({
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-xs text-text-muted">
-                  {s.vehicle_name ?? "–"}
+                  {s.vehicle_name ?? "-"}
                 </span>
                 <span className="text-xs text-red">Ansehen →</span>
               </div>
@@ -161,7 +161,7 @@ export function SubmissionsTable({
                     {s.user_first_name} {s.user_last_name}
                   </td>
                   <td className="px-4 py-3 text-text-muted">
-                    {s.vehicle_name ?? "–"}
+                    {s.vehicle_name ?? "-"}
                   </td>
                   <td className="px-4 py-3 text-right">
                     <Link

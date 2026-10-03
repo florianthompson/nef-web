@@ -88,7 +88,7 @@ export default function AlleProtokollePage() {
           id: row.id,
           created_at: row.created_at,
           vehicle_name: v?.name ?? null,
-          user_first_name: u?.first_name ?? "–",
+          user_first_name: u?.first_name ?? "-",
           user_last_name: u?.last_name ?? "",
         };
       });

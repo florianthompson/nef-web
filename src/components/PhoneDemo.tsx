@@ -85,7 +85,7 @@ export default function PhoneDemo() {
         So sieht die App aus
       </h2>
       <p className="text-center text-base text-text-muted font-medium mb-12">
-        Scrolle durch das Protokoll — direkt im Browser
+        Scrolle durch das Protokoll, direkt im Browser
       </p>
 
       {/* Phone Frame */}
@@ -225,7 +225,7 @@ export default function PhoneDemo() {
               </div>
             </div>
             <p className="text-center text-[11px] text-amber mt-2 font-medium">
-              &#9888; 59 fehlende Positionen — wird bei Abgabe als fehlend markiert
+              &#9888; 59 fehlende Positionen. Wird bei Abgabe als fehlend markiert
             </p>
           </div>
         </div>

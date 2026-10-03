@@ -24,8 +24,8 @@ export async function generateMetadata({
     ? `Erstelle deinen Account für ${teamName}`
     : "Erstelle deinen NEF-Account";
   const description = teamName
-    ? `Tritt ${teamName} auf NEF bei — in zwei Schritten startklar: Account erstellen und die App auf den Home-Bildschirm legen.`
-    : "In zwei Schritten startklar mit NEF — Account erstellen und die App auf den Home-Bildschirm legen.";
+    ? `Tritt ${teamName} auf NEF bei, in zwei Schritten startklar: Account erstellen und die App auf den Home-Bildschirm legen.`
+    : "In zwei Schritten startklar mit NEF. Account erstellen und die App auf den Home-Bildschirm legen.";
 
   return {
     title,

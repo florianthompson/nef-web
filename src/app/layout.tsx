@@ -28,9 +28,9 @@ export const metadata: Metadata = {
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_SITE_URL ?? "https://nef-web.vercel.app"
   ),
-  title: "NEF Protokoll — Digitale Schichtübergabe für Rettungsdienste",
+  title: "NEF Protokoll. Digitale Schichtübergabe für Rettungsdienste",
   description:
-    "Das digitale Übergabeprotokoll für Rettungsdienste. Fahrzeuge, Medikamente und Ausrüstung — alles geprüft, dokumentiert und in Echtzeit synchronisiert.",
+    "Das digitale Übergabeprotokoll für Rettungsdienste. Fahrzeuge, Medikamente und Ausrüstung, alles geprüft, dokumentiert und in Echtzeit synchronisiert.",
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,

@@ -78,7 +78,7 @@ export default function VerlaufPage() {
                   {formatDate(p.created_at)}
                 </p>
                 <p className="text-xs text-text-muted">
-                  {p.vehicle_name ?? "–"}
+                  {p.vehicle_name ?? "-"}
                 </p>
               </div>
               <span className="text-xs text-red">→</span>
