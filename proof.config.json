@@ -1,0 +1,7 @@
+{
+  "kind": "nef-web",
+  "routes": ["/"],
+  "checks": [
+    { "name": "validator tests", "command": "node --test scripts/proof/*.test.mjs" }
+  ]
+}
