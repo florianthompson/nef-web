@@ -4,7 +4,7 @@
   "repo": "florianthompson/nef-web",
   "kind": "nef-web",
   "branch": "haz-74-proof-json",
-  "commitSha": "4287f1884c0fff380bdc2a2d906fcc1aa66fc0a4",
+  "commitSha": "34d5d7dfb30133493f29b8e986ae4a613eba67d5",
   "pr": {
     "url": "https://github.com/florianthompson/nef-web/pull/6",
     "number": 6,
@@ -40,13 +40,13 @@
       "name": "validator tests",
       "command": "node --test scripts/proof/*.test.mjs",
       "exitCode": 0,
-      "durationMs": 115,
-      "summary": "# Subtest: shopify-theme may omit pr and sha when repo is none\nok 17 - shopify-theme may omit pr and sha when repo is none\n  ---\n  duration_ms: 0.311315\n  type: 'test'\n  ...\n1..17\n# tests 17\n# suites 0\n# pass 17\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 80.578899"
+      "durationMs": 117,
+      "summary": "# Subtest: shopify-theme may omit pr and sha when repo is none\nok 17 - shopify-theme may omit pr and sha when repo is none\n  ---\n  duration_ms: 0.317267\n  type: 'test'\n  ...\n1..17\n# tests 17\n# suites 0\n# pass 17\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 82.829335"
     }
   ],
   "console": {
     "errors": []
   },
-  "createdAt": "2026-10-03T09:07:50+02:00",
-  "createdBy": "claude"
+  "createdAt": "2026-10-03T09:41:38+02:00",
+  "createdBy": "Dev (Grok Bot)"
 }
