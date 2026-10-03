@@ -4,7 +4,7 @@
   "repo": "florianthompson/nef-web",
   "kind": "nef-web",
   "branch": "haz-140-nef-e2e-test",
-  "commitSha": "473351d3c7ed91f3c2c224f285d3c3f2b9d9130f",
+  "commitSha": "0259a4d3c09e9091a318a739dc90bf0b82dac8fe",
   "pr": {
     "url": "https://github.com/florianthompson/nef-web/pull/11",
     "number": 11,
@@ -113,6 +113,22 @@
       "height": 1800,
       "deviceScaleFactor": 2,
       "route": "/login (offline)"
+    },
+    {
+      "path": "desktop-b12-admin-team-name.png",
+      "viewport": "desktop",
+      "width": 2880,
+      "height": 1800,
+      "deviceScaleFactor": 2,
+      "route": "/dashboard/team (admin)"
+    },
+    {
+      "path": "390-b12-admin-team-name.png",
+      "viewport": "mobile390",
+      "width": 780,
+      "height": 1688,
+      "deviceScaleFactor": 2,
+      "route": "/dashboard/team (admin)"
     }
   ],
   "checks": [
@@ -141,6 +157,6 @@
   "console": {
     "errors": []
   },
-  "createdAt": "2026-10-03T14:50:00+02:00",
+  "createdAt": "2026-10-03T15:10:00+02:00",
   "createdBy": "Claude Code"
 }
