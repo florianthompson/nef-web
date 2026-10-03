@@ -44,15 +44,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();
 
   useEffect(() => {
+    // Keep the same user object when the id is unchanged, so token refreshes and the
+    // repeated session events do not re-trigger the profile and page loads.
+    const sameUser = (next: User | null) => (prev: User | null) =>
+      prev && next && prev.id === next.id ? prev : next;
+
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
+      setUser(sameUser(session?.user ?? null));
       if (!session?.user) setLoading(false);
     });
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
+      setUser(sameUser(session?.user ?? null));
       if (!session?.user) {
         setProfile(null);
       }

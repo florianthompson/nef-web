@@ -1,4 +1,5 @@
 import { supabase } from "./supabase";
+import { loadTeamCatalog } from "./catalog";
 import { clearDraft, loadDraft, saveDraft } from "./protocolDraft";
 
 export type ProtoItem = {
@@ -161,8 +162,8 @@ function mapItem(row: Record<string, unknown>): ProtoItem {
 export async function loadTeamProtocol(
   teamId: string
 ): Promise<{ protocol: Protocol | null; vehicles: Vehicle[] }> {
-  const [{ data: protocolData }, { data: vehiclesData }] = await Promise.all([
-    supabase.from("protocols").select("*").eq("team_id", teamId).limit(1).maybeSingle(),
+  const [catalog, { data: vehiclesData }] = await Promise.all([
+    loadTeamCatalog(teamId).catch(() => null),
     supabase.from("vehicles").select("*").eq("team_id", teamId),
   ]);
 
@@ -173,33 +174,20 @@ export async function loadTeamProtocol(
   }));
   vehicles.sort((a, b) => (a.isDefault === b.isDefault ? 0 : a.isDefault ? -1 : 1));
 
-  if (!protocolData) return { protocol: null, vehicles };
+  if (!catalog) return { protocol: null, vehicles };
 
-  const { data: categoriesData } = await supabase
-    .from("categories")
-    .select("*")
-    .eq("protocol_id", protocolData.id)
-    .order("position");
-
-  const catRows = (categoriesData ?? []) as Record<string, unknown>[];
-  const catIds = catRows.map((c) => String(c.id));
-  const { data: itemsData } = catIds.length
-    ? await supabase.from("items").select("*").in("category_id", catIds).order("position")
-    : { data: [] };
-
-  const itemRows = (itemsData ?? []) as Record<string, unknown>[];
-  const subsByParent = new Map<string, ProtoItem[]>();
-  for (const row of itemRows) {
-    const parent = row.parent_item_id ? String(row.parent_item_id) : "";
-    if (!parent) continue;
-    const list = subsByParent.get(parent) ?? [];
-    list.push(mapItem(row));
-    subsByParent.set(parent, list);
-  }
-
-  const categories: ProtoCategory[] = catRows.map((cat) => {
+  const categories: ProtoCategory[] = catalog.categories.map((cat) => {
+    const itemRows = cat.items;
+    const subsByParent = new Map<string, ProtoItem[]>();
+    for (const row of itemRows) {
+      const parent = row.parent_item_id ? String(row.parent_item_id) : "";
+      if (!parent) continue;
+      const list = subsByParent.get(parent) ?? [];
+      list.push(mapItem(row));
+      subsByParent.set(parent, list);
+    }
     const items = itemRows
-      .filter((row) => String(row.category_id) === String(cat.id) && !row.parent_item_id)
+      .filter((row) => !row.parent_item_id)
       .map((row) => {
         const item = mapItem(row);
         item.subItems = (subsByParent.get(item.id) ?? [])
@@ -219,9 +207,9 @@ export async function loadTeamProtocol(
 
   return {
     protocol: {
-      id: String(protocolData.id),
-      title: String(protocolData.title ?? ""),
-      version: Number(protocolData.version ?? 1),
+      id: String(catalog.protocol.id),
+      title: String(catalog.protocol.title ?? ""),
+      version: Number(catalog.protocol.version ?? 1),
       categories,
     },
     vehicles,
@@ -330,66 +318,55 @@ type UpRow = {
   user_id: string;
 };
 
-export async function loadMySubmissions(userId: string): Promise<Submission[]> {
-  const { data: ups } = await supabase
-    .from("user_protocols")
-    .select("id, created_at, vehicle_id, user_id")
-    .eq("user_id", userId)
-    .order("created_at", { ascending: false })
-    .limit(30);
-  const rows = (ups ?? []) as UpRow[];
+type UpItemRow = {
+  id: string;
+  title: string;
+  is_completed: boolean;
+  parent_item_id: string | null;
+  position: number;
+};
+type UpCatRow = {
+  id: string;
+  title: string;
+  position: number;
+  type: string;
+  user_protocol_items: UpItemRow[] | null;
+};
+
+/**
+ * The user's latest submissions with their checklists. One request for the protocols,
+ * categories and items (nested), one in parallel for the author name.
+ */
+export async function loadMySubmissions(userId: string, limit = 30): Promise<Submission[]> {
+  const [{ data: ups }, { data: users }] = await Promise.all([
+    supabase
+      .from("user_protocols")
+      .select(
+        "id, created_at, vehicle_id, user_id, vehicles(name), user_protocol_categories(id, title, position, type, user_protocol_items(id, title, is_completed, parent_item_id, position))"
+      )
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
+      .order("position", { referencedTable: "user_protocol_categories" })
+      .order("position", { referencedTable: "user_protocol_categories.user_protocol_items" })
+      .limit(limit),
+    supabase.from("users").select("id, first_name, last_name").eq("id", userId),
+  ]);
+  const rows = (ups ?? []) as unknown as (UpRow & {
+    vehicles: { name: string } | null;
+    user_protocol_categories: UpCatRow[] | null;
+  })[];
   if (!rows.length) return [];
 
-  const userIds = [...new Set(rows.map((r) => r.user_id))];
-  const vehicleIds = [...new Set(rows.map((r) => r.vehicle_id).filter(Boolean))] as string[];
-  const [{ data: users }, { data: vehicles }] = await Promise.all([
-    supabase.from("users").select("id, first_name, last_name").in("id", userIds),
-    vehicleIds.length
-      ? supabase.from("vehicles").select("id, name").in("id", vehicleIds)
-      : Promise.resolve({ data: [] as { id: string; name: string }[] }),
-  ]);
   const names = new Map<string, string>();
   for (const u of (users ?? []) as { id: string; first_name: string; last_name: string }[]) {
     const last = (u.last_name ?? "").trim();
     names.set(u.id, last ? `${u.first_name} ${last[0]}.` : u.first_name);
   }
-  const vehicleNames = new Map<string, string>();
-  for (const v of (vehicles ?? []) as { id: string; name: string }[]) vehicleNames.set(v.id, v.name);
-
-  const upIds = rows.map((r) => r.id);
-  const { data: cats } = await supabase
-    .from("user_protocol_categories")
-    .select("id, user_protocol_id, title, position, type")
-    .in("user_protocol_id", upIds)
-    .order("position");
-  const catRows = (cats ?? []) as {
-    id: string;
-    user_protocol_id: string;
-    title: string;
-    position: number;
-    type: string;
-  }[];
-  const catIds = catRows.map((c) => c.id);
-  const { data: items } = catIds.length
-    ? await supabase
-        .from("user_protocol_items")
-        .select("id, user_protocol_category_id, title, is_completed, parent_item_id, position")
-        .in("user_protocol_category_id", catIds)
-        .order("position")
-    : { data: [] };
-  const itemRows = (items ?? []) as {
-    id: string;
-    user_protocol_category_id: string;
-    title: string;
-    is_completed: boolean;
-    parent_item_id: string | null;
-    position: number;
-  }[];
 
   return rows.map((up) => {
-    const myCats = catRows.filter((c) => c.user_protocol_id === up.id && c.type !== "text");
+    const myCats = (up.user_protocol_categories ?? []).filter((c) => c.type !== "text");
     const sections: CheckSection[] = myCats.map((cat) => {
-      const mine = itemRows.filter((i) => i.user_protocol_category_id === cat.id);
+      const mine = cat.user_protocol_items ?? [];
       const parentIds = new Set(mine.map((i) => i.parent_item_id).filter(Boolean) as string[]);
       const leaves = mine.filter((i) => i.parent_item_id || !parentIds.has(i.id));
       const titleOf = new Map(mine.map((i) => [i.id, i.title]));
@@ -415,7 +392,7 @@ export async function loadMySubmissions(userId: string): Promise<Submission[]> {
       id: up.id,
       createdAt: up.created_at,
       vehicleId: up.vehicle_id,
-      vehicleName: up.vehicle_id ? (vehicleNames.get(up.vehicle_id) ?? null) : null,
+      vehicleName: up.vehicles?.name ?? null,
       author: names.get(up.user_id) ?? "",
       checked: all.filter((r) => r.done).length,
       missing: unchecked.length,

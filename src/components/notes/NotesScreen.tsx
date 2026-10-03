@@ -52,14 +52,16 @@ export function NotesScreen() {
 
   const teamId = profile?.teamId;
 
+  const userId = user?.id;
   const load = useCallback(async () => {
-    if (!profile || !user) return;
+    if (!teamId || !userId) return;
+    // Only the latest submission decides the shift state; the full history follows once the page is usable.
     const [{ protocol: proto, vehicles: vlist }, subs] = await Promise.all([
-      loadTeamProtocol(profile.teamId),
-      loadMySubmissions(user.id),
+      loadTeamProtocol(teamId),
+      loadMySubmissions(userId, 1),
     ]);
     if (proto) {
-      const draft = applyDraft(proto, user.id);
+      const draft = applyDraft(proto, userId);
       setShiftNote(draft.shiftNote);
       const picked = vlist.find((v) => v.id === draft.vehicleId) ?? vlist[0] ?? null;
       setVehicle(picked);
@@ -70,13 +72,14 @@ export function NotesScreen() {
     setVehicles(vlist);
     setSubmissions(subs);
     setReady(true);
-  }, [profile, user]);
+    void loadMySubmissions(userId).then(setSubmissions);
+  }, [teamId, userId]);
 
   useEffect(() => {
-    if (authLoading || !profile || !user) return;
+    if (authLoading || !teamId || !userId) return;
     // eslint-disable-next-line react-hooks/set-state-in-effect
     void load();
-  }, [authLoading, profile, user, load]);
+  }, [authLoading, teamId, userId, load]);
 
   useEffect(() => {
     if (!teamId) return;
