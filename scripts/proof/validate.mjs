@@ -4,7 +4,7 @@
 import { readFileSync, existsSync, statSync, openSync, readSync, closeSync } from 'node:fs';
 import { dirname, resolve, relative, isAbsolute, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { changedFilesBetween, formatStale, staleFindings } from './stale.mjs';
+import { changedFilesBetween, formatStale, localProofExists, staleFindings } from './stale.mjs';
 
 const SCHEMA_PATH = resolve(dirname(fileURLToPath(import.meta.url)), 'proof.schema.json');
 const ISO_DATE_TIME = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:\d{2})$/;
@@ -172,7 +172,12 @@ export function staleErrors(obj, headSha, cwd) {
   }
   const diff = changedFilesBetween(obj.commitSha, headSha, cwd);
   if (diff.error) return [diff.error];
-  const findings = staleFindings({ proof: obj, headSha, changedFiles: diff.files });
+  const findings = staleFindings({
+    proof: obj,
+    headSha,
+    changedFiles: diff.files,
+    otherProofExists: localProofExists(headSha, cwd),
+  });
   const message = formatStale({ proof: obj, headSha, findings });
   return message ? [message] : [];
 }

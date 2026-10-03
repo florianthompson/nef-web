@@ -11,10 +11,15 @@ import {
 } from "@/lib/notes";
 import { notesApi, PARSE_TIMEOUT_MS, transcribeSegments, transcribeTimeout, type ApiError } from "@/lib/notesClient";
 import { bufferAll, bufferDelete, bufferPut, type BufferedAudio } from "@/lib/audioBuffer";
+import {
+  appendDraft,
+  migrateLegacyDraft,
+  readDraft,
+  writeDraft,
+} from "@/lib/vehicleNotes.mjs";
 import { ReviewCard, type ReviewPart } from "./ReviewCard";
 import { fmtClock, useVoiceRecorder, VoiceWave, type Recording } from "./VoiceRecorder";
 
-const DRAFT_KEY = "nef-notes-draft";
 const COMP_MAX = 154;
 const T_NOSORT = "Automatische Sortierung nicht verfügbar";
 
@@ -24,6 +29,7 @@ type Job = {
   mimeType: string;
   durationMs: number;
   localText: string;
+  vehicleId: string | null; // the vehicle the recording was made for; its text goes to that vehicle
   settled: boolean;
   ctrl?: AbortController;
   timer?: ReturnType<typeof setTimeout>;
@@ -45,6 +51,8 @@ let partKey = 0;
 export function Composer({
   items,
   teamId,
+  vehicleId,
+  legacyVehicleId,
   userId,
   authorName,
   onSaved,
@@ -53,17 +61,31 @@ export function Composer({
 }: {
   items: ItemOption[];
   teamId: string;
+  /** the selected vehicle (null = the team has no vehicles); drafts and new notes belong to it */
+  vehicleId: string | null;
+  legacyVehicleId: string | null;
   userId: string;
   authorName: string;
   onSaved: (message: string) => void;
   onNotice: (message: string) => void;
   onHeight: (h: number) => void;
 }) {
-  const [text, setText] = useState("");
+  // the draft text always belongs to the vehicle in `draft.vid`; another vehicle's text is never shown
+  const [draft, setDraft] = useState<{ vid: string | null | undefined; text: string }>({ vid: undefined, text: "" });
+  const text = draft.vid === vehicleId ? draft.text : "";
+  const vidRef = useRef(vehicleId);
+  const recVidRef = useRef(vehicleId);
   const [deviceHint, setDeviceHint] = useState(false);
   const [fromVoice, setFromVoice] = useState(false);
   const [progress, setProgress] = useState<{ kind: "listen" | "sort"; seg: number; total: number } | null>(null);
-  const [review, setReview] = useState<{ orig: string; parts: ReviewPart[]; hint: string } | null>(null);
+  const [reviewAny, setReview] = useState<{
+    vehicleId: string | null;
+    orig: string;
+    parts: ReviewPart[];
+    hint: string;
+  } | null>(null);
+  // an open review tray stays with the vehicle it was made for
+  const review = reviewAny && reviewAny.vehicleId === vehicleId ? reviewAny : null;
   const [saving, setSaving] = useState(false);
   const [bufs, setBufs] = useState<BufferedAudio[]>([]);
   const taRef = useRef<HTMLTextAreaElement>(null);
@@ -73,27 +95,31 @@ export function Composer({
   const drainingRef = useRef(false);
   const busy = !!progress;
 
-  // restore the draft once
-  useEffect(() => {
-    try {
-      const d = localStorage.getItem(DRAFT_KEY);
-      if (d) setText(d);
-    } catch {
-      // ignore
-    }
+  const setText = useCallback((u: string | ((prev: string) => string)) => {
+    setDraft((d) => {
+      const v = vidRef.current;
+      const prev = d.vid === v ? d.text : "";
+      return { vid: v, text: typeof u === "function" ? u(prev) : u };
+    });
   }, []);
+
+  // load the selected vehicle's draft (the old single draft moves to the default vehicle once)
   useEffect(() => {
-    try {
-      if (text) localStorage.setItem(DRAFT_KEY, text);
-      else localStorage.removeItem(DRAFT_KEY);
-    } catch {
-      // ignore
-    }
-    if (!text.trim()) {
+    vidRef.current = vehicleId;
+    if (vehicleId === legacyVehicleId) migrateLegacyDraft(localStorage, vehicleId);
+    setDraft({ vid: vehicleId, text: readDraft(localStorage, vehicleId) });
+    setFromVoice(false);
+    setDeviceHint(false);
+    if (voiceStopRef.current) voiceStopRef.current(); // a running recording ends and stays with its vehicle
+  }, [vehicleId, legacyVehicleId]);
+  useEffect(() => {
+    if (draft.vid !== vehicleId) return; // not loaded for this vehicle yet
+    writeDraft(localStorage, vehicleId, draft.text);
+    if (!draft.text.trim()) {
       setDeviceHint(false);
       setFromVoice(false);
     }
-  }, [text]);
+  }, [draft, vehicleId]);
 
   // grow the textarea
   useEffect(() => {
@@ -112,7 +138,13 @@ export function Composer({
     return () => ro.disconnect();
   }, [onHeight]);
 
-  const putText = useCallback((t: string, device = false) => {
+  const putText = useCallback((t: string, device = false, target?: string | null) => {
+    if (target !== undefined && target !== vidRef.current) {
+      // the user switched vehicles meanwhile: park the text in that vehicle's draft, not in this field
+      appendDraft(localStorage, target, t);
+      onNotice("Text liegt im Entwurf des anderen Fahrzeugs.");
+      return;
+    }
     setText((prev) => (prev.trim() ? prev.trimEnd() + " " + t : t));
     setFromVoice(true);
     if (device) setDeviceHint(true);
@@ -124,7 +156,7 @@ export function Composer({
         ta.scrollTop = ta.scrollHeight;
       }
     });
-  }, []);
+  }, [setText, onNotice]);
 
   /* ---------- hidden audio buffer ---------- */
   const refreshBufs = useCallback(async () => setBufs(await bufferAll()), []);
@@ -183,7 +215,7 @@ export function Composer({
       if (!settle(j)) return;
       j.ctrl?.abort();
       if (j.localText) {
-        putText(j.localText, true);
+        putText(j.localText, true, j.vehicleId);
         return;
       }
       await bufferPut({
@@ -216,7 +248,7 @@ export function Composer({
         });
         if (!settle(j)) return;
         const out = t || j.localText;
-        if (out) putText(out, !t);
+        if (out) putText(out, !t, j.vehicleId);
         else onNotice("Nichts verstanden. Bitte nochmal versuchen.");
       } catch {
         void failJob(j);
@@ -228,7 +260,7 @@ export function Composer({
   const onFinish = useCallback(
     (r: Recording) => {
       if (!r.blobs.length) {
-        if (r.localText) putText(r.localText, true);
+        if (r.localText) putText(r.localText, true, recVidRef.current);
         else onNotice("Nichts verstanden. Bitte nochmal versuchen.");
         return;
       }
@@ -238,6 +270,7 @@ export function Composer({
         mimeType: r.type,
         durationMs: r.durationMs,
         localText: r.localText,
+        vehicleId: recVidRef.current,
         settled: false,
       });
     },
@@ -245,24 +278,34 @@ export function Composer({
   );
 
   const voice = useVoiceRecorder({ onFinish, onError: onNotice });
+  const voiceStopRef = useRef(voice.stop);
+  useEffect(() => {
+    voiceStopRef.current = voice.stop;
+  }, [voice.stop]);
+  const startVoice = () => {
+    recVidRef.current = vehicleId;
+    void voice.start();
+  };
 
   /* ---------- sending ---------- */
-  const clearField = () => {
-    setText("");
+  const clearField = (forVehicle: string | null) => {
+    if (forVehicle === vidRef.current) setText("");
+    else writeDraft(localStorage, forVehicle, "");
     setReview(null);
   };
 
-  async function save(drafts: NoteDraft[], source: NoteSource, message: string) {
+  // notes are saved for the vehicle the text was written for, not whichever is selected by now
+  async function save(drafts: NoteDraft[], source: NoteSource, message: string, forVehicle: string | null) {
     if (!drafts.length) return;
     setSaving(true);
-    const { ok, error } = await insertNotes({ teamId, userId, authorName, source }, drafts);
+    const { ok, error } = await insertNotes({ teamId, userId, authorName, source, vehicleId: forVehicle }, drafts);
     setSaving(false);
     if (!ok) {
       console.error("save notes failed:", error);
       onNotice("Speichern nicht möglich. Der Text bleibt erhalten.");
       return;
     }
-    clearField();
+    clearField(forVehicle);
     onSaved(message);
   }
 
@@ -281,9 +324,10 @@ export function Composer({
     }
     const v = text.trim();
     if (!v || busy || saving || review) return;
+    const sendVid = vehicleId;
     taRef.current?.blur();
     if (!navigator.onLine) {
-      await save([rawDraft(v)], "raw", "Gespeichert, ohne Auswertung");
+      await save([rawDraft(v)], "raw", "Gespeichert, ohne Auswertung", sendVid);
       return;
     }
     const ctrl = new AbortController();
@@ -317,11 +361,11 @@ export function Composer({
     if (failure === "busy") {
       onNotice("Zu viele Anfragen, bitte kurz warten.");
     } else if (failure === "skipped") {
-      await save([rawDraft(v)], "raw", "Gespeichert, ohne Auswertung");
+      await save([rawDraft(v)], "raw", "Gespeichert, ohne Auswertung", sendVid);
     } else if (failure === "error") {
-      await save([rawDraft(v)], "raw", `${T_NOSORT} · als Text gespeichert`);
+      await save([rawDraft(v)], "raw", `${T_NOSORT} · als Text gespeichert`, sendVid);
     } else if (parts) {
-      setReview({ orig: v, parts, hint: "" });
+      setReview({ vehicleId: sendVid, orig: v, parts, hint: "" });
     }
   }
 
@@ -381,10 +425,11 @@ export function Composer({
                   dueText: p.dueText,
                 })),
               fromVoice ? "voice" : "text",
-              review.parts.length > 1 ? "Notizen gespeichert" : "Notiz gespeichert"
+              review.parts.length > 1 ? "Notizen gespeichert" : "Notiz gespeichert",
+              review.vehicleId
             )
           }
-          onSendRaw={() => void save([rawDraft(review.orig.trim())], "raw", "Gespeichert")}
+          onSendRaw={() => void save([rawDraft(review.orig.trim())], "raw", "Gespeichert", review.vehicleId)}
         />
       )}
       {bufs.length > 0 && !busy && !review && (
@@ -443,7 +488,7 @@ export function Composer({
           type="button"
           className="rb"
           id="mic"
-          onClick={() => void voice.start()}
+          onClick={startVoice}
           disabled={busy}
           aria-label="Sprachaufnahme"
         >

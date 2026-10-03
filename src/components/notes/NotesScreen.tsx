@@ -21,6 +21,7 @@ import {
   type Submission,
   type Vehicle,
 } from "@/lib/protocol";
+import { legacyNoteVehicleId } from "@/lib/vehicleNotes.mjs";
 import { shortAuthor } from "./format";
 import { AvatarMenu } from "@/components/app/AvatarMenu";
 import { Checklist } from "./Checklist";
@@ -28,6 +29,8 @@ import { Feed } from "./Feed";
 import { HistoryDetail, HistoryList } from "./HistoryView";
 import { ProtocolCard } from "./ProtocolCard";
 import { SubmitSheet } from "./SubmitSheet";
+
+const NO_COUNTS: Record<string, number> = {};
 
 export function NotesScreen() {
   const { user, profile, loading: authLoading } = useAuth();
@@ -43,7 +46,7 @@ export function NotesScreen() {
   const [submitOpen, setSubmitOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [openNotes, setOpenNotes] = useState(0);
-  const [noteCounts, setNoteCounts] = useState<Record<string, number>>({});
+  const [counts, setCounts] = useState<{ vehicleId: string | null; map: Record<string, number> } | null>(null);
   const [openItemId, setOpenItemId] = useState<string | null>(null);
   const [now, setNow] = useState(() => Date.now());
   const [editingNew, setEditingNew] = useState(false);
@@ -51,6 +54,10 @@ export function NotesScreen() {
   const teamId = profile?.teamId;
 
   const userId = user?.id;
+  // legacy notes (no vehicle_id) show under this vehicle only, see legacyNoteVehicleId
+  const legacyVehicleId = legacyNoteVehicleId(vehicles);
+  // undefined until the vehicles are loaded, null when the team has none
+  const feedVehicleId = ready ? (vehicle?.id ?? null) : undefined;
   const load = useCallback(async () => {
     if (!teamId || !userId) return;
     // Only the latest submission decides the shift state; the full history follows once the page is usable.
@@ -80,27 +87,36 @@ export function NotesScreen() {
   }, [authLoading, teamId, userId, load]);
 
   useEffect(() => {
-    if (!teamId) return;
+    if (!teamId || feedVehicleId === undefined) return;
     let live = true;
-    supabase
+    const q = supabase
       .from("notes")
       .select("item_id")
       .eq("team_id", teamId)
       .eq("is_resolved", false)
-      .is("deleted_at", null)
-      .then(({ data }) => {
-        if (!live) return;
-        const map: Record<string, number> = {};
-        for (const row of (data ?? []) as { item_id: string | null }[]) {
-          if (!row.item_id) continue;
-          map[row.item_id] = (map[row.item_id] ?? 0) + 1;
-        }
-        setNoteCounts(map);
-      });
+      .is("deleted_at", null);
+    // the checklist counts belong to the selected vehicle, like the feed
+    (feedVehicleId === null
+      ? q
+      : feedVehicleId === legacyVehicleId
+        ? q.or(`vehicle_id.eq.${feedVehicleId},vehicle_id.is.null`)
+        : q.eq("vehicle_id", feedVehicleId)
+    ).then(({ data }) => {
+      if (!live) return;
+      const map: Record<string, number> = {};
+      for (const row of (data ?? []) as { item_id: string | null }[]) {
+        if (!row.item_id) continue;
+        map[row.item_id] = (map[row.item_id] ?? 0) + 1;
+      }
+      setCounts({ vehicleId: feedVehicleId, map });
+    });
     return () => {
       live = false;
     };
-  }, [teamId, view, submitOpen]);
+  }, [teamId, view, submitOpen, feedVehicleId, legacyVehicleId]);
+
+  // counts of another vehicle are never shown
+  const noteCounts = counts && counts.vehicleId === feedVehicleId ? counts.map : NO_COUNTS;
 
   const latest = submissions[0] ?? null;
 
@@ -232,7 +248,13 @@ export function NotesScreen() {
 
       {card && <div className="protocol-pin">{card}</div>}
 
-      <Feed openItemId={openItemId} onOpenItemConsumed={consumeItem} onStats={onStats} />
+      <Feed
+        vehicleId={feedVehicleId}
+        legacyVehicleId={legacyVehicleId}
+        openItemId={openItemId}
+        onOpenItemConsumed={consumeItem}
+        onStats={onStats}
+      />
 
       {view === "check" && (
         <Checklist

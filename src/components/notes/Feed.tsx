@@ -15,6 +15,7 @@ import {
   type NoteCategory,
   type NoteComment,
 } from "@/lib/notes";
+import { createVehicleFeed, visibleFeed } from "@/lib/vehicleNotes.mjs";
 import { CategoryChips, type CategoryFilter } from "./CategoryChips";
 import { Composer } from "./Composer";
 import { dayLabel, rtime, shortAuthor } from "./format";
@@ -28,23 +29,41 @@ import { UndoToast, type ToastState } from "./UndoToast";
 
 const UNDO_MS = 5000;
 
+type FeedState = {
+  vehicleId: string | null | undefined;
+  notes: Note[];
+  comments: Record<string, NoteComment[]>;
+  loading: boolean;
+  error: string | null;
+};
+
 export function Feed({
   top,
   openItemId,
   onOpenItemConsumed,
   onStats,
+  vehicleId,
+  legacyVehicleId,
 }: {
+  /** undefined = the vehicle is not known yet (loading), null = the team has no vehicles (all notes) */
+  vehicleId?: string | null;
+  /** the vehicle that also shows legacy notes without vehicle_id */
+  legacyVehicleId?: string | null;
   top?: ReactNode;
   openItemId?: string | null;
   onOpenItemConsumed?: () => void;
   onStats?: (stats: { open: number }) => void;
 }) {
   const { user, profile } = useAuth();
-  const [notes, setNotes] = useState<Note[]>([]);
-  const [comments, setComments] = useState<Record<string, NoteComment[]>>({});
+  const [feed, setFeed] = useState<FeedState>({
+    vehicleId: undefined,
+    notes: [],
+    comments: {},
+    loading: true,
+    error: null,
+  });
+  const [store, setStore] = useState<ReturnType<typeof createVehicleFeed> | null>(null);
   const [itemOptions, setItemOptions] = useState<ItemOption[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [loadError, setLoadError] = useState<string | null>(null);
   const [segment, setSegment] = useState<Segment>("open");
   const [category, setCategory] = useState<CategoryFilter>("Alle");
   const [openId, setOpenId] = useState<string | null>(null);
@@ -63,22 +82,49 @@ export function Feed({
   const fullName = profile ? `${profile.firstName} ${profile.lastName}`.trim() : "";
   const items = useMemo(() => new Map(itemOptions.map((i) => [i.id, i])), [itemOptions]);
 
-  const reload = useCallback(async () => {
+  // never render another vehicle's rows: anything not loaded for the selected vehicle counts as empty
+  const { notes, comments, loading, error: loadError } = visibleFeed(feed, vehicleId);
+
+  const legacyRef = useRef(legacyVehicleId ?? null);
+  useEffect(() => {
+    legacyRef.current = legacyVehicleId ?? null;
+  }, [legacyVehicleId]);
+
+  useEffect(() => {
     if (!teamId) return;
-    const res = await loadNotes(teamId);
-    if (res.error) setLoadError(res.error);
-    else {
-      setLoadError(null);
-      setNotes(res.notes);
-      setComments(await loadCommentsFor(res.notes.map((n) => n.id)));
-    }
-    setLoading(false);
+    const s = createVehicleFeed({
+      legacyId: () => legacyRef.current,
+      onChange: setFeed,
+      fetchFor: async (vid: string | null) => {
+        const res = await loadNotes(teamId, vid ? { id: vid, includeLegacy: vid === legacyRef.current } : null);
+        if (res.error) return { notes: [], comments: {}, error: res.error };
+        return { notes: res.notes, comments: await loadCommentsFor(res.notes.map((n) => n.id)), error: null };
+      },
+    });
+    setStore(s);
+    return () => setStore(null);
   }, [teamId]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    void reload();
-  }, [reload]);
+    if (store && vehicleId !== undefined) void store.select(vehicleId);
+  }, [store, vehicleId]);
+
+  // switching vehicles starts from a clean view: open tab, all categories, nothing opened
+  const [shownFor, setShownFor] = useState(vehicleId);
+  if (shownFor !== vehicleId) {
+    setShownFor(vehicleId);
+    setSegment("open");
+    setCategory("Alle");
+    setOpenId(null);
+    setItemId(null);
+    setItemSeg("open");
+    setAsk(null);
+    setPickNote(null);
+  }
+
+  const reload = useCallback(async () => {
+    await store?.refresh();
+  }, [store]);
 
   useEffect(() => {
     if (!teamId) return;
@@ -121,8 +167,7 @@ export function Feed({
     toastTimer.current = setTimeout(() => setToast(null), UNDO_MS);
   }, []);
 
-  const patchNote = (id: string, p: Partial<Note>) =>
-    setNotes((ns) => ns.map((n) => (n.id === id ? { ...n, ...p } : n)));
+  const patchNote = (id: string, p: Partial<Note>) => store?.patch(id, p);
 
   const stopLinger = (id: string) => {
     clearTimeout(lingerTimers.current.get(id));
@@ -294,10 +339,12 @@ export function Feed({
         )}
       </div>
 
-      {teamId && user && (
+      {teamId && user && vehicleId !== undefined && (
         <Composer
           items={itemOptions}
           teamId={teamId}
+          vehicleId={vehicleId}
+          legacyVehicleId={legacyVehicleId ?? null}
           userId={user.id}
           authorName={fullName || "Unbekannt"}
           onHeight={setComposerH}
