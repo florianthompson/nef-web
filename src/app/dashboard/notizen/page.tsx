@@ -7,7 +7,6 @@ import {
   CheckCircleIcon,
   Trash2Icon,
   ClockIcon,
-  UserIcon,
 } from "lucide-react";
 
 type Note = {
@@ -54,21 +53,21 @@ export default function NotizenPage() {
 
     // Fetch vehicle names
     const vehicleIds = [
-      ...new Set((data ?? []).map((n: any) => n.vehicle_id).filter(Boolean)),
+      ...new Set(((data ?? []) as Note[]).map((n) => n.vehicle_id).filter(Boolean)),
     ];
 
-    let vehiclesMap = new Map();
+    let vehiclesMap = new Map<string, string>();
     if (vehicleIds.length > 0) {
       const { data: vehicles } = await supabase
         .from("vehicles")
         .select("id, name")
         .in("id", vehicleIds);
       vehiclesMap = new Map(
-        (vehicles ?? []).map((v: any) => [v.id, v.name])
+        (vehicles ?? []).map((v: { id: string; name: string }) => [v.id, v.name] as [string, string])
       );
     }
 
-    const allNotes: Note[] = (data ?? []).map((n: any) => {
+    const allNotes: Note[] = ((data ?? []) as Note[]).map((n) => {
       return {
         id: n.id,
         author_name:
@@ -83,7 +82,7 @@ export default function NotizenPage() {
         deleted_by: n.deleted_by ?? null,
         deleted_at: n.deleted_at ?? null,
         vehicle_id: n.vehicle_id,
-        vehicle_name: vehiclesMap.get(n.vehicle_id) ?? undefined,
+        vehicle_name: (n.vehicle_id ? vehiclesMap.get(n.vehicle_id) : undefined),
       };
     });
 
@@ -93,7 +92,8 @@ export default function NotizenPage() {
 
   useEffect(() => {
     if (authLoading || !profile) return;
-    setLoading(true);
+    // fetch on mount; loadNotes only sets state after the awaited query
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadNotes();
   }, [authLoading, profile, loadNotes]);
 
