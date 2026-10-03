@@ -1,0 +1,30 @@
+name: Proof
+
+on:
+  pull_request:
+
+jobs:
+  proof:
+    name: Proof validator
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Validator tests
+        run: node --test scripts/proof/*.test.mjs
+      - name: Validate changed proof.json files
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          files=$(git diff --name-only --diff-filter=AM "$BASE_SHA" "$HEAD_SHA" -- 'proof/**/proof.json' 'proof/*/proof.json')
+          if [ -z "$files" ]; then
+            echo "No proof.json changed in this pull request. Nothing to validate."
+            exit 0
+          fi
+          echo "$files"
+          echo "$files" | xargs node scripts/proof/validate.mjs
