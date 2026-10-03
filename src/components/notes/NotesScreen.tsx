@@ -199,7 +199,7 @@ export function NotesScreen() {
       <header className="fh">
         <h1>Notizen</h1>
         {vehicles.length > 0 && (
-          <div style={{ position: "relative" }}>
+          <div className="veh-wrap">
             <button type="button" className="veh" onClick={() => vehicles.length > 1 && setVehicleOpen((v) => !v)}>
               {vehicle?.name ?? "Fahrzeug"}
             </button>
