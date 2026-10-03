@@ -149,7 +149,7 @@ export default function PhoneDemo() {
             <SectionHeader
               icon={"\ud83d\ude97"}
               title="Fahrzeug"
-              count="8/8 \u2713"
+              count="8/8 ✓"
               countColor="var(--color-green)"
               barWidth="100%"
               barColor="var(--color-green)"
@@ -209,7 +209,7 @@ export default function PhoneDemo() {
             <SectionHeader
               icon={"\ud83d\udd12"}
               title="Betäubungsmittel"
-              count="3/3 \u2713"
+              count="3/3 ✓"
               countColor="var(--color-green)"
               barWidth="100%"
               barColor="var(--color-green)"
