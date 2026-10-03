@@ -1,4 +1,3 @@
-// canonical copy: bot-brain tools/proof, keep in sync
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
@@ -93,5 +92,38 @@ test('shopify-theme may omit pr and sha when repo is none', () => {
   const r = run((p) => { p.kind = 'shopify-theme'; p.repo = 'none'; p.pr = null; p.commitSha = null; });
   assert.deepEqual(r.errors, []);
 });
+
+test('proof.json without proofKind still requires desktop and 390 shots', () => {
+  const r = run();
+  assert.equal(r.ok, true);
+  assert.equal(Object.hasOwn(valid(), 'proofKind'), false);
+});
+
+test('proofKind non-ui validates with zero screenshots and a result', () => {
+  const r = run((p) => {
+    p.proofKind = 'non-ui';
+    p.result = 'node --test 8/8';
+    p.screenshots = [];
+    p.urls = { preview: null, live: null };
+  });
+  assert.deepEqual(r.errors, []);
+});
+
+rejects('unknown proofKind', (p) => { p.proofKind = 'both'; }, 'proofKind');
+rejects('non-ui without result', (p) => { p.proofKind = 'non-ui'; p.screenshots = []; }, 'non-empty result');
+rejects('non-ui without a link', (p) => {
+  p.proofKind = 'non-ui';
+  p.result = 'node --test 1/1';
+  p.screenshots = [];
+  p.pr = null;
+  p.urls = { preview: null, live: null };
+  p.kind = 'shopify-theme';
+}, 'pr.url, urls.preview or urls.live');
+rejects('non-ui check must still exit 0', (p) => {
+  p.proofKind = 'non-ui';
+  p.result = 'node --test 1/1';
+  p.screenshots = [];
+  p.checks[0].exitCode = 1;
+}, 'exitCode 1');
 
 test.after(() => rmSync(root, { recursive: true, force: true }));

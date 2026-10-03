@@ -1,10 +1,10 @@
 #!/usr/bin/env node
-// canonical copy: bot-brain tools/proof, keep in sync
 // Zero-dependency validator for proof.json (schemaVersion 1). Node 22+, ESM.
 // Usage: node validate.mjs <proof.json>...   (exit 1 with messages on failure)
 import { readFileSync, existsSync, statSync, openSync, readSync, closeSync } from 'node:fs';
 import { dirname, resolve, relative, isAbsolute, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { changedFilesBetween, formatStale, staleFindings } from './stale.mjs';
 
 const SCHEMA_PATH = resolve(dirname(fileURLToPath(import.meta.url)), 'proof.schema.json');
 const ISO_DATE_TIME = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:\d{2})$/;
@@ -85,15 +85,25 @@ export function validateProof(obj, { baseDir = process.cwd(), checkFiles = false
   if (obj.commitSha === null && !(shopify && obj.repo === 'none')) {
     errors.push('commitSha: may only be null for kind shopify-theme with repo "none"');
   }
-  if (obj.urls && typeOf(obj.urls) === 'object' && !obj.urls.preview && !obj.urls.live) {
-    errors.push('urls: at least one of preview or live must be set');
+  const proofKind = obj.proofKind ?? 'ui';
+  if (obj.urls && typeOf(obj.urls) === 'object') {
+    const hasPreview = Boolean(obj.urls.preview) || Boolean(obj.urls.live);
+    const hasPr = Boolean(obj.pr && obj.pr.url);
+    if (proofKind === 'non-ui') {
+      if (!hasPreview && !hasPr) errors.push('non-ui: at least one of pr.url, urls.preview or urls.live must be set');
+    } else if (!hasPreview) {
+      errors.push('urls: at least one of preview or live must be set');
+    }
+  }
+  if (proofKind === 'non-ui' && (typeof obj.result !== 'string' || !obj.result.trim())) {
+    errors.push('result: non-ui proof needs a non-empty result');
   }
   if (obj.pr && obj.pr.merged !== undefined && obj.pr.merged !== (obj.pr.state === 'MERGED')) {
     errors.push('pr.merged: must be true exactly when pr.state is MERGED');
   }
 
   const shots = Array.isArray(obj.screenshots) ? obj.screenshots : [];
-  if (Array.isArray(obj.screenshots)) {
+  if (Array.isArray(obj.screenshots) && proofKind !== 'non-ui') {
     if (!shots.some((s) => s?.viewport === 'desktop')) errors.push('screenshots: at least one desktop screenshot is required');
     if (!shots.some((s) => s?.viewport === 'mobile390')) errors.push('screenshots: at least one mobile390 screenshot is required (390px wide viewport)');
   }
@@ -147,9 +157,44 @@ export function validateProof(obj, { baseDir = process.cwd(), checkFiles = false
   return { ok: errors.length === 0, errors };
 }
 
-function main(files) {
-  if (files.length === 0) {
-    console.error('usage: node validate.mjs <proof.json>...');
+/** Stale check for CI: local git diff from proof.commitSha to headSha. */
+export function staleErrors(obj, headSha, cwd) {
+  if (obj?.commitSha == null && obj?.kind === 'shopify-theme' && obj?.repo === 'none') {
+    const skipped = staleFindings({ proof: obj, headSha, changedFiles: [] });
+    return skipped.error ? [skipped.error] : [];
+  }
+  if (obj?.commitSha && headSha && obj.commitSha === headSha) {
+    return [];
+  }
+  if (!obj?.commitSha) {
+    const findings = staleFindings({ proof: obj ?? {}, headSha, changedFiles: [] });
+    return [findings.error ?? 'stale proof: commitSha is null'];
+  }
+  const diff = changedFilesBetween(obj.commitSha, headSha, cwd);
+  if (diff.error) return [diff.error];
+  const findings = staleFindings({ proof: obj, headSha, changedFiles: diff.files });
+  const message = formatStale({ proof: obj, headSha, findings });
+  return message ? [message] : [];
+}
+
+function parseCli(argv) {
+  const files = [];
+  let head = null;
+  for (let i = 0; i < argv.length; i++) {
+    if (argv[i] === '--head') {
+      head = argv[i + 1] ?? '';
+      i++;
+      continue;
+    }
+    files.push(argv[i]);
+  }
+  return { files, head };
+}
+
+function main(argv) {
+  const { files, head } = parseCli(argv);
+  if (files.length === 0 || (argv.includes('--head') && !head)) {
+    console.error('usage: node validate.mjs [--head <sha>] <proof.json>...');
     return 2;
   }
   let bad = 0;
@@ -162,12 +207,15 @@ function main(files) {
       bad++;
       continue;
     }
-    const { ok, errors } = validateProof(obj, { baseDir: dirname(resolve(f)), checkFiles: true });
-    if (ok) console.log(`ok   ${f}`);
+    const baseDir = dirname(resolve(f));
+    const { ok, errors } = validateProof(obj, { baseDir, checkFiles: true });
+    const stale = head ? staleErrors(obj, head, baseDir) : [];
+    if (ok && stale.length === 0) console.log(`ok   ${f}`);
     else {
       bad++;
       console.error(`FAIL ${f}`);
       for (const e of errors) console.error(`  - ${e}`);
+      for (const e of stale) console.error(`  - ${e}`);
     }
   }
   return bad ? 1 : 0;
