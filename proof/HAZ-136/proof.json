@@ -4,7 +4,7 @@
  "repo": "florianthompson/nef-web",
  "kind": "nef-web",
  "branch": "florian/haz-136-nef-protokoll-page-loads-in-8-to-10-seconds-speed-it-up",
- "commitSha": "2c6c63288767802786a39216ceacf131798a366a",
+ "commitSha": "f06efb1783deaadaeac1af2551073d95e332ec25",
  "pr": {
   "url": "https://github.com/florianthompson/nef-web/pull/12",
   "number": 12,
@@ -14,7 +14,7 @@
   "mergedAt": null
  },
  "urls": {
-  "preview": "https://nef-web-git-florian-3f7820-florian-thompsons-projects-c1c41a9c.vercel.app",
+  "preview": "https://nef-rbsyadrij-florian-thompsons-projects-c1c41a9c.vercel.app",
   "live": null
  },
  "screenshots": [
@@ -91,6 +91,6 @@
  "console": {
   "errors": []
  },
- "createdAt": "2026-10-03T17:00:00+02:00",
+ "createdAt": "2026-10-03T14:12:48Z",
  "createdBy": "Claude Code (box)"
 }
