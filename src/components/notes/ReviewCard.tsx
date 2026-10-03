@@ -58,23 +58,19 @@ function DueSheet({
       open={open}
       onClose={onClose}
       title="Termin"
-      z={70}
+      z={3}
       footer={
         <div className="flex flex-col gap-2">
           <button
             type="button"
+            className="btn btn-p"
             disabled={!date}
             onClick={() => onSet(time ? `${date}T${time}` : date)}
-            className="min-h-11 w-full rounded-[10px] bg-zinc-100 font-semibold text-zinc-900 disabled:opacity-40"
           >
             Übernehmen
           </button>
           {initial && (
-            <button
-              type="button"
-              onClick={() => onSet(null)}
-              className="min-h-11 w-full rounded-[10px] bg-zinc-800 font-medium text-zinc-200"
-            >
+            <button type="button" className="btn btn-s" onClick={() => onSet(null)}>
               Termin entfernen
             </button>
           )}
@@ -137,10 +133,7 @@ export function ReviewCard({
   const duePart = parts.find((p) => p.key === dueFor);
 
   return (
-    <section
-      aria-label="Prüfen"
-      className="flex max-h-[74dvh] shrink-0 flex-col rounded-t-[14px] border border-b-0 border-border bg-surface shadow-[0_-8px_24px_rgba(0,0,0,0.35)]"
-    >
+    <section aria-label="Prüfen" className="tray show">
       <div className="flex min-h-[52px] shrink-0 items-center pr-1 pl-4">
         <b className="text-[17px] font-semibold">Prüfen</b>
         <button
@@ -276,24 +269,11 @@ export function ReviewCard({
         )}
       </div>
 
-      <div
-        className="flex shrink-0 flex-col gap-0.5 border-t border-border px-4 pt-2"
-        style={{ paddingBottom: "calc(max(12px, env(safe-area-inset-bottom)) + 8px)" }}
-      >
-        <button
-          type="button"
-          onClick={onSend}
-          disabled={!valid || sending}
-          className="h-[50px] w-full rounded-xl bg-zinc-100 text-[17px] font-semibold text-zinc-900 active:scale-[0.98] disabled:opacity-40"
-        >
+      <div className="tr-f">
+        <button type="button" className="btn btn-p" onClick={onSend} disabled={!valid || sending}>
           {multi ? `Senden (${valid})` : "Senden"}
         </button>
-        <button
-          type="button"
-          onClick={onSendRaw}
-          disabled={sending}
-          className="min-h-11 self-center px-3 text-[13px] text-zinc-500 underline underline-offset-4 active:text-zinc-100"
-        >
+        <button type="button" className="tr-raw" onClick={onSendRaw} disabled={sending}>
           Ohne Zuordnung senden
         </button>
       </div>

@@ -88,7 +88,7 @@ export function ItemPicker({
       }}
       title="Zuordnung wählen"
       tall
-      z={60}
+      z={3}
     >
       <div className="mx-4 mb-2 flex h-11 items-center gap-2 rounded-[10px] border border-border bg-surface px-3 text-zinc-500">
         <SearchIcon className="h-4 w-4 shrink-0" />

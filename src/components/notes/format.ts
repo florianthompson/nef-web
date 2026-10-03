@@ -15,14 +15,47 @@ export function parseLocal(s: string): Date {
   return new Date(y, m - 1, day, h, min);
 }
 
+export const dm = (d: Date) => `${p2(d.getDate())}.${p2(d.getMonth() + 1)}.`;
+
+export function shortAuthor(name: string): string {
+  const p = name.trim().split(/\s+/).filter(Boolean);
+  if (p.length > 1) return `${p[0]} ${p[p.length - 1][0]}.`;
+  return name.trim();
+}
+
 export function dayLabel(iso: string): string {
   const d = new Date(iso);
   const diff = dayDiff(d);
   if (diff === 0) return "Heute";
   if (diff === -1) return "Gestern";
-  return `${WD[d.getDay()]}, ${d.getDate()}.${d.getMonth() + 1}.${
-    d.getFullYear() !== new Date().getFullYear() ? d.getFullYear() : ""
-  }`;
+  return `${WD[d.getDay()]}, ${dm(d)}`;
+}
+
+/** Feed row time: "jetzt" in the first minute, otherwise HH:MM. */
+export function timeMeta(iso: string): string {
+  const d = new Date(iso);
+  if (Date.now() - d.getTime() < 60000) return "jetzt";
+  return hm(d);
+}
+
+/** Detail and reply time. Today stays short, older days get the date. */
+export function rtime(iso: string): string {
+  const d = new Date(iso);
+  if (d.toDateString() === new Date().toDateString()) return timeMeta(iso);
+  return `${dm(d)} ${hm(d)}`;
+}
+
+export function closedMeta(by: string | null, at: string | null): string {
+  const who = by?.trim() || "-";
+  if (!at) return `Erledigt von ${who}`;
+  const d = new Date(at);
+  const when = d.toDateString() === new Date().toDateString() ? `heute ${hm(d)}` : dm(d);
+  return `Erledigt von ${who} · ${when}`;
+}
+
+export function sameLocalDay(iso: string, now = new Date()): boolean {
+  const d = new Date(iso);
+  return d.toDateString() === now.toDateString();
 }
 
 export function dateTime(iso: string): string {

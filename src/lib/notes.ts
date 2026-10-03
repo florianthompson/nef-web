@@ -146,6 +146,65 @@ export async function loadComments(noteId: string): Promise<NoteComment[]> {
   return (data ?? []) as NoteComment[];
 }
 
+/** Replies for the visible notes, keyed by note id. Empty when the table cannot be read. */
+export async function loadCommentsFor(
+  noteIds: string[]
+): Promise<Record<string, NoteComment[]>> {
+  if (!noteIds.length) return {};
+  const { data, error } = await supabase
+    .from("note_comments")
+    .select("id, note_id, author_name, value, created_at")
+    .in("note_id", noteIds)
+    .order("created_at", { ascending: true });
+  if (error || !data) return {};
+  const map: Record<string, NoteComment[]> = {};
+  for (const row of data as {
+    id: string;
+    note_id: string;
+    author_name: string;
+    value: string;
+    created_at: string;
+  }[]) {
+    (map[row.note_id] ??= []).push({
+      id: row.id,
+      author_name: row.author_name,
+      value: row.value,
+      created_at: row.created_at,
+    });
+  }
+  return map;
+}
+
+export async function addComment(
+  noteId: string,
+  authorName: string,
+  value: string
+): Promise<boolean> {
+  const { error } = await supabase.from("note_comments").insert({
+    note_id: noteId,
+    author_name: authorName,
+    value: value.trim(),
+  });
+  return !error;
+}
+
+export async function updateNoteValue(id: string, value: string): Promise<boolean> {
+  const { error } = await supabase.from("notes").update({ value: value.trim() }).eq("id", id);
+  return !error;
+}
+
+export async function assignNote(
+  id: string,
+  itemId: string | null,
+  category: string
+): Promise<boolean> {
+  const { error } = await supabase
+    .from("notes")
+    .update({ item_id: itemId, category })
+    .eq("id", id);
+  return !error;
+}
+
 function categoryOf(title: string): NoteCategory {
   const t = title.toLowerCase();
   if (t.startsWith("betäubung") || t === "btm") return "BTM";

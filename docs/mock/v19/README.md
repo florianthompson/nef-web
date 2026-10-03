@@ -4,4 +4,4 @@
 - Warning: the `index.v19.html` on that repo's `main` (and the box copy at /tmp/audit/nef-notes-mock) is byte-identical to v18. Do not use it.
 - `data.json` is the mock's demo data. The app must use real Supabase data, not this file.
 - Open locally: `npx serve docs/mock/v19` then `/index.v19.html`. The mock frames itself at max 390px wide on desktop.
-- Shots: `shots/mock-v19-desktop-1440.png` (1440x900), `shots/mock-v19-mobile-390.png` (390x844 @2x), `shots/mock-v19-mobile-390-scrolled.png` (feed scrolled 600px: in the mock the Schichtprotokoll card scrolls away; HAZ-138 pins it until the protocol is complete).
+- Shots: `shots/mock-v19-desktop-1440.png` (1440x900), `shots/mock-v19-mobile-390.png` (390x844 @2x), `shots/mock-v19-mobile-390-scrolled.png` (feed scrolled 600px: in the mock the Schichtprotokoll card scrolls away). HAZ-138 keeps that bar pinned in both states. The done state shows Bereits abgeschlossen and resets 12 hours after the latest submission.
