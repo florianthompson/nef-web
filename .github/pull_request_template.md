@@ -28,7 +28,7 @@ Proof kind: non-ui
 
 Backend, tooling, or tests. A Result line and at least one link (the PR, a CI run, a preview, or a live URL). No screenshots of test output, a terminal, or code. A diagram is fine.
 
-- Result: <what the checks printed, for example node --test 36/36>
+Result: <what the checks printed, for example node --test 36/36>
 - PR: paste-https-pull-url
 - CI run: paste-https-actions-run-url
 - Preview or live: paste-https-url
