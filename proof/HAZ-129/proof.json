@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "ticket": "HAZ-129",
+  "repo": "florianthompson/nef-web",
+  "kind": "nef-web",
+  "branch": "haz-129-pr-template",
+  "commitSha": "2647d1ffc485d06f9a8aa389c58c92b9bf680160",
+  "pr": {
+    "url": "https://github.com/florianthompson/nef-web/pull/9",
+    "number": 9,
+    "state": "OPEN",
+    "isDraft": true,
+    "merged": false,
+    "mergedAt": null
+  },
+  "urls": {
+    "preview": "https://nef-n8q7bu7m3-florian-thompsons-projects-c1c41a9c.vercel.app",
+    "live": null
+  },
+  "screenshots": [
+    {
+      "path": "desktop-home.png",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 3122,
+      "deviceScaleFactor": 1,
+      "route": "/"
+    },
+    {
+      "path": "mobile390-home.png",
+      "viewport": "mobile390",
+      "width": 780,
+      "height": 8146,
+      "deviceScaleFactor": 2,
+      "route": "/"
+    }
+  ],
+  "checks": [
+    {
+      "name": "validator and PR body tests",
+      "command": "node --test scripts/proof/*.test.mjs",
+      "exitCode": 0,
+      "durationMs": 534,
+      "summary": "# Subtest: shopify-theme may omit pr and sha when repo is none\nok 47 - shopify-theme may omit pr and sha when repo is none\n  ---\n  duration_ms: 0.329364\n  type: 'test'\n  ...\n1..47\n# tests 47\n# suites 0\n# pass 46\n# fail 0\n# cancelled 0\n# skipped 1\n# todo 0\n# duration_ms 491.034909"
+    },
+    {
+      "name": "PR body check on this PR's live description",
+      "command": "gh pr view haz-129-pr-template --json body --jq .body | node scripts/proof/pr_body.mjs",
+      "exitCode": 0,
+      "durationMs": 795,
+      "summary": "PR BODY PROOF: PASS\n  desktop: yes\n  390px: yes\n  output: no\n  preview: https://nef-n8q7bu7m3-florian-thompsons-projects-c1c41a9c.vercel.app/"
+    },
+    {
+      "name": "PR body check on the unfilled template fails",
+      "command": "! node scripts/proof/pr_body.mjs --body-file .github/pull_request_template.md",
+      "exitCode": 0,
+      "durationMs": 41,
+      "summary": "PR BODY PROOF: FAIL\n  FAIL  missing a desktop screenshot: a markdown image, img tag, or link whose alt text or file name contains \"desktop\"\n  FAIL  missing a 390px screenshot: a markdown image, img tag, or link whose alt text or file name contains \"390\"\n  FAIL  For work with no visual, one screenshot whose alt text or file name contains \"output\" also counts\n  FAIL  missing a clickable preview URL: an http or https link that is not one of the screenshots"
+    }
+  ],
+  "console": {
+    "errors": []
+  },
+  "createdAt": "2026-10-03T13:06:45+02:00",
+  "createdBy": "Dev (Grok Bot)"
+}
