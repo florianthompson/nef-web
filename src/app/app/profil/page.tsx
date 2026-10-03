@@ -21,7 +21,13 @@ export default function ProfilPage() {
   useEffect(() => {
     if (authLoading || !user) return;
 
+    let cancelled = false;
+
     async function load() {
+      // Skip the fetch once the session is gone (logout in progress).
+      const { data: session } = await supabase.auth.getSession();
+      if (cancelled || !session.session) return;
+
       const { data } = await supabase
         .from("user_protocols")
         .select("id, created_at, vehicle_id")
@@ -50,10 +56,13 @@ export default function ProfilPage() {
           vehicle_name: vehiclesMap.get(d.vehicle_id) ?? null,
         }))
       );
-      setLoadingHistory(false);
+      if (!cancelled) setLoadingHistory(false);
     }
 
     load();
+    return () => {
+      cancelled = true;
+    };
   }, [authLoading, user]);
 
   return (

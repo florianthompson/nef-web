@@ -1,0 +1,162 @@
+{
+  "schemaVersion": 1,
+  "ticket": "HAZ-140",
+  "repo": "florianthompson/nef-web",
+  "kind": "nef-web",
+  "branch": "haz-140-nef-e2e-test",
+  "commitSha": "0259a4d3c09e9091a318a739dc90bf0b82dac8fe",
+  "pr": {
+    "url": "https://github.com/florianthompson/nef-web/pull/11",
+    "number": 11,
+    "state": "OPEN",
+    "isDraft": true,
+    "merged": false,
+    "mergedAt": null
+  },
+  "urls": {
+    "preview": "https://nef-web-git-haz-140-447cf1-florian-thompsons-projects-c1c41a9c.vercel.app",
+    "live": null
+  },
+  "screenshots": [
+    {
+      "path": "390-b08-member-dashboard-team.png",
+      "viewport": "mobile390",
+      "width": 780,
+      "height": 1688,
+      "deviceScaleFactor": 2,
+      "route": "/dashboard/team"
+    },
+    {
+      "path": "390-b09-delete-confirm.png",
+      "viewport": "mobile390",
+      "width": 780,
+      "height": 1688,
+      "deviceScaleFactor": 2,
+      "route": "/dashboard/notizen"
+    },
+    {
+      "path": "390-b09-delete-error.png",
+      "viewport": "mobile390",
+      "width": 780,
+      "height": 1688,
+      "deviceScaleFactor": 2,
+      "route": "/dashboard/notizen"
+    },
+    {
+      "path": "390-b10-notizen-tabs-clamp.png",
+      "viewport": "mobile390",
+      "width": 780,
+      "height": 1688,
+      "deviceScaleFactor": 2,
+      "route": "/dashboard/notizen"
+    },
+    {
+      "path": "390-b13-login-wrong-password.png",
+      "viewport": "mobile390",
+      "width": 780,
+      "height": 1688,
+      "deviceScaleFactor": 2,
+      "route": "/login"
+    },
+    {
+      "path": "390-b14-offline.png",
+      "viewport": "mobile390",
+      "width": 780,
+      "height": 1688,
+      "deviceScaleFactor": 2,
+      "route": "/login (offline)"
+    },
+    {
+      "path": "desktop-b08-member-dashboard-team.png",
+      "viewport": "desktop",
+      "width": 2880,
+      "height": 1800,
+      "deviceScaleFactor": 2,
+      "route": "/dashboard/team"
+    },
+    {
+      "path": "desktop-b09-delete-confirm.png",
+      "viewport": "desktop",
+      "width": 2880,
+      "height": 1800,
+      "deviceScaleFactor": 2,
+      "route": "/dashboard/notizen"
+    },
+    {
+      "path": "desktop-b09-delete-error.png",
+      "viewport": "desktop",
+      "width": 2880,
+      "height": 1800,
+      "deviceScaleFactor": 2,
+      "route": "/dashboard/notizen"
+    },
+    {
+      "path": "desktop-b10-notizen-tabs-clamp.png",
+      "viewport": "desktop",
+      "width": 2880,
+      "height": 1800,
+      "deviceScaleFactor": 2,
+      "route": "/dashboard/notizen"
+    },
+    {
+      "path": "desktop-b13-login-wrong-password.png",
+      "viewport": "desktop",
+      "width": 2880,
+      "height": 1800,
+      "deviceScaleFactor": 2,
+      "route": "/login"
+    },
+    {
+      "path": "desktop-b14-offline.png",
+      "viewport": "desktop",
+      "width": 2880,
+      "height": 1800,
+      "deviceScaleFactor": 2,
+      "route": "/login (offline)"
+    },
+    {
+      "path": "desktop-b12-admin-team-name.png",
+      "viewport": "desktop",
+      "width": 2880,
+      "height": 1800,
+      "deviceScaleFactor": 2,
+      "route": "/dashboard/team (admin)"
+    },
+    {
+      "path": "390-b12-admin-team-name.png",
+      "viewport": "mobile390",
+      "width": 780,
+      "height": 1688,
+      "deviceScaleFactor": 2,
+      "route": "/dashboard/team (admin)"
+    }
+  ],
+  "checks": [
+    {
+      "name": "unit tests (npm test)",
+      "command": "npm test",
+      "exitCode": 0,
+      "durationMs": 1000,
+      "summary": "_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:2252017) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)"
+    },
+    {
+      "name": "validator and PR body tests",
+      "command": "node --test scripts/proof/*.test.mjs",
+      "exitCode": 0,
+      "durationMs": 1000,
+      "summary": "283703\n  type: 'test'\n  ...\n1..47\n# tests 47\n# suites 0\n# pass 46\n# fail 0\n# cancelled 0\n# skipped 1\n# todo 0\n# duration_ms 507.180039\n(node:2252087) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)"
+    },
+    {
+      "name": "no dashes",
+      "command": "node scripts/check-no-dashes.mjs",
+      "exitCode": 0,
+      "durationMs": 1000,
+      "summary": "check:dashes: no em dash (U+2014) or en dash (U+2013) in UI source\n(node:2252142) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)"
+    }
+  ],
+  "console": {
+    "errors": []
+  },
+  "createdAt": "2026-10-03T15:10:00+02:00",
+  "createdBy": "Claude Code"
+}

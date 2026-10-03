@@ -47,10 +47,10 @@ export default function SubmissionDetailPage() {
         .from("user_protocols")
         .select("id, created_at, vehicle_id, user_id")
         .eq("id", id)
-        .single();
+        .maybeSingle();
 
       if (upErr || !up) {
-        console.error("Error fetching submission:", upErr);
+        if (upErr) console.error("Error fetching submission:", upErr);
         setLoading(false);
         return;
       }
@@ -81,11 +81,14 @@ export default function SubmissionDetailPage() {
       }
 
       const catIds = (cats ?? []).map((c: any) => c.id);
-      const { data: allItems, error: itemsErr } = await supabase
-        .from("user_protocol_items")
-        .select("*")
-        .in("user_protocol_category_id", catIds.length > 0 ? catIds : ["__none__"])
-        .order("position");
+      const { data: allItems, error: itemsErr } =
+        catIds.length > 0
+          ? await supabase
+              .from("user_protocol_items")
+              .select("*")
+              .in("user_protocol_category_id", catIds)
+              .order("position")
+          : { data: [], error: null };
 
       if (itemsErr) {
         setLoading(false);

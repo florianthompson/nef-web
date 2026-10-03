@@ -410,9 +410,13 @@ export default function AppHomePage() {
     setShowConfirm(false);
 
     try {
+      const { data: sessionData } = await supabase.auth.getSession();
       const res = await fetch("/api/submit-protocol", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${sessionData.session?.access_token ?? ""}`,
+        },
         body: JSON.stringify({
           protocolId: protocol.id,
           userId: user.id,

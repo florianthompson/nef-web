@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { AuthProvider, useAuth } from "@/lib/auth";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import {
@@ -124,6 +125,31 @@ function DashboardSidebar() {
   );
 }
 
+const ADMIN_ONLY_ROUTES = ["/dashboard/alle", "/dashboard/team"];
+
+// Members are sent back to /dashboard when they open an admin-only route by URL.
+function AdminRouteGuard({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  const router = useRouter();
+  const { profile, loading } = useAuth();
+
+  const adminOnly = ADMIN_ONLY_ROUTES.some(
+    (r) => pathname === r || pathname.startsWith(`${r}/`)
+  );
+  const denied = adminOnly && !loading && !!profile && profile.role !== "admin";
+
+  useEffect(() => {
+    if (denied) router.replace("/dashboard");
+  }, [denied, router]);
+
+  if (adminOnly && (loading || !profile || denied)) {
+    return denied ? (
+      <p className="text-text-muted">Keine Berechtigung.</p>
+    ) : null;
+  }
+  return <>{children}</>;
+}
+
 function DashboardShell({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
@@ -134,7 +160,7 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
         </header>
         <main className="flex-1 overflow-y-auto overflow-x-hidden overscroll-none">
           <div className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6">
-            {children}
+            <AdminRouteGuard>{children}</AdminRouteGuard>
           </div>
         </main>
       </SidebarInset>

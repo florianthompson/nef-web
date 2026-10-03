@@ -38,12 +38,17 @@ export default function AlleProtokollePage() {
         .eq("team_id", profile!.teamId);
 
       const teamUserIds = (teamMembers ?? []).map((m: any) => m.id);
+      if (teamUserIds.length === 0) {
+        setSubmissions([]);
+        setLoading(false);
+        return;
+      }
 
       // Fetch all team submissions
       const { data: protocols, error } = await supabase
         .from("user_protocols")
         .select("id, created_at, vehicle_id, user_id")
-        .in("user_id", teamUserIds.length > 0 ? teamUserIds : ["__none__"])
+        .in("user_id", teamUserIds)
         .order("created_at", { ascending: false });
 
       if (error) {
@@ -63,19 +68,22 @@ export default function AlleProtokollePage() {
         ),
       ];
 
-      const { data: usersData } = await supabase
-        .from("users")
-        .select("id, first_name, last_name")
-        .in("id", userIds.length > 0 ? userIds : ["__none__"]);
+      const { data: usersData } =
+        userIds.length > 0
+          ? await supabase
+              .from("users")
+              .select("id, first_name, last_name")
+              .in("id", userIds)
+          : { data: [] };
 
       const usersMap = new Map(
         (usersData ?? []).map((u: any) => [u.id, u])
       );
 
-      const { data: vehiclesData } = await supabase
-        .from("vehicles")
-        .select("id, name")
-        .in("id", vehicleIds.length > 0 ? vehicleIds : ["__none__"]);
+      const { data: vehiclesData } =
+        vehicleIds.length > 0
+          ? await supabase.from("vehicles").select("id, name").in("id", vehicleIds)
+          : { data: [] };
 
       const vehiclesMap = new Map(
         (vehiclesData ?? []).map((v: any) => [v.id, v])
