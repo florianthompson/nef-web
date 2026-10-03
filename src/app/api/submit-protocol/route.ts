@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextRequest, NextResponse } from "next/server";
+import { authorizeSubmit } from "@/lib/server/submitAuth.mjs";
 
 function getSupabaseAdmin() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -31,7 +32,16 @@ export async function POST(req: NextRequest) {
   try {
     const supabaseAdmin = getSupabaseAdmin();
     const body = await req.json();
-    const { protocolId, userId, vehicleId, categories, shiftNote, teamId, authorName } = body;
+    const { protocolId, vehicleId, categories, shiftNote } = body;
+
+    const header = req.headers.get("authorization") ?? "";
+    const token = header.startsWith("Bearer ") ? header.slice(7).trim() : "";
+    const auth = await authorizeSubmit(supabaseAdmin, token, { protocolId, vehicleId });
+    if (!auth.ok) {
+      return NextResponse.json({ error: auth.error }, { status: auth.status });
+    }
+    // Identity comes from the verified token, never from the body.
+    const { userId, teamId, firstName: authorName } = auth;
 
     // 1. Create user_protocol
     const { data: up, error: upErr } = await supabaseAdmin
