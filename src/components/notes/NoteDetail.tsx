@@ -68,7 +68,7 @@ export function NoteDetail({
           {note.is_resolved ? (
             <div className="flex items-center justify-between gap-3 text-[13px] text-zinc-400">
               <span>
-                Erledigt von {note.resolved_by ?? "—"}
+                Erledigt von {note.resolved_by ?? "-"}
                 {note.resolved_at ? ` · ${dateTime(note.resolved_at)}` : ""}
               </span>
               <button

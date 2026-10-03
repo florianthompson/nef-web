@@ -105,7 +105,7 @@ export function Feed() {
     const prev = { is_resolved: false, resolved_by: null, resolved_at: null };
     patchNote(note.id, {
       is_resolved: true,
-      resolved_by: fullName || "—",
+      resolved_by: fullName || "-",
       resolved_at: new Date().toISOString(),
     });
     setLingering((s) => new Set(s).add(note.id));
@@ -113,7 +113,7 @@ export function Feed() {
       note.id,
       setTimeout(() => stopLinger(note.id), UNDO_MS)
     );
-    const ok = await resolveNote(note.id, fullName || "—");
+    const ok = await resolveNote(note.id, fullName || "-");
     if (!ok) {
       patchNote(note.id, prev);
       stopLinger(note.id);

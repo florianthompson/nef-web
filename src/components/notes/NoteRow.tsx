@@ -76,7 +76,7 @@ export function NoteRow({
   const time = hm(new Date(note.created_at));
   const meta =
     segment === "done" && note.resolved_at
-      ? `Erledigt von ${note.resolved_by ?? "—"} · ${dateTime(note.resolved_at)}`
+      ? `Erledigt von ${note.resolved_by ?? "-"} · ${dateTime(note.resolved_at)}`
       : `${note.author_name} · ${time}${note.vehicle_name ? ` · ${note.vehicle_name}` : ""}`;
   return (
     <div className={`relative flex items-stretch transition-opacity ${done ? "opacity-60" : ""}`}>
