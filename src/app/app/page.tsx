@@ -473,7 +473,7 @@ export default function AppHomePage() {
         </div>
         <h1 className="mb-2 text-xl font-bold">Protokoll übermittelt</h1>
         <p className="mb-1 text-sm text-text-muted">
-          {selectedVehicle?.name} — {new Date().toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" })}
+          {selectedVehicle?.name}, {new Date().toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" })}
         </p>
         <p className="mb-6 font-mono text-sm">
           <span className="text-green">{checkedItems} geprüft</span>
@@ -514,7 +514,7 @@ export default function AppHomePage() {
         <div className="mb-6 rounded-lg border border-border bg-surface2 px-4 py-3">
           <div className="flex items-start gap-2">
             <span className="flex-1 text-xs text-text-muted">
-              Fortsetzung — dein bisheriger Fortschritt wurde wiederhergestellt.
+              Fortsetzung. Dein bisheriger Fortschritt wurde wiederhergestellt.
             </span>
             <button
               onClick={() => setDraftRestored(false)}

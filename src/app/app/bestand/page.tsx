@@ -251,7 +251,7 @@ export default function BestandPage() {
 
       {/* All medications, A–Z */}
       <p className="mb-1.5 px-0.5 font-mono text-[9.5px] uppercase tracking-[0.12em] text-text-muted">
-        Alle Medikamente · A–Z
+        Alle Medikamente · A bis Z
       </p>
       <div className="space-y-1.5">
         {filtered.map((m) => (
@@ -427,7 +427,7 @@ function EditSheet({
             {currentDate ? (
               <>Bisheriges MHD <b>{formatDate(currentDate)}</b></>
             ) : (
-              <>Kein MHD hinterlegt — wird als Ersteintrag protokolliert.</>
+              <>Kein MHD hinterlegt. Wird als Ersteintrag protokolliert.</>
             )}
           </div>
 

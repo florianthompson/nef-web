@@ -1,0 +1,36 @@
+HAZ-126 before: user-visible em dash (U+2014) and en dash (U+2013)
+UI occurrences: 29
+U+2014 em dash: 20
+U+2013 en dash: 9
+Comments, docs, and other non-rendering lines are omitted.
+Format: file:line: kind: text
+
+src/app/app/bestand/page.tsx:254: U+2013: Alle Medikamente · A–Z
+src/app/app/bestand/page.tsx:430: U+2014: <>Kein MHD hinterlegt — wird als Ersteintrag protokolliert.</>
+src/app/app/page.tsx:476: U+2014: {selectedVehicle?.name} — {new Date().toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" })}
+src/app/app/page.tsx:517: U+2014: Fortsetzung — dein bisheriger Fortschritt wurde wiederhergestellt.
+src/app/app/profil/page.tsx:123: U+2013: {p.vehicle_name ?? "–"}
+src/app/app/verlauf/page.tsx:81: U+2013: {p.vehicle_name ?? "–"}
+src/app/dashboard/[id]/page.tsx:118: U+2013: user_first_name: userData?.first_name ?? "–",
+src/app/dashboard/[id]/page.tsx:159: U+2013: <InfoCard label="Fahrzeug" value={detail.vehicle_name ?? "–"} />
+src/app/dashboard/alle/page.tsx:91: U+2013: user_first_name: u?.first_name ?? "–",
+src/app/dashboard/page.tsx:66: U+2013: user_first_name: me?.first_name ?? "–",
+src/app/dashboard/page.tsx:126: U+2013: {s.vehicle_name ?? "–"}
+src/app/dashboard/page.tsx:164: U+2013: {s.vehicle_name ?? "–"}
+src/app/layout.tsx:31: U+2014: title: "NEF Protokoll — Digitale Schichtübergabe für Rettungsdienste",
+src/app/layout.tsx:33: U+2014: "Das digitale Übergabeprotokoll für Rettungsdienste. Fahrzeuge, Medikamente und Ausrüstung — alles geprüft, dokumentiert und in Echtzeit synchronisiert.",
+src/app/onboarding/onboarding-client.tsx:58: U+2014: In zwei Schritten startklar — Account erstellen und die App auf den
+src/app/onboarding/onboarding-client.tsx:98: U+2014: So legst du NEF wie eine echte App auf deinen Startbildschirm — mit
+src/app/onboarding/onboarding-client.tsx:144: U+2014: <strong className="text-text">„Hinzufügen"</strong> — fertig.
+src/app/onboarding/onboarding-client.tsx:173: U+2014: „Installieren" — fertig.
+src/app/onboarding/page.tsx:27: U+2014: ? `Tritt ${teamName} auf NEF bei — in zwei Schritten startklar: Account erstellen und die App auf den Home-Bildschirm legen.`
+src/app/onboarding/page.tsx:28: U+2014: : "In zwei Schritten startklar mit NEF — Account erstellen und die App auf den Home-Bildschirm legen.";
+src/components/Benefits.tsx:6: U+2014: desc: "Alle 91 Prüfpositionen aus dem NEF-Protokoll — Fahrzeug, Ausrüstung, 68 Medikamente und Betäubungsmittel. Nichts wird vergessen.",
+src/components/Benefits.tsx:12: U+2014: desc: "Offene Mängel werden der nächsten Schicht angezeigt. Jede Crew sieht sofort, was noch aussteht — mit Bestätigungsfunktion.",
+src/components/Benefits.tsx:18: U+2014: desc: "Jedes Protokoll wird einem Fahrzeug zugeordnet. Mehrere NEF? Kein Problem — jedes Fahrzeug hat seinen eigenen Status und Historie.",
+src/components/Benefits.tsx:24: U+2014 (JS unicode escape, renders as em dash): desc: "\u201EAlle ausw\u00E4hlen\u201C pro Kategorie, klare Fortschrittsanzeige und optimiert f\u00FCr den Einsatz auf dem Smartphone \u2014 auch mit Handschuhen.",
+src/components/Benefits.tsx:30: U+2014: desc: "Betäubungsmittel werden separat erfasst — ohne Sammel-Check. Fentanyl, Morphin und Piritramid einzeln verifiziert und dokumentiert.",
+src/components/Hero.tsx:17: U+2014: In Entwicklung — Bald verf&uuml;gbar
+src/components/Hero.tsx:36: U+2014: Medikamente und Ausr&uuml;stung — alles gepr&uuml;ft, dokumentiert und in
+src/components/PhoneDemo.tsx:88: U+2014: Scrolle durch das Protokoll — direkt im Browser
+src/components/PhoneDemo.tsx:228: U+2014: &#9888; 59 fehlende Positionen — wird bei Abgabe als fehlend markiert

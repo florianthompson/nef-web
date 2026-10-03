@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "ticket": "HAZ-126",
+  "repo": "florianthompson/nef-web",
+  "kind": "nef-web",
+  "branch": "haz-126-nef-no-dashes",
+  "commitSha": "570c692ccf59817466dd72ab658bb754f7ed7c8d",
+  "pr": {
+    "url": "https://github.com/florianthompson/nef-web/pull/7",
+    "number": 7,
+    "state": "OPEN",
+    "isDraft": false,
+    "merged": false,
+    "mergedAt": null
+  },
+  "urls": {
+    "preview": "https://nef-web-git-haz-126-4334dc-florian-thompsons-projects-c1c41a9c.vercel.app",
+    "live": null
+  },
+  "screenshots": [
+    {
+      "path": "desktop-home.png",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 3122,
+      "deviceScaleFactor": 1,
+      "route": "/"
+    },
+    {
+      "path": "desktop-onboarding.png",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 986,
+      "deviceScaleFactor": 1,
+      "route": "/onboarding"
+    },
+    {
+      "path": "mobile390-home.png",
+      "viewport": "mobile390",
+      "width": 780,
+      "height": 8146,
+      "deviceScaleFactor": 2,
+      "route": "/"
+    },
+    {
+      "path": "mobile390-onboarding.png",
+      "viewport": "mobile390",
+      "width": 780,
+      "height": 2040,
+      "deviceScaleFactor": 2,
+      "route": "/onboarding"
+    }
+  ],
+  "checks": [
+    {
+      "name": "no em/en dashes in UI source",
+      "command": "npm run -s check:dashes",
+      "exitCode": 0,
+      "durationMs": 358,
+      "summary": "check:dashes: no em dash (U+2014) or en dash (U+2013) in UI source"
+    }
+  ],
+  "console": {
+    "errors": []
+  },
+  "createdAt": "2026-10-03T11:36:24+02:00",
+  "createdBy": "executor (Grok Bot) for Florian Thompson"
+}

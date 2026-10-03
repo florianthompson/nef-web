@@ -3,31 +3,31 @@ const benefits = [
     icon: "\ud83d\udccb",
     bg: "rgba(239,68,68,0.1)",
     title: "Vollständige Checkliste",
-    desc: "Alle 91 Prüfpositionen aus dem NEF-Protokoll — Fahrzeug, Ausrüstung, 68 Medikamente und Betäubungsmittel. Nichts wird vergessen.",
+    desc: "Alle 91 Prüfpositionen aus dem NEF-Protokoll. Fahrzeug, Ausrüstung, 68 Medikamente und Betäubungsmittel. Nichts wird vergessen.",
   },
   {
     icon: "\ud83d\udcdd",
     bg: "rgba(245,158,11,0.1)",
     title: "Schichtnotizen & Übergabe",
-    desc: "Offene Mängel werden der nächsten Schicht angezeigt. Jede Crew sieht sofort, was noch aussteht — mit Bestätigungsfunktion.",
+    desc: "Offene Mängel werden der nächsten Schicht angezeigt. Jede Crew sieht sofort, was noch aussteht, mit Bestätigungsfunktion.",
   },
   {
     icon: "\ud83d\ude97",
     bg: "rgba(34,197,94,0.1)",
     title: "Fahrzeug-Zuordnung",
-    desc: "Jedes Protokoll wird einem Fahrzeug zugeordnet. Mehrere NEF? Kein Problem — jedes Fahrzeug hat seinen eigenen Status und Historie.",
+    desc: "Jedes Protokoll wird einem Fahrzeug zugeordnet. Mehrere NEF? Kein Problem. Jedes Fahrzeug hat seinen eigenen Status und Historie.",
   },
   {
     icon: "\u26a1",
     bg: "rgba(59,130,246,0.1)",
     title: "Schnelle Erfassung",
-    desc: "\u201EAlle ausw\u00E4hlen\u201C pro Kategorie, klare Fortschrittsanzeige und optimiert f\u00FCr den Einsatz auf dem Smartphone \u2014 auch mit Handschuhen.",
+    desc: "\u201EAlle ausw\u00E4hlen\u201C pro Kategorie, klare Fortschrittsanzeige und optimiert f\u00FCr den Einsatz auf dem Smartphone, auch mit Handschuhen.",
   },
   {
     icon: "\ud83d\udd12",
     bg: "rgba(236,72,153,0.1)",
     title: "BTM-Dokumentation",
-    desc: "Betäubungsmittel werden separat erfasst — ohne Sammel-Check. Fentanyl, Morphin und Piritramid einzeln verifiziert und dokumentiert.",
+    desc: "Betäubungsmittel werden separat erfasst, ohne Sammel-Check. Fentanyl, Morphin und Piritramid einzeln verifiziert und dokumentiert.",
   },
 ];
 

@@ -115,7 +115,7 @@ export default function SubmissionDetailPage() {
       setDetail({
         id: up.id,
         created_at: up.created_at,
-        user_first_name: userData?.first_name ?? "–",
+        user_first_name: userData?.first_name ?? "-",
         user_last_name: userData?.last_name ?? "",
         vehicle_name: vehicleData?.name ?? null,
         categories,
@@ -156,7 +156,7 @@ export default function SubmissionDetailPage() {
           value={`${detail.user_first_name} ${detail.user_last_name}`}
         />
         <InfoCard label="Datum" value={formatDate(detail.created_at)} />
-        <InfoCard label="Fahrzeug" value={detail.vehicle_name ?? "–"} />
+        <InfoCard label="Fahrzeug" value={detail.vehicle_name ?? "-"} />
       </div>
 
       {/* Categories & Items */}

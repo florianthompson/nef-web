@@ -1,0 +1,10 @@
+HAZ-126 after: user-visible em dash (U+2014) and en dash (U+2013)
+UI occurrences: 0
+U+2014 em dash: 0
+U+2013 en dash: 0
+
+Rescanned JSX text, rendered string literals, and page metadata under src/app and src/components.
+None of the 29 strings from docs/HAZ-126-dashes-before.txt still contain U+2014 or U+2013.
+npm run check:dashes scans src/ (comments stripped) and reports no em dash or en dash in UI source.
+
+Comment-only lines and non-rendering files were not rewritten.
