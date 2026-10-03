@@ -145,3 +145,62 @@ test('the gate and CI both call staleFindings', () => {
 });
 
 test.after(() => rmSync(root, { recursive: true, force: true }));
+
+test('multi-ticket PR: another ticket proof folder with its own proof.json is ignored, nothing else', () => {
+  const proof = { ticket: 'HAZ-9', commitSha: 'a'.repeat(40) };
+  const head = 'b'.repeat(40);
+  const other = ['proof/HAZ-10/proof.json', 'proof/HAZ-10/shot-desktop.png'];
+  const ok = staleFindings({ proof, headSha: head, changedFiles: ['proof/HAZ-9/proof.json', ...other] });
+  assert.equal(ok.ok, true);
+  assert.deepEqual(ok.otherProofs, ['HAZ-10']);
+  assert.equal(formatStale({ proof, headSha: head, findings: ok }), null);
+
+  // folder without its own proof.json (not in the diff, callback says no) stays stale
+  const noProof = staleFindings({ proof, headSha: head, changedFiles: ['proof/HAZ-11/shot-390.png'] });
+  assert.equal(noProof.ok, false);
+  assert.deepEqual(noProof.outside, ['proof/HAZ-11/shot-390.png']);
+  const cbNo = staleFindings({ proof, headSha: head, changedFiles: ['proof/HAZ-11/shot-390.png'], otherProofExists: () => false });
+  assert.equal(cbNo.ok, false);
+
+  // proof.json already at head (callback) covers later shot-only changes in that folder
+  const cbYes = staleFindings({ proof, headSha: head, changedFiles: ['proof/HAZ-11/shot-390.png'], otherProofExists: (t) => t === 'HAZ-11' });
+  assert.equal(cbYes.ok, true);
+
+  // not a ticket folder, a nested proof/ path, or code: still stale
+  for (const f of ['proof/notes/proof.json', 'proof/README.md', 'src/proof/HAZ-10/proof.json', 'src/other.js']) {
+    const r = staleFindings({ proof, headSha: head, changedFiles: [...other, f], otherProofExists: () => true });
+    assert.equal(r.ok, false, f);
+    assert.deepEqual(r.outside, [f]);
+  }
+});
+
+test('multi-ticket PR: validate.mjs --head ignores another ticket proof folder that has proof.json', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'stale-multi-'));
+  const g = (args) => execFileSync('git', args, { cwd: dir, encoding: 'utf8' }).trim();
+  g(['init', '-q']);
+  g(['config', 'user.email', 't@t']);
+  g(['config', 'user.name', 't']);
+  mkdirSync(join(dir, 'src'));
+  writeFileSync(join(dir, 'src', 'a.js'), 'export const a = 1;\n');
+  g(['add', '-A']);
+  g(['commit', '-qm', 'code']);
+  const code = g(['rev-parse', 'HEAD']);
+  for (const t of ['HAZ-9', 'HAZ-10']) {
+    mkdirSync(join(dir, 'proof', t), { recursive: true });
+    writeFileSync(join(dir, 'proof', t, 'proof.json'), JSON.stringify({ ticket: t, commitSha: code }) + '\n');
+  }
+  g(['add', '-A']);
+  g(['commit', '-qm', 'both proofs']);
+  writeFileSync(join(dir, 'proof', 'HAZ-10', 'x-390.png'), 'png');
+  g(['add', '-A']);
+  g(['commit', '-qm', 'other ticket shot']);
+  const head = g(['rev-parse', 'HEAD']);
+  assert.deepEqual(staleErrors({ ticket: 'HAZ-9', commitSha: code }, head, dir), []);
+  writeFileSync(join(dir, 'proof', 'stray.txt'), 'x');
+  g(['add', '-A']);
+  g(['commit', '-qm', 'stray']);
+  const head2 = g(['rev-parse', 'HEAD']);
+  const errs = staleErrors({ ticket: 'HAZ-9', commitSha: code }, head2, dir);
+  assert.equal(errs.length, 1);
+  assert.match(errs[0], /proof\/stray\.txt/);
+});

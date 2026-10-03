@@ -10,24 +10,52 @@ function nameOf(file) {
 /**
  * Files outside proof/<ticket>/ between the measured commit and the head.
  * Same commit passes. A null commitSha is skipped only for shopify-theme with repo "none".
- * @returns {{ ok: boolean, skipped: boolean, outside: string[], error: string|null }}
+ * Multi-ticket PRs: a change under proof/<OTHER>/ is ignored only when <OTHER> is a ticket id
+ * and that folder holds its own proof.json at the head (another ticket's proof artifacts).
+ * `otherProofExists(ticket)` answers that; without it, only a proof/<OTHER>/proof.json in the
+ * changed files counts. Any other path outside proof/<ticket>/ still makes the proof stale.
+ * @returns {{ ok: boolean, skipped: boolean, outside: string[], otherProofs: string[], error: string|null }}
  */
-export function staleFindings({ proof, headSha, changedFiles }) {
+export function staleFindings({ proof, headSha, changedFiles, otherProofExists }) {
   if (!proof || typeof proof !== 'object') {
-    return { ok: false, skipped: false, outside: [], error: 'stale proof: proof is missing' };
+    return { ok: false, skipped: false, outside: [], otherProofs: [], error: 'stale proof: proof is missing' };
   }
   if (proof.commitSha == null) {
     if (proof.kind === 'shopify-theme' && proof.repo === 'none') {
-      return { ok: true, skipped: true, outside: [], error: null };
+      return { ok: true, skipped: true, outside: [], otherProofs: [], error: null };
     }
-    return { ok: false, skipped: false, outside: [], error: 'stale proof: commitSha is null' };
+    return { ok: false, skipped: false, outside: [], otherProofs: [], error: 'stale proof: commitSha is null' };
   }
   if (headSha && proof.commitSha === headSha) {
-    return { ok: true, skipped: false, outside: [], error: null };
+    return { ok: true, skipped: false, outside: [], otherProofs: [], error: null };
   }
   const prefix = `proof/${proof.ticket}/`;
-  const outside = (changedFiles ?? []).map(nameOf).filter((name) => name && !name.startsWith(prefix));
-  return { ok: outside.length === 0, skipped: false, outside, error: null };
+  const names = (changedFiles ?? []).map(nameOf).filter(Boolean);
+  const exists = otherProofExists ?? ((t) => names.includes(`proof/${t}/proof.json`));
+  const known = new Map();
+  const otherProof = (name) => {
+    const m = name.match(OTHER_PROOF);
+    if (!m || m[1] === proof.ticket) return null;
+    if (!known.has(m[1])) known.set(m[1], Boolean(exists(m[1])));
+    return known.get(m[1]) ? m[1] : null;
+  };
+  const outside = names.filter((name) => !name.startsWith(prefix) && !otherProof(name));
+  const otherProofs = [...known].filter(([, ok]) => ok).map(([t]) => t);
+  return { ok: outside.length === 0, skipped: false, outside, otherProofs, error: null };
+}
+
+const OTHER_PROOF = /^proof\/([A-Z][A-Z0-9]*-\d+)\/[^/].*$/;
+
+/** True when proof/<ticket>/proof.json exists at `ref` in the local repo. */
+export function localProofExists(ref, cwd) {
+  return (ticket) => {
+    try {
+      execFileSync('git', ['cat-file', '-e', `${ref}:proof/${ticket}/proof.json`], { cwd, stdio: ['ignore', 'pipe', 'pipe'] });
+      return true;
+    } catch {
+      return false;
+    }
+  };
 }
 
 export function formatStale({ proof, headSha, findings }) {
