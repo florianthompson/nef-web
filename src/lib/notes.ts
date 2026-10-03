@@ -100,17 +100,26 @@ function toNote(r: Row): Note {
 /**
  * Loads the team's notes (not soft-deleted). Detects once per session whether the
  * assignment columns exist; without them it falls back to the base column list.
+ * With `vehicle`, only that vehicle's notes (plus legacy notes without vehicle_id when it is the
+ * legacy vehicle, see legacyNoteVehicleId). vehicle null/undefined = the whole team.
  */
 export async function loadNotes(
-  teamId: string
+  teamId: string,
+  vehicle?: { id: string; includeLegacy: boolean } | null
 ): Promise<{ notes: Note[]; error: string | null }> {
-  const run = (cols: string) =>
-    supabase
+  const run = (cols: string) => {
+    const q = supabase
       .from("notes")
       .select(`${cols}, vehicles(name)`)
       .eq("team_id", teamId)
-      .is("deleted_at", null)
-      .order("created_at", { ascending: false });
+      .is("deleted_at", null);
+    const scoped = !vehicle
+      ? q
+      : vehicle.includeLegacy
+        ? q.or(`vehicle_id.eq.${vehicle.id},vehicle_id.is.null`)
+        : q.eq("vehicle_id", vehicle.id);
+    return scoped.order("created_at", { ascending: false });
+  };
 
   let res = await run(assignmentSupported === false ? BASE_COLUMNS : EXT_COLUMNS);
   if (res.error && assignmentSupported !== false && isMissingColumn(res.error)) {
