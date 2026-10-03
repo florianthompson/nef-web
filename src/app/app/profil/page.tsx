@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/lib/auth";
-import { LogOutIcon, ShieldIcon } from "lucide-react";
+import { getInitials } from "@/lib/utils";
+import { LogOutIcon, ShieldIcon, UserIcon } from "lucide-react";
 
 type PastProtocol = {
   id: string;
@@ -59,8 +60,8 @@ export default function ProfilPage() {
     <div className="px-4 py-6">
       {/* User Card */}
       <div className="mb-6 rounded-lg border border-border p-6 text-center">
-        <div className="mb-3 inline-flex h-16 w-16 items-center justify-center rounded-full bg-surface text-2xl font-bold text-text-muted">
-          {profile?.firstName?.charAt(0) ?? "?"}
+        <div className="mb-3 inline-flex h-16 w-16 items-center justify-center rounded-full bg-surface text-xl font-bold text-text-muted">
+          {getInitials(profile) || <UserIcon className="h-7 w-7" />}
         </div>
         <h1 className="text-lg font-bold">
           Hallo {profile?.firstName ?? "…"}
