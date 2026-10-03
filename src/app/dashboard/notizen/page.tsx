@@ -30,6 +30,9 @@ export default function NotizenPage() {
   const { profile, loading: authLoading } = useAuth();
   const [notes, setNotes] = useState<Note[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [filter, setFilter] = useState<"open" | "delegated" | "resolved" | "deleted">(
     "open"
   );
@@ -116,12 +119,12 @@ export default function NotizenPage() {
     deleted: notes.filter((n) => isDeleted(n)).length,
   };
 
+  const ERROR_TEXT = "Aktion fehlgeschlagen. Bitte erneut versuchen.";
+
   async function markResolved(id: string) {
     const now = new Date().toISOString();
-    await supabase
-      .from("notes")
-      .update({ is_resolved: true, resolved_by: fullName, resolved_at: now })
-      .eq("id", id);
+    setError(null);
+    const before = notes;
     setNotes((prev) =>
       prev.map((n) =>
         n.id === id
@@ -129,40 +132,60 @@ export default function NotizenPage() {
           : n
       )
     );
+    const { error: err } = await supabase
+      .from("notes")
+      .update({ is_resolved: true, resolved_by: fullName, resolved_at: now })
+      .eq("id", id);
+    if (err) {
+      setNotes(before);
+      setError(ERROR_TEXT);
+    }
   }
 
   async function markDeleted(id: string) {
     const now = new Date().toISOString();
-    await supabase
-      .from("notes")
-      .update({ deleted_by: fullName, deleted_at: now })
-      .eq("id", id);
+    setError(null);
+    const before = notes;
     setNotes((prev) =>
       prev.map((n) =>
         n.id === id ? { ...n, deleted_by: fullName, deleted_at: now } : n
       )
     );
+    const { error: err } = await supabase
+      .from("notes")
+      .update({ deleted_by: fullName, deleted_at: now })
+      .eq("id", id);
+    if (err) {
+      setNotes(before);
+      setError(ERROR_TEXT);
+    }
   }
 
   async function markDelegated(id: string) {
     const note = notes.find((n) => n.id === id);
     if (!note) return;
-    await supabase
+    setError(null);
+    const before = notes;
+    setNotes((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, delegated: true } : n))
+    );
+    const { error: err } = await supabase
       .from("notes")
       .update({
         author_name: `${note.author_name} → Zentrale`,
       })
       .eq("id", id);
-    setNotes((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, delegated: true } : n))
-    );
+    if (err) {
+      setNotes(before);
+      setError(ERROR_TEXT);
+    }
   }
 
   return (
     <div>
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-lg font-semibold">Notizen</h1>
-        <div className="flex gap-1 rounded-lg border border-border bg-surface p-0.5">
+        <div className="flex max-w-full gap-1 overflow-x-auto rounded-lg border border-border bg-surface p-0.5">
           <FilterButton
             active={filter === "open"}
             onClick={() => setFilter("open")}
@@ -193,6 +216,15 @@ export default function NotizenPage() {
           </FilterButton>
         </div>
       </div>
+
+      {error && (
+        <div
+          role="alert"
+          className="mb-4 rounded-md border border-red/30 bg-red/10 px-3 py-2 text-sm text-red"
+        >
+          {error}
+        </div>
+      )}
 
       {loading ? (
         <div className="flex items-center gap-2 text-text-muted">
@@ -231,9 +263,26 @@ export default function NotizenPage() {
                   </span>
                 )}
               </div>
-              <p className={`text-sm ${isDeleted(note) ? "text-text-muted line-through" : "text-text-muted"}`}>
+              <p
+                className={`whitespace-pre-wrap break-words text-sm ${isDeleted(note) ? "text-text-muted line-through" : "text-text-muted"} ${expanded.has(note.id) ? "" : "line-clamp-6"}`}
+              >
                 {note.value}
               </p>
+              {(note.value.length > 280 || note.value.split("\n").length > 6) && (
+                <button
+                  onClick={() =>
+                    setExpanded((prev) => {
+                      const next = new Set(prev);
+                      if (next.has(note.id)) next.delete(note.id);
+                      else next.add(note.id);
+                      return next;
+                    })
+                  }
+                  className="mt-1 text-xs font-medium text-text hover:underline"
+                >
+                  {expanded.has(note.id) ? "Weniger anzeigen" : "Mehr anzeigen"}
+                </button>
+              )}
 
               {/* Audit trail */}
               {(note.resolved_at || note.deleted_at) && (
@@ -290,7 +339,7 @@ export default function NotizenPage() {
                     </button>
                   )}
                   <button
-                    onClick={() => markDeleted(note.id)}
+                    onClick={() => setConfirmDeleteId(note.id)}
                     className="ml-auto flex items-center gap-1.5 rounded-md border border-red/20 px-3 py-1.5 text-xs font-semibold text-red transition-opacity hover:opacity-80"
                   >
                     <Trash2Icon className="h-3.5 w-3.5" />
@@ -300,6 +349,46 @@ export default function NotizenPage() {
               )}
             </div>
           ))}
+        </div>
+      )}
+
+      {confirmDeleteId && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+          onClick={() => setConfirmDeleteId(null)}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="delete-note-title"
+            className="w-full max-w-sm rounded-lg border border-border bg-surface p-5"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 id="delete-note-title" className="text-base font-semibold">
+              Notiz löschen?
+            </h2>
+            <p className="mt-1 text-sm text-text-muted">
+              Die Notiz wird in den Bereich Gelöscht verschoben.
+            </p>
+            <div className="mt-5 flex justify-end gap-2">
+              <button
+                onClick={() => setConfirmDeleteId(null)}
+                className="rounded-md border border-border px-3 py-1.5 text-xs font-semibold transition-opacity hover:opacity-80"
+              >
+                Abbrechen
+              </button>
+              <button
+                onClick={() => {
+                  const id = confirmDeleteId;
+                  setConfirmDeleteId(null);
+                  markDeleted(id);
+                }}
+                className="rounded-md bg-red px-3 py-1.5 text-xs font-semibold text-white transition-opacity hover:opacity-80"
+              >
+                Löschen
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
@@ -320,7 +409,7 @@ function FilterButton({
   return (
     <button
       onClick={onClick}
-      className={`rounded-md px-3 py-1 text-xs font-medium transition-colors ${
+      className={`shrink-0 whitespace-nowrap rounded-md px-3 py-1 text-xs font-medium transition-colors ${
         active ? "bg-red text-white" : "text-text-muted hover:text-text"
       }`}
     >
