@@ -5,10 +5,8 @@ import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/lib/auth";
 import {
   CheckCircleIcon,
-  ArrowRightCircleIcon,
   Trash2Icon,
   ClockIcon,
-  UserIcon,
 } from "lucide-react";
 
 type Note = {
@@ -23,7 +21,6 @@ type Note = {
   deleted_at: string | null;
   vehicle_id: string | null;
   vehicle_name?: string;
-  delegated: boolean;
 };
 
 export default function NotizenPage() {
@@ -33,7 +30,7 @@ export default function NotizenPage() {
   const [error, setError] = useState<string | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
-  const [filter, setFilter] = useState<"open" | "delegated" | "resolved" | "deleted">(
+  const [filter, setFilter] = useState<"open" | "resolved" | "deleted">(
     "open"
   );
 
@@ -56,29 +53,27 @@ export default function NotizenPage() {
 
     // Fetch vehicle names
     const vehicleIds = [
-      ...new Set((data ?? []).map((n: any) => n.vehicle_id).filter(Boolean)),
+      ...new Set(((data ?? []) as Note[]).map((n) => n.vehicle_id).filter(Boolean)),
     ];
 
-    let vehiclesMap = new Map();
+    let vehiclesMap = new Map<string, string>();
     if (vehicleIds.length > 0) {
       const { data: vehicles } = await supabase
         .from("vehicles")
         .select("id, name")
         .in("id", vehicleIds);
       vehiclesMap = new Map(
-        (vehicles ?? []).map((v: any) => [v.id, v.name])
+        (vehicles ?? []).map((v: { id: string; name: string }) => [v.id, v.name] as [string, string])
       );
     }
 
-    const allNotes: Note[] = (data ?? []).map((n: any) => {
-      const isDelegated =
-        typeof n.author_name === "string" &&
-        n.author_name.includes("→ Zentrale");
+    const allNotes: Note[] = ((data ?? []) as Note[]).map((n) => {
       return {
         id: n.id,
-        author_name: isDelegated
-          ? n.author_name.replace(" → Zentrale", "")
-          : n.author_name,
+        author_name:
+          typeof n.author_name === "string"
+            ? n.author_name.replace(" → Zentrale", "")
+            : n.author_name,
         value: n.value,
         created_at: n.created_at,
         is_resolved: n.is_resolved,
@@ -87,8 +82,7 @@ export default function NotizenPage() {
         deleted_by: n.deleted_by ?? null,
         deleted_at: n.deleted_at ?? null,
         vehicle_id: n.vehicle_id,
-        vehicle_name: vehiclesMap.get(n.vehicle_id) ?? undefined,
-        delegated: isDelegated,
+        vehicle_name: (n.vehicle_id ? vehiclesMap.get(n.vehicle_id) : undefined),
       };
     });
 
@@ -98,7 +92,8 @@ export default function NotizenPage() {
 
   useEffect(() => {
     if (authLoading || !profile) return;
-    setLoading(true);
+    // fetch on mount; loadNotes only sets state after the awaited query
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadNotes();
   }, [authLoading, profile, loadNotes]);
 
@@ -107,14 +102,12 @@ export default function NotizenPage() {
   const filtered = notes.filter((n) => {
     if (filter === "deleted") return isDeleted(n);
     if (isDeleted(n)) return false;
-    if (filter === "open") return !n.is_resolved && !n.delegated;
-    if (filter === "delegated") return !n.is_resolved && n.delegated;
+    if (filter === "open") return !n.is_resolved;
     return n.is_resolved;
   });
 
   const counts = {
-    open: notes.filter((n) => !isDeleted(n) && !n.is_resolved && !n.delegated).length,
-    delegated: notes.filter((n) => !isDeleted(n) && !n.is_resolved && n.delegated).length,
+    open: notes.filter((n) => !isDeleted(n) && !n.is_resolved).length,
     resolved: notes.filter((n) => !isDeleted(n) && n.is_resolved).length,
     deleted: notes.filter((n) => isDeleted(n)).length,
   };
@@ -161,26 +154,6 @@ export default function NotizenPage() {
     }
   }
 
-  async function markDelegated(id: string) {
-    const note = notes.find((n) => n.id === id);
-    if (!note) return;
-    setError(null);
-    const before = notes;
-    setNotes((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, delegated: true } : n))
-    );
-    const { error: err } = await supabase
-      .from("notes")
-      .update({
-        author_name: `${note.author_name} → Zentrale`,
-      })
-      .eq("id", id);
-    if (err) {
-      setNotes(before);
-      setError(ERROR_TEXT);
-    }
-  }
-
   return (
     <div>
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
@@ -192,13 +165,6 @@ export default function NotizenPage() {
             count={counts.open}
           >
             Offen
-          </FilterButton>
-          <FilterButton
-            active={filter === "delegated"}
-            onClick={() => setFilter("delegated")}
-            count={counts.delegated}
-          >
-            Zentrale
           </FilterButton>
           <FilterButton
             active={filter === "resolved"}
@@ -245,11 +211,6 @@ export default function NotizenPage() {
                 {note.vehicle_name && (
                   <span className="rounded bg-purple/10 px-1.5 py-0.5 text-[10px] font-medium text-purple">
                     {note.vehicle_name}
-                  </span>
-                )}
-                {note.delegated && (
-                  <span className="rounded bg-amber/10 px-1.5 py-0.5 text-[10px] font-medium text-amber">
-                    → Zentrale
                   </span>
                 )}
                 {note.is_resolved && !isDeleted(note) && (
@@ -329,15 +290,6 @@ export default function NotizenPage() {
                     <CheckCircleIcon className="h-3.5 w-3.5" />
                     Erledigt
                   </button>
-                  {!note.delegated && (
-                    <button
-                      onClick={() => markDelegated(note.id)}
-                      className="flex items-center gap-1.5 rounded-md border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-semibold text-white transition-opacity hover:opacity-80"
-                    >
-                      <ArrowRightCircleIcon className="h-3.5 w-3.5" />
-                      An Zentrale
-                    </button>
-                  )}
                   <button
                     onClick={() => setConfirmDeleteId(note.id)}
                     className="ml-auto flex items-center gap-1.5 rounded-md border border-red/20 px-3 py-1.5 text-xs font-semibold text-red transition-opacity hover:opacity-80"

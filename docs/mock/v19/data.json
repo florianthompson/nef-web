@@ -1,0 +1,824 @@
+{
+ "vehicle": "RK Gmund 76/1",
+ "items": [
+  {
+   "title": "Acetylsalicylsäure",
+   "name": "Acetylsalicylsäure",
+   "strength": "500 mg",
+   "bag": "Roter Rucksack",
+   "soll": 1,
+   "bestand": 1
+  },
+  {
+   "title": "Adenosin",
+   "name": "Adenosin",
+   "strength": "6 mg/2 ml",
+   "bag": "Roter Rucksack",
+   "soll": 3,
+   "bestand": 3
+  },
+  {
+   "title": "Amiodaron",
+   "name": "Amiodaron",
+   "strength": "150 mg/3 ml",
+   "bag": "Roter Rucksack",
+   "soll": 3,
+   "bestand": 3
+  },
+  {
+   "title": "Aqua ad injectabilia",
+   "name": "Aqua ad injectabilia",
+   "strength": "10 ml",
+   "bag": "Infusionen",
+   "soll": 2,
+   "bestand": 4
+  },
+  {
+   "title": "Atropin",
+   "name": "Atropin",
+   "strength": "0,5 mg/1 ml",
+   "bag": "Roter Rucksack",
+   "soll": 3,
+   "bestand": 3
+  },
+  {
+   "title": "Atropinsulfat",
+   "name": "Atropinsulfat",
+   "strength": "100 mg/10 ml",
+   "bag": "Antidota",
+   "soll": 1,
+   "bestand": 2
+  },
+  {
+   "title": "Balancierte Elektrolytlösung",
+   "name": "Balancierte Elektrolytlösung",
+   "strength": "500 ml",
+   "bag": "Infusionen",
+   "soll": 4,
+   "bestand": 4
+  },
+  {
+   "title": "Butylscopolamin",
+   "name": "Butylscopolamin",
+   "strength": "20 mg/1 ml",
+   "bag": "Roter Rucksack",
+   "soll": 1,
+   "bestand": 1
+  },
+  {
+   "title": "Cafedrin/Theodrenalin",
+   "name": "Cafedrin/Theodrenalin",
+   "strength": "200/10 mg/2 ml",
+   "bag": "Roter Rucksack",
+   "soll": 1,
+   "bestand": 1
+  },
+  {
+   "title": "Calciumgluconat 10 %",
+   "name": "Calciumgluconat 10 %",
+   "strength": "1 g/10 ml",
+   "bag": "Antidota",
+   "soll": 6,
+   "bestand": 6
+  },
+  {
+   "title": "Calciumgluconat-Gel 2,5 %",
+   "name": "Calciumgluconat-Gel 2,5 %",
+   "strength": "100 g",
+   "bag": "Antidota",
+   "soll": 1,
+   "bestand": 1
+  },
+  {
+   "title": "Captopril",
+   "name": "Captopril",
+   "strength": "12,5 mg",
+   "bag": "Roter Rucksack",
+   "soll": 2,
+   "bestand": 2
+  },
+  {
+   "title": "Ceftriaxon",
+   "name": "Ceftriaxon",
+   "strength": "2 g",
+   "bag": "Roter Rucksack",
+   "soll": 1,
+   "bestand": 0
+  },
+  {
+   "title": "Diazepam",
+   "name": "Diazepam",
+   "strength": "5 mg Rectiole",
+   "bag": "Kinderrucksack",
+   "soll": 2,
+   "bestand": 0
+  },
+  {
+   "title": "Dimenhydrinat",
+   "name": "Dimenhydrinat",
+   "strength": "62 mg",
+   "bag": "Roter Rucksack",
+   "soll": 1,
+   "bestand": 1
+  },
+  {
+   "title": "Dimetindenmaleat",
+   "name": "Dimetindenmaleat",
+   "strength": "4 mg/4 ml",
+   "bag": "Roter Rucksack",
+   "soll": 2,
+   "bestand": 2
+  },
+  {
+   "title": "4-DMAP",
+   "name": "4-DMAP",
+   "strength": "250 mg/5 ml",
+   "bag": "Antidota",
+   "soll": 1,
+   "bestand": 0
+  },
+  {
+   "title": "Epinephrin - 1 mg/1 ml",
+   "name": "Epinephrin",
+   "strength": "1 mg/1 ml",
+   "bag": "Roter Rucksack",
+   "soll": 1,
+   "bestand": 5
+  },
+  {
+   "title": "Epinephrin - 25 mg/25 ml",
+   "name": "Epinephrin",
+   "strength": "25 mg/25 ml",
+   "bag": "Roter Rucksack",
+   "soll": 1,
+   "bestand": 0
+  },
+  {
+   "title": "Esketamin",
+   "name": "Esketamin",
+   "strength": "50 mg/2 ml",
+   "bag": "Roter Rucksack",
+   "soll": 2,
+   "bestand": 2
+  },
+  {
+   "title": "Fenoterol",
+   "name": "Fenoterol",
+   "strength": "25 µg/1 ml",
+   "bag": "Roter Rucksack",
+   "soll": 1,
+   "bestand": 0
+  },
+  {
+   "title": "Flumazenil",
+   "name": "Flumazenil",
+   "strength": "0,5 mg/5 ml",
+   "bag": "Roter Rucksack",
+   "soll": 0,
+   "bestand": 1
+  },
+  {
+   "title": "Furosemid",
+   "name": "Furosemid",
+   "strength": "40 mg/4 ml",
+   "bag": "Roter Rucksack",
+   "soll": 1,
+   "bestand": 1
+  },
+  {
+   "title": "Gelatinelösung 4 %",
+   "name": "Gelatinelösung 4 %",
+   "strength": "500 ml",
+   "bag": "Infusionen",
+   "soll": 2,
+   "bestand": 0
+  },
+  {
+   "title": "Glucose 5 %",
+   "name": "Glucose 5 %",
+   "strength": "250 ml",
+   "bag": "Infusionen",
+   "soll": 1,
+   "bestand": 0
+  },
+  {
+   "title": "Glucose 10 %",
+   "name": "Glucose 10 %",
+   "strength": "100 ml",
+   "bag": "Infusionen",
+   "soll": 0,
+   "bestand": 1
+  },
+  {
+   "title": "Glucose 40 %",
+   "name": "Glucose 40 %",
+   "strength": "4 g/10 ml",
+   "bag": "Roter Rucksack",
+   "soll": 5,
+   "bestand": 4
+  },
+  {
+   "title": "Glyceroltrinitrat",
+   "name": "Glyceroltrinitrat",
+   "strength": "0,4 mg/Hub",
+   "bag": "Roter Rucksack",
+   "soll": 1,
+   "bestand": 1
+  },
+  {
+   "title": "Haloperidol",
+   "name": "Haloperidol",
+   "strength": "5 mg/1 ml",
+   "bag": "Roter Rucksack",
+   "soll": 1,
+   "bestand": 0
+  },
+  {
+   "title": "Heparin",
+   "name": "Heparin",
+   "strength": "25.000 IE/5 ml",
+   "bag": "Roter Rucksack",
+   "soll": 1,
+   "bestand": 1
+  },
+  {
+   "title": "Hydroxocobalamin",
+   "name": "Hydroxocobalamin",
+   "strength": "5 g",
+   "bag": "Antidota",
+   "soll": 1,
+   "bestand": 1
+  },
+  {
+   "title": "Ipratropiumbromid",
+   "name": "Ipratropiumbromid",
+   "strength": "500 µg/2 ml",
+   "bag": "Roter Rucksack",
+   "soll": 1,
+   "bestand": 1
+  },
+  {
+   "title": "Levetiracetam",
+   "name": "Levetiracetam",
+   "strength": "500 mg/5 ml",
+   "bag": "Roter Rucksack",
+   "soll": 3,
+   "bestand": 1
+  },
+  {
+   "title": "Lidocain 2 %",
+   "name": "Lidocain 2 %",
+   "strength": "100 mg/5 ml",
+   "bag": "Roter Rucksack",
+   "soll": 2,
+   "bestand": 2
+  },
+  {
+   "title": "Lorazepam",
+   "name": "Lorazepam",
+   "strength": "1 mg",
+   "bag": "Roter Rucksack",
+   "soll": 2,
+   "bestand": 0
+  },
+  {
+   "title": "Magnesiumsulfat 20 %",
+   "name": "Magnesiumsulfat 20 %",
+   "strength": "2 g/10 ml",
+   "bag": "Roter Rucksack",
+   "soll": 2,
+   "bestand": 1
+  },
+  {
+   "title": "Medizinische Kohle",
+   "name": "Medizinische Kohle",
+   "strength": "50 g",
+   "bag": "Antidota",
+   "soll": 1,
+   "bestand": 1
+  },
+  {
+   "title": "Metamizol",
+   "name": "Metamizol",
+   "strength": "1 g/2 ml",
+   "bag": "Roter Rucksack",
+   "soll": 1,
+   "bestand": 1
+  },
+  {
+   "title": "Methylthioniniumchlorid",
+   "name": "Methylthioniniumchlorid",
+   "strength": "50 mg/10 ml",
+   "bag": "Antidota",
+   "soll": 5,
+   "bestand": 5
+  },
+  {
+   "title": "Metoprolol",
+   "name": "Metoprolol",
+   "strength": "5 mg/5 ml",
+   "bag": "Roter Rucksack",
+   "soll": 1,
+   "bestand": 1
+  },
+  {
+   "title": "Midazolam",
+   "name": "Midazolam",
+   "strength": "15 mg/3 ml",
+   "bag": "Roter Rucksack",
+   "soll": 1,
+   "bestand": 1
+  },
+  {
+   "title": "NaCl 0,9 % - 10 ml",
+   "name": "NaCl 0,9 %",
+   "strength": "10 ml",
+   "bag": "Infusionen",
+   "soll": 4,
+   "bestand": 5
+  },
+  {
+   "title": "NaCl 0,9 % - 100 ml",
+   "name": "NaCl 0,9 %",
+   "strength": "100 ml",
+   "bag": "Infusionen",
+   "soll": 2,
+   "bestand": 1
+  },
+  {
+   "title": "Naloxon",
+   "name": "Naloxon",
+   "strength": "0,4 mg/1 ml",
+   "bag": "Roter Rucksack",
+   "soll": 2,
+   "bestand": 1
+  },
+  {
+   "title": "Naloxon nasal",
+   "name": "Naloxon nasal",
+   "strength": "1,8 mg je Gerät",
+   "bag": "Roter Rucksack",
+   "soll": 0,
+   "bestand": 1
+  },
+  {
+   "title": "Natriumchlorid 10 %",
+   "name": "Natriumchlorid 10 %",
+   "strength": "100 ml",
+   "bag": "Antidota",
+   "soll": 1,
+   "bestand": 0
+  },
+  {
+   "title": "Natriumhydrogencarbonat 8,4 %",
+   "name": "Natriumhydrogencarbonat 8,4 %",
+   "strength": "100 ml",
+   "bag": "Antidota",
+   "soll": 2,
+   "bestand": 2
+  },
+  {
+   "title": "Natriumthiosulfat 10 %",
+   "name": "Natriumthiosulfat 10 %",
+   "strength": "100 ml",
+   "bag": "Antidota",
+   "soll": 1,
+   "bestand": 1
+  },
+  {
+   "title": "Noradrenalin",
+   "name": "Noradrenalin",
+   "strength": "5 mg/5 ml",
+   "bag": "Roter Rucksack",
+   "soll": 2,
+   "bestand": 0
+  },
+  {
+   "title": "Obidoxim",
+   "name": "Obidoxim",
+   "strength": "250 mg/1 ml",
+   "bag": "Antidota",
+   "soll": 1,
+   "bestand": 0
+  },
+  {
+   "title": "Ondansetron",
+   "name": "Ondansetron",
+   "strength": "4 mg/2 ml",
+   "bag": "Roter Rucksack",
+   "soll": 1,
+   "bestand": 1
+  },
+  {
+   "title": "Oxymetazolin",
+   "name": "Oxymetazolin",
+   "strength": "0,05 % Nasenspray",
+   "bag": "Roter Rucksack",
+   "soll": 1,
+   "bestand": 0
+  },
+  {
+   "title": "Oxytocin",
+   "name": "Oxytocin",
+   "strength": "3 IE/1 ml",
+   "bag": "Roter Rucksack",
+   "soll": 3,
+   "bestand": 0
+  },
+  {
+   "title": "Paracetamol - 75 mg Suppositorium",
+   "name": "Paracetamol",
+   "strength": "75 mg Suppositorium",
+   "bag": "Kinderrucksack",
+   "soll": 1,
+   "bestand": 2
+  },
+  {
+   "title": "Paracetamol - 125 mg Suppositorium",
+   "name": "Paracetamol",
+   "strength": "125 mg Suppositorium",
+   "bag": "Kinderrucksack",
+   "soll": 1,
+   "bestand": 1
+  },
+  {
+   "title": "Paracetamol - 250 mg Suppositorium",
+   "name": "Paracetamol",
+   "strength": "250 mg Suppositorium",
+   "bag": "Kinderrucksack",
+   "soll": 1,
+   "bestand": 1
+  },
+  {
+   "title": "Paracetamol - 500 mg",
+   "name": "Paracetamol",
+   "strength": "500 mg",
+   "bag": "Kinderrucksack",
+   "soll": 0,
+   "bestand": 2
+  },
+  {
+   "title": "Prednisolon",
+   "name": "Prednisolon",
+   "strength": "250 mg",
+   "bag": "Roter Rucksack",
+   "soll": 2,
+   "bestand": 2
+  },
+  {
+   "title": "Prednison",
+   "name": "Prednison",
+   "strength": "100 mg Suppositorium",
+   "bag": "Kinderrucksack",
+   "soll": 1,
+   "bestand": 2
+  },
+  {
+   "title": "Promethazin",
+   "name": "Promethazin",
+   "strength": "50 mg/2 ml",
+   "bag": "Roter Rucksack",
+   "soll": 1,
+   "bestand": 0
+  },
+  {
+   "title": "Propofol",
+   "name": "Propofol",
+   "strength": "200 mg/20 ml",
+   "bag": "Roter Rucksack",
+   "soll": 2,
+   "bestand": 2
+  },
+  {
+   "title": "Reproterol",
+   "name": "Reproterol",
+   "strength": "90 µg/1 ml",
+   "bag": "Roter Rucksack",
+   "soll": 1,
+   "bestand": 1
+  },
+  {
+   "title": "Rocuronium",
+   "name": "Rocuronium",
+   "strength": "50 mg/5 ml",
+   "bag": "Roter Rucksack",
+   "soll": 2,
+   "bestand": 0
+  },
+  {
+   "title": "Salbutamol",
+   "name": "Salbutamol",
+   "strength": "1,25 mg/2,5 ml",
+   "bag": "Roter Rucksack",
+   "soll": 2,
+   "bestand": 1
+  },
+  {
+   "title": "Simeticon",
+   "name": "Simeticon",
+   "strength": "30 ml",
+   "bag": "Antidota",
+   "soll": 1,
+   "bestand": 1
+  },
+  {
+   "title": "Tenecteplase",
+   "name": "Tenecteplase",
+   "strength": "10.000 U/50 mg",
+   "bag": "Roter Rucksack",
+   "soll": 1,
+   "bestand": 1
+  },
+  {
+   "title": "Thiamin",
+   "name": "Thiamin",
+   "strength": "100 mg/2 ml",
+   "bag": "Roter Rucksack",
+   "soll": 1,
+   "bestand": 1
+  },
+  {
+   "title": "Tranexamsäure",
+   "name": "Tranexamsäure",
+   "strength": "500 mg/5 ml",
+   "bag": "Roter Rucksack",
+   "soll": 2,
+   "bestand": 2
+  },
+  {
+   "title": "Urapidil",
+   "name": "Urapidil",
+   "strength": "50 mg/10 ml",
+   "bag": "Roter Rucksack",
+   "soll": 1,
+   "bestand": 2
+  },
+  {
+   "title": "Xylometazolin",
+   "name": "Xylometazolin",
+   "strength": "0,025 %",
+   "bag": "Kinderrucksack",
+   "soll": 1,
+   "bestand": 0
+  }
+ ],
+ "fehltNotes": [
+  {
+   "itemTitle": "Ceftriaxon",
+   "text": "Fehlt: Ceftriaxon 2 g, Soll 1, Bestand 0 (Roter Rucksack)",
+   "author": "Florian Thompson",
+   "created_at": "2026-09-30T19:18:58.550113+00:00",
+   "missing": 1,
+   "bag": "Roter Rucksack",
+   "type": "fehlt"
+  },
+  {
+   "itemTitle": "Epinephrin - 25 mg/25 ml",
+   "text": "Fehlt: Epinephrin 25 mg/25 ml, Soll 1, Bestand 0 (Roter Rucksack)",
+   "author": "Florian Thompson",
+   "created_at": "2026-09-30T19:18:58.550113+00:00",
+   "missing": 1,
+   "bag": "Roter Rucksack",
+   "type": "fehlt"
+  },
+  {
+   "itemTitle": "Fenoterol",
+   "text": "Fehlt: Fenoterol 25 µg/1 ml, Soll 1, Bestand 0 (Roter Rucksack)",
+   "author": "Florian Thompson",
+   "created_at": "2026-09-30T19:18:58.550113+00:00",
+   "missing": 1,
+   "bag": "Roter Rucksack",
+   "type": "fehlt"
+  },
+  {
+   "itemTitle": "Glucose 40 %",
+   "text": "Fehlt: Glucose 40 % 4 g/10 ml, Soll 5, Bestand 4 (Roter Rucksack)",
+   "author": "Florian Thompson",
+   "created_at": "2026-09-30T19:18:58.550113+00:00",
+   "missing": 1,
+   "bag": "Roter Rucksack",
+   "type": "fehlt"
+  },
+  {
+   "itemTitle": "Haloperidol",
+   "text": "Fehlt: Haloperidol 5 mg/1 ml, Soll 1, Bestand 0 (Roter Rucksack)",
+   "author": "Florian Thompson",
+   "created_at": "2026-09-30T19:18:58.550113+00:00",
+   "missing": 1,
+   "bag": "Roter Rucksack",
+   "type": "fehlt"
+  },
+  {
+   "itemTitle": "Levetiracetam",
+   "text": "Fehlt: Levetiracetam 500 mg/5 ml, Soll 3, Bestand 1 (Roter Rucksack)",
+   "author": "Florian Thompson",
+   "created_at": "2026-09-30T19:18:58.550113+00:00",
+   "missing": 2,
+   "bag": "Roter Rucksack",
+   "type": "fehlt"
+  },
+  {
+   "itemTitle": "Lorazepam",
+   "text": "Fehlt: Lorazepam 1 mg, Soll 2, Bestand 0 (Roter Rucksack)",
+   "author": "Florian Thompson",
+   "created_at": "2026-09-30T19:18:58.550113+00:00",
+   "missing": 2,
+   "bag": "Roter Rucksack",
+   "type": "fehlt"
+  },
+  {
+   "itemTitle": "Magnesiumsulfat 20 %",
+   "text": "Fehlt: Magnesiumsulfat 20 % 2 g/10 ml, Soll 2, Bestand 1 (Roter Rucksack)",
+   "author": "Florian Thompson",
+   "created_at": "2026-09-30T19:18:58.550113+00:00",
+   "missing": 1,
+   "bag": "Roter Rucksack",
+   "type": "fehlt"
+  },
+  {
+   "itemTitle": "Naloxon",
+   "text": "Fehlt: Naloxon 0,4 mg/1 ml, Soll 2, Bestand 1 (Roter Rucksack)",
+   "author": "Florian Thompson",
+   "created_at": "2026-09-30T19:18:58.550113+00:00",
+   "missing": 1,
+   "bag": "Roter Rucksack",
+   "type": "fehlt"
+  },
+  {
+   "itemTitle": "Noradrenalin",
+   "text": "Fehlt: Noradrenalin 5 mg/5 ml, Soll 2, Bestand 0 (Roter Rucksack)",
+   "author": "Florian Thompson",
+   "created_at": "2026-09-30T19:18:58.550113+00:00",
+   "missing": 2,
+   "bag": "Roter Rucksack",
+   "type": "fehlt"
+  },
+  {
+   "itemTitle": "Oxymetazolin",
+   "text": "Fehlt: Oxymetazolin 0,05 % Nasenspray, Soll 1, Bestand 0 (Roter Rucksack)",
+   "author": "Florian Thompson",
+   "created_at": "2026-09-30T19:18:58.550113+00:00",
+   "missing": 1,
+   "bag": "Roter Rucksack",
+   "type": "fehlt"
+  },
+  {
+   "itemTitle": "Oxytocin",
+   "text": "Fehlt: Oxytocin 3 IE/1 ml, Soll 3, Bestand 0 (Roter Rucksack)",
+   "author": "Florian Thompson",
+   "created_at": "2026-09-30T19:18:58.550113+00:00",
+   "missing": 3,
+   "bag": "Roter Rucksack",
+   "type": "fehlt"
+  },
+  {
+   "itemTitle": "Promethazin",
+   "text": "Fehlt: Promethazin 50 mg/2 ml, Soll 1, Bestand 0 (Roter Rucksack)",
+   "author": "Florian Thompson",
+   "created_at": "2026-09-30T19:18:58.550113+00:00",
+   "missing": 1,
+   "bag": "Roter Rucksack",
+   "type": "fehlt"
+  },
+  {
+   "itemTitle": "Rocuronium",
+   "text": "Fehlt: Rocuronium 50 mg/5 ml, Soll 2, Bestand 0 (Roter Rucksack)",
+   "author": "Florian Thompson",
+   "created_at": "2026-09-30T19:18:58.550113+00:00",
+   "missing": 2,
+   "bag": "Roter Rucksack",
+   "type": "fehlt"
+  },
+  {
+   "itemTitle": "Salbutamol",
+   "text": "Fehlt: Salbutamol 1,25 mg/2,5 ml, Soll 2, Bestand 1 (Roter Rucksack)",
+   "author": "Florian Thompson",
+   "created_at": "2026-09-30T19:18:58.550113+00:00",
+   "missing": 1,
+   "bag": "Roter Rucksack",
+   "type": "fehlt"
+  },
+  {
+   "itemTitle": "Gelatinelösung 4 %",
+   "text": "Fehlt: Gelatinelösung 4 % 500 ml, Soll 2, Bestand 0 (Infusionen)",
+   "author": "Florian Thompson",
+   "created_at": "2026-09-30T19:18:58.550113+00:00",
+   "missing": 2,
+   "bag": "Infusionen",
+   "type": "fehlt"
+  },
+  {
+   "itemTitle": "Glucose 5 %",
+   "text": "Fehlt: Glucose 5 % 250 ml, Soll 1, Bestand 0 (Infusionen)",
+   "author": "Florian Thompson",
+   "created_at": "2026-09-30T19:18:58.550113+00:00",
+   "missing": 1,
+   "bag": "Infusionen",
+   "type": "fehlt"
+  },
+  {
+   "itemTitle": "NaCl 0,9 % - 100 ml",
+   "text": "Fehlt: NaCl 0,9 % 100 ml, Soll 2, Bestand 1 (Infusionen)",
+   "author": "Florian Thompson",
+   "created_at": "2026-09-30T19:18:58.550113+00:00",
+   "missing": 1,
+   "bag": "Infusionen",
+   "type": "fehlt"
+  },
+  {
+   "itemTitle": "Diazepam",
+   "text": "Fehlt: Diazepam 5 mg Rectiole, Soll 2, Bestand 0 (Kinderrucksack)",
+   "author": "Florian Thompson",
+   "created_at": "2026-09-30T19:18:58.550113+00:00",
+   "missing": 2,
+   "bag": "Kinderrucksack",
+   "type": "fehlt"
+  },
+  {
+   "itemTitle": "Xylometazolin",
+   "text": "Fehlt: Xylometazolin 0,025 %, Soll 1, Bestand 0 (Kinderrucksack)",
+   "author": "Florian Thompson",
+   "created_at": "2026-09-30T19:18:58.550113+00:00",
+   "missing": 1,
+   "bag": "Kinderrucksack",
+   "type": "fehlt"
+  },
+  {
+   "itemTitle": "4-DMAP",
+   "text": "Fehlt: 4-DMAP 250 mg/5 ml, Soll 1, Bestand 0 (Antidota)",
+   "author": "Florian Thompson",
+   "created_at": "2026-09-30T19:18:58.550113+00:00",
+   "missing": 1,
+   "bag": "Antidota",
+   "type": "fehlt"
+  },
+  {
+   "itemTitle": "Natriumchlorid 10 %",
+   "text": "Fehlt: Natriumchlorid 10 % 100 ml, Soll 1, Bestand 0 (Antidota)",
+   "author": "Florian Thompson",
+   "created_at": "2026-09-30T19:18:58.550113+00:00",
+   "missing": 1,
+   "bag": "Antidota",
+   "type": "fehlt"
+  },
+  {
+   "itemTitle": "Obidoxim",
+   "text": "Fehlt: Obidoxim 250 mg/1 ml, Soll 1, Bestand 0 (Antidota)",
+   "author": "Florian Thompson",
+   "created_at": "2026-09-30T19:18:58.550113+00:00",
+   "missing": 1,
+   "bag": "Antidota",
+   "type": "fehlt"
+  }
+ ],
+ "generalNotes": [
+  {
+   "text": "Feuerlöscher Prüfung abgelaufen (gemeldet), Druckbegrenzung Ventil und Beatmungsfilter Kind Verfall (wird bestellt)",
+   "author": "Christian",
+   "created_at": "2026-09-27T08:50:10.59597+00:00",
+   "type": "sonstiges"
+  },
+  {
+   "text": "Protokoll vom 14.09. morgens. Zudem am Kreisverband ausgetauscht. Hygienefilter Medumat. Neues NIDA Pad und neuer CO Warner.",
+   "author": "Mikey",
+   "created_at": "2026-09-15T04:17:48.053988+00:00",
+   "type": "sonstiges"
+  },
+  {
+   "text": "Monatscheck für 08/2026 gemacht",
+   "author": "Mikey",
+   "created_at": "2026-09-02T06:34:27.199732+00:00",
+   "type": "sonstiges"
+  },
+  {
+   "text": "Monatscheck konnte heute wegen zu vieler Einsätze nur teilweise durchgeführt werden (Ampullarium und Perfusormaterial ok)",
+   "author": "Oliver",
+   "created_at": "2026-09-01T17:09:04.903551+00:00",
+   "type": "sonstiges"
+  },
+  {
+   "text": "Die Liste für die Medikamente stimmt nicht, ein Abgleich ist in Arbeit.",
+   "author": "Thomas",
+   "created_at": "2026-08-24T05:25:35.474548+00:00",
+   "type": "sonstiges"
+  },
+  {
+   "text": "CorPuls hatte nicht geladen, war vermutlich nicht ein gerastet. Jetzt am Strom lädt es.\nMetoprolol läuft 8/26 ab, werde ich mit dem RTW tauschen.",
+   "author": "Oliver",
+   "created_at": "2026-08-21T06:16:20.789883+00:00",
+   "type": "sonstiges"
+  },
+  {
+   "text": "Test, keine Prüfung durch mich heute erfolgt",
+   "author": "Oliver",
+   "created_at": "2026-07-16T10:04:17.556236+00:00",
+   "type": "sonstiges"
+  },
+  {
+   "text": "Schaut guad aus :-)",
+   "author": "Christian Pawlak",
+   "created_at": "2026-04-02T06:12:07.829434+00:00",
+   "type": "sonstiges"
+  }
+ ]
+}

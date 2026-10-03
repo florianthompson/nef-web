@@ -332,25 +332,16 @@ export function VoiceWave({
   onCancel: () => void;
 }) {
   return (
-    <div className="flex h-11 min-w-0 flex-1 items-center gap-0.5 rounded-[22px] border border-border bg-surface px-1">
-      <button
-        type="button"
-        onClick={onCancel}
-        aria-label="Aufnahme verwerfen"
-        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-zinc-400"
-      >
-        <XIcon className="h-4 w-4" />
+    <div className="rwave">
+      <button type="button" className="rx" onClick={onCancel} aria-label="Aufnahme verwerfen">
+        <XIcon className="ic" />
       </button>
-      <div ref={waveRef} className="flex h-7 min-w-0 flex-1 items-center justify-between px-1.5" aria-hidden>
+      <div ref={waveRef} className="rbars" aria-hidden>
         {Array.from({ length: BARS }, (_, i) => (
-          <i
-            key={i}
-            className="block h-[26px] w-[3px] rounded-full bg-zinc-300 transition-transform duration-[90ms] ease-linear"
-            style={{ transform: "scaleY(0.06)" }}
-          />
+          <i key={i} style={{ transform: "scaleY(0.06)" }} />
         ))}
       </div>
-      <span className="shrink-0 pr-3 pl-1 font-mono text-[13px] whitespace-nowrap text-zinc-400">
+      <span className="rtm">
         {fmtClock(elapsed)}
         {elapsed >= MAX_REC_MS - 60000 ? ` / ${fmtClock(MAX_REC_MS)}` : ""}
       </span>

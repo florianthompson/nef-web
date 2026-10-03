@@ -1,27 +1,52 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ChevronLeftIcon } from "lucide-react";
-import { loadComments, type ItemOption, type Note, type NoteComment } from "@/lib/notes";
-import { NoteChips } from "./NoteRow";
-import { dateTime } from "./format";
+import {
+  ArrowUpIcon,
+  CalendarIcon,
+  CheckIcon,
+  ChevronDownIcon,
+  ChevronLeftIcon,
+  MoreHorizontalIcon,
+  PencilIcon,
+  XIcon,
+} from "lucide-react";
+import {
+  addComment,
+  loadComments,
+  updateNoteValue,
+  type ItemOption,
+  type Note,
+  type NoteComment,
+} from "@/lib/notes";
+import { dueIsHot, dueLabel, dm, hm, rtime, closedMeta } from "./format";
+import { noteCategory } from "./NoteRow";
 
 export function NoteDetail({
   note,
   items,
-  showChips,
+  authorName,
   onClose,
-  onComplete,
+  onAskDone,
   onReopen,
+  onChanged,
+  onPickMaterial,
 }: {
   note: Note;
   items: Map<string, ItemOption>;
-  showChips: boolean;
+  authorName: string;
   onClose: () => void;
-  onComplete: () => void;
+  onAskDone: () => void;
   onReopen: () => void;
+  onChanged: () => void;
+  onPickMaterial?: () => void;
 }) {
   const [comments, setComments] = useState<NoteComment[] | null>(null);
+  const [reply, setReply] = useState("");
+  const [sending, setSending] = useState(false);
+  const [menu, setMenu] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(note.value);
 
   useEffect(() => {
     let live = true;
@@ -32,87 +57,201 @@ export function NoteDetail({
   }, [note.id]);
 
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        if (menu) setMenu(false);
+        else onClose();
+      }
+    };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [onClose]);
+  }, [onClose, menu]);
+
+  const it = note.item_id ? items.get(note.item_id) : undefined;
+  const cat = noteCategory(note, items);
+  const due = note.due_at ? new Date(note.due_at) : null;
+  const dueHasTime = !!due && (due.getHours() !== 0 || due.getMinutes() !== 0);
+  const when = `${note.author_name} · ${
+    new Date(note.created_at).toDateString() === new Date().toDateString()
+      ? "Heute"
+      : dm(new Date(note.created_at))
+  }, ${hm(new Date(note.created_at))}`;
+
+  async function send() {
+    const v = reply.trim();
+    if (!v || sending) return;
+    setSending(true);
+    const ok = await addComment(note.id, authorName || "Unbekannt", v);
+    setSending(false);
+    if (!ok) return;
+    setReply("");
+    const next = await loadComments(note.id);
+    setComments(next);
+    onChanged();
+  }
+
+  async function saveEdit() {
+    const v = draft.trim();
+    if (!v) return;
+    const ok = await updateNoteValue(note.id, v);
+    if (!ok) return;
+    setEditing(false);
+    onChanged();
+  }
+
+  const countLabel =
+    comments === null
+      ? "Antworten"
+      : comments.length === 0
+        ? "Antworten"
+        : comments.length === 1
+          ? "1 Antwort"
+          : `${comments.length} Antworten`;
 
   return (
-    <div className="fixed inset-0 z-[45] flex justify-center bg-bg">
-      <div className="flex h-full w-full max-w-lg flex-col">
-        <div
-          className="flex shrink-0 items-center gap-1 border-b border-border px-2 pb-2"
-          style={{ paddingTop: "calc(env(safe-area-inset-top) + 8px)" }}
-        >
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Schließen"
-            className="flex h-11 w-11 items-center justify-center rounded-full text-zinc-400"
-          >
-            <ChevronLeftIcon className="h-[22px] w-[22px]" />
-          </button>
-          <h1 className="text-base font-semibold">Notiz</h1>
-        </div>
-
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-4">
-          {showChips && <NoteChips note={note} items={items} done={note.is_resolved} />}
-          <div className="mt-1.5 mb-1 text-[17px] leading-6 break-words whitespace-pre-wrap">
-            {note.value}
-          </div>
-          <div className="mb-4 text-[13px] text-text-muted">
-            {note.author_name} · {dateTime(note.created_at)}
-            {note.vehicle_name ? ` · ${note.vehicle_name}` : ""}
-          </div>
-
-          {note.is_resolved ? (
-            <div className="flex items-center justify-between gap-3 text-[13px] text-zinc-400">
+    <div className="nd show" role="dialog" aria-label="Notiz">
+      <div className="nd-h">
+        <button type="button" className="back" aria-label="Schließen" onClick={onClose}>
+          <ChevronLeftIcon className="ic" style={{ width: 22, height: 22 }} />
+        </button>
+        <div className="tt">
+          {(it || cat !== "Sonstiges") && (
+            <span className="chip">
               <span>
-                Erledigt von {note.resolved_by ?? "-"}
-                {note.resolved_at ? ` · ${dateTime(note.resolved_at)}` : ""}
+                {it ? (
+                  <>
+                    <em className="cc">{cat} · </em>
+                    {it.title}
+                  </>
+                ) : (
+                  cat
+                )}
               </span>
-              <button
-                type="button"
-                onClick={onReopen}
-                className="min-h-11 px-1 font-medium text-zinc-100 underline underline-offset-4"
-              >
-                Wieder öffnen
+            </span>
+          )}
+        </div>
+        <button
+          type="button"
+          className="back"
+          aria-label="Mehr"
+          aria-haspopup="menu"
+          onClick={() => setMenu(true)}
+        >
+          <MoreHorizontalIcon className="ic" />
+        </button>
+      </div>
+      <div className={`nd-b${note.is_resolved ? " cl" : ""}`}>
+        {editing ? (
+          <>
+            <textarea className="ta" style={{ marginTop: 8 }} value={draft} onChange={(e) => setDraft(e.target.value)} />
+            <div className="row2">
+              <button type="button" className="btn btn-s" onClick={() => setEditing(false)}>
+                Abbrechen
+              </button>
+              <button type="button" className="btn btn-p" onClick={() => void saveEdit()}>
+                Speichern
               </button>
             </div>
-          ) : (
-            <button
-              type="button"
-              onClick={onComplete}
-              className="flex min-h-11 w-full items-center justify-center rounded-[10px] bg-zinc-100 font-semibold text-zinc-900 active:scale-[0.98]"
-            >
-              Erledigt
-            </button>
-          )}
-
-          <div className="mt-5">
-            <div className="mb-1 text-[13px] font-medium text-zinc-500">
-              {comments?.length ? (comments.length === 1 ? "1 Antwort" : `${comments.length} Antworten`) : "Antworten"}
-            </div>
-            {comments?.length ? (
-              comments.map((c) => (
-                <div key={c.id} className="border-t border-border py-3">
-                  <div className="flex items-baseline gap-2">
-                    <b className="text-[15px] font-semibold">{c.author_name}</b>
-                    <span className="text-[13px] text-text-muted">{dateTime(c.created_at)}</span>
-                  </div>
-                  <p className="mt-0.5 text-[15px] leading-[22px] break-words whitespace-pre-wrap">
-                    {c.value}
-                  </p>
-                </div>
-              ))
-            ) : (
-              <div className="border-t border-border py-3 text-[15px] text-zinc-500">
-                {comments === null ? "Lädt …" : "Noch keine Antworten"}
+          </>
+        ) : (
+          <>
+            <div className="nd-t">{note.value}</div>
+            <div className="nd-m">{when}</div>
+            {note.source === "raw" && !note.item_id && onPickMaterial && (
+              <div className="vx">
+                <button type="button" className="chip gen vpk" onClick={onPickMaterial}>
+                  <span>Material wählen</span>
+                  <ChevronDownIcon className="ic" />
+                </button>
               </div>
             )}
-          </div>
+            {due && (
+              <div className="nd-due">
+                <span className={`due${!note.is_resolved && dueIsHot(due) ? " hot" : ""}`}>
+                  <CalendarIcon className="ic" />
+                  {dueLabel(due, dueHasTime)}
+                </span>
+              </div>
+            )}
+            {note.is_resolved ? (
+              <div className="nd-st">
+                <span>
+                  <CheckIcon className="ic" />
+                  {closedMeta(note.resolved_by, note.resolved_at)}
+                </span>
+                <button type="button" className="nd-re" onClick={onReopen}>
+                  Wieder öffnen
+                </button>
+              </div>
+            ) : (
+              <button type="button" className="btn nd-done" onClick={onAskDone}>
+                Als erledigt markieren
+              </button>
+            )}
+          </>
+        )}
+        <div className="rps">
+          <div className="rps-l">{countLabel}</div>
+          {comments?.length ? (
+            comments.map((c) => (
+              <div key={c.id} className="rpl">
+                <div className="a">
+                  <b>{c.author_name}</b>
+                  <span>{rtime(c.created_at)}</span>
+                </div>
+                <p>{c.value}</p>
+              </div>
+            ))
+          ) : (
+            <div className="rp-none">{comments === null ? "Lädt …" : "Noch keine Antworten"}</div>
+          )}
         </div>
       </div>
+      <div className="nd-c">
+        <textarea
+          rows={1}
+          placeholder="Antworten …"
+          aria-label="Antwort"
+          value={reply}
+          onChange={(e) => {
+            setReply(e.target.value);
+            const t = e.target;
+            t.style.height = "auto";
+            t.style.height = Math.min(t.scrollHeight + 2, 108) + "px";
+          }}
+        />
+        <button
+          type="button"
+          className="rb send"
+          aria-label="Antwort senden"
+          disabled={!reply.trim() || sending}
+          onClick={() => void send()}
+        >
+          <ArrowUpIcon className="ic" />
+        </button>
+      </div>
+      {menu && (
+        <div className="nd-mb show" onClick={() => setMenu(false)}>
+          <div className="nd-menu" role="menu" onClick={(e) => e.stopPropagation()}>
+            <button
+              type="button"
+              role="menuitem"
+              onClick={() => {
+                setDraft(note.value);
+                setEditing(true);
+                setMenu(false);
+              }}
+            >
+              <PencilIcon className="ic" />
+              Bearbeiten
+            </button>
+            <button type="button" role="menuitem" onClick={() => setMenu(false)}>
+              <XIcon className="ic" />
+              Abbrechen
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

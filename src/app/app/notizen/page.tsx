@@ -1,7 +1,7 @@
 "use client";
 
-import { Feed } from "@/components/notes/Feed";
+import { NotesScreen } from "@/components/notes/NotesScreen";
 
 export default function NotizenPage() {
-  return <Feed />;
+  return <NotesScreen />;
 }

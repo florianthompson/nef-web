@@ -339,11 +339,25 @@ export function Composer({
   const bufMs = bufs.reduce((s, b) => s + (b.durationMs || 0), 0);
 
   return (
-    <div
-      ref={wrapRef}
-      className="shrink-0 bg-bg"
-    >
-      {review ? (
+    <div ref={wrapRef}>
+      {progress && (
+        <div className="strip show" aria-live="polite">
+          <ol>
+            <li className="active">
+              <span className="si">
+                <i className="spin" />
+              </span>
+              {progress.kind === "listen"
+                ? `Aufnahme gesichert · Text wird erkannt${progress.total > 1 ? ` (${progress.seg}/${progress.total})` : ""}`
+                : "Notizen werden sortiert"}
+            </li>
+          </ol>
+          <button type="button" className="sp-skip" onClick={skipSort}>
+            {progress.kind === "listen" ? "Nicht warten" : "Ohne Auswertung speichern"}
+          </button>
+        </div>
+      )}
+      {review && (
         <ReviewCard
           orig={review.orig}
           parts={review.parts}
@@ -372,104 +386,86 @@ export function Composer({
           }
           onSendRaw={() => void save([rawDraft(review.orig.trim())], "raw", "Gespeichert")}
         />
-      ) : (
-        <>
-          {progress && (
-            <div className="flex flex-wrap items-center gap-x-3 border-t border-border px-4 py-1.5">
-              <span className="flex items-center gap-1.5 text-[13px] leading-6 text-zinc-100">
-                <i className="block h-3 w-3 animate-spin rounded-full border-[1.5px] border-current border-r-transparent" />
-                {progress.kind === "listen"
-                  ? `Aufnahme gesichert · Text wird erkannt${progress.total > 1 ? ` (${progress.seg}/${progress.total})` : ""}`
-                  : "Notizen werden sortiert"}
-              </span>
-              <button
-                type="button"
-                onClick={skipSort}
-                className="-my-2.5 ml-auto min-h-11 pl-1 text-[13px] font-medium text-zinc-300 underline underline-offset-[3px]"
-              >
-                {progress.kind === "listen" ? "Nicht warten" : "Ohne Auswertung speichern"}
-              </button>
-            </div>
-          )}
-          {fieldHint && (
-            <p className="border-t border-border px-5 pt-1.5 text-xs leading-4 text-zinc-500">
-              Text vom Gerät erkannt, bitte prüfen
-            </p>
-          )}
-          {bufs.length > 0 && !busy && (
-            <div className="flex items-center gap-2 border-t border-border px-4 py-1 text-[13px] text-zinc-500">
-              <span className="min-w-0 flex-1 truncate">
-                {bufs.length > 1 ? `${bufs.length} Aufnahmen werden` : "Aufnahme wird"} übertragen, sobald
-                online · {fmtClock(bufMs)}
-              </span>
-              <button
-                type="button"
-                aria-label="Aufnahme verwerfen"
-                onClick={async () => {
-                  for (const b of bufs) await bufferDelete(b.id);
-                  await refreshBufs();
-                }}
-                className="flex h-11 w-11 shrink-0 items-center justify-center text-zinc-400"
-              >
-                <XIcon className="h-4 w-4" />
-              </button>
-            </div>
-          )}
-          <div
-            className="flex items-end gap-2 border-t border-border px-4 pt-2"
-            style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 8px)" }}
+      )}
+      {bufs.length > 0 && !busy && !review && (
+        <div className="bhint" aria-live="polite">
+          <span className="bt">
+            {bufs.length > 1 ? `${bufs.length} Aufnahmen werden` : "Aufnahme wird"} übertragen, sobald{" "}
+            {typeof navigator !== "undefined" && navigator.onLine ? "verfügbar" : "online"} · {fmtClock(bufMs)}
+          </span>
+          <button
+            type="button"
+            className="bx"
+            aria-label="Aufnahme verwerfen"
+            onClick={async () => {
+              for (const b of bufs) await bufferDelete(b.id);
+              await refreshBufs();
+            }}
           >
-            {voice.recording ? (
-              <VoiceWave waveRef={voice.waveRef} elapsed={voice.elapsed} onCancel={voice.cancel} />
-            ) : (
-              <textarea
-                ref={taRef}
-                value={text}
-                disabled={busy}
-                rows={1}
-                placeholder="Notiz hinterlassen …"
-                aria-label="Notiz"
-                onChange={(e) => setText(e.target.value)}
-                onKeyDown={(e) => {
-                  if (
-                    e.key === "Enter" &&
-                    !e.shiftKey &&
-                    !e.nativeEvent.isComposing &&
-                    !window.matchMedia("(pointer:coarse)").matches
-                  ) {
-                    e.preventDefault();
-                    void send();
-                  }
-                }}
-                className="h-11 max-h-[154px] min-w-0 flex-1 resize-none overflow-y-auto rounded-[22px] border border-border bg-surface px-4 py-2.5 text-base leading-[22px] text-text outline-none placeholder:text-zinc-500 focus:border-zinc-600 disabled:opacity-55"
-              />
-            )}
-            {!voice.recording && (
-              <button
-                type="button"
-                onClick={() => void voice.start()}
-                disabled={busy}
-                aria-label="Sprachaufnahme starten"
-                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-zinc-800 text-zinc-200 active:scale-95 disabled:opacity-35"
-              >
-                <MicIcon className="h-5 w-5" />
-              </button>
-            )}
-            {(has || voice.recording) && (
-              <button
-                type="button"
-                onClick={() => void send()}
-                disabled={busy || saving}
-                aria-label={voice.recording ? "Aufnahme beenden" : "Senden"}
-                className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-zinc-100 text-zinc-900 active:scale-95 disabled:opacity-35 ${
-                  voice.recording ? "ring-[3px] ring-zinc-100/20" : ""
-                }`}
-              >
-                <ArrowUpIcon className="h-5 w-5" />
-              </button>
-            )}
-          </div>
-        </>
+            <XIcon className="ic" />
+          </button>
+        </div>
+      )}
+      <div
+        className="comp"
+        data-has={has ? "1" : "0"}
+        data-rec={voice.recording ? "1" : "0"}
+        data-busy={busy ? "1" : "0"}
+        data-tray={review ? "1" : "0"}
+      >
+        <div className="fld">
+          <textarea
+            ref={taRef}
+            id="composer-input"
+            data-tour="composer"
+            value={text}
+            disabled={busy}
+            rows={1}
+            placeholder="Notiz hinterlassen …"
+            aria-label="Notiz"
+            onChange={(e) => setText(e.target.value)}
+            onKeyDown={(e) => {
+              if (
+                e.key === "Enter" &&
+                !e.shiftKey &&
+                !e.nativeEvent.isComposing &&
+                !window.matchMedia("(pointer:coarse)").matches
+              ) {
+                e.preventDefault();
+                void send();
+              }
+            }}
+          />
+          {voice.recording && (
+            <VoiceWave waveRef={voice.waveRef} elapsed={voice.elapsed} onCancel={voice.cancel} />
+          )}
+        </div>
+        <button
+          type="button"
+          className="rb"
+          id="mic"
+          data-tour="mic"
+          onClick={() => void voice.start()}
+          disabled={busy}
+          aria-label="Sprachaufnahme"
+        >
+          <MicIcon className="ic" />
+        </button>
+        <button
+          type="button"
+          className="rb send"
+          id="composer-send"
+          onClick={() => void send()}
+          disabled={busy || saving}
+          aria-label={voice.recording ? "Aufnahme beenden" : "Senden"}
+        >
+          <ArrowUpIcon className="ic" />
+        </button>
+      </div>
+      {fieldHint && (
+        <div className="dhint" aria-live="polite">
+          Text vom Gerät erkannt, bitte prüfen
+        </div>
       )}
     </div>
   );

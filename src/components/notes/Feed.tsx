@@ -1,39 +1,60 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useAuth } from "@/lib/auth";
 import {
+  assignNote,
   isAssignmentSupported,
+  loadCommentsFor,
   loadItemOptions,
   loadNotes,
   reopenNote,
   resolveNote,
   type ItemOption,
   type Note,
+  type NoteCategory,
+  type NoteComment,
 } from "@/lib/notes";
 import { CategoryChips, type CategoryFilter } from "./CategoryChips";
 import { Composer } from "./Composer";
-import { dayLabel } from "./format";
+import { dayLabel, rtime, shortAuthor } from "./format";
+import { ItemPicker } from "./ItemPicker";
+import { ItemScreen } from "./ItemScreen";
 import { NoteDetail } from "./NoteDetail";
 import { noteCategory, NoteRow } from "./NoteRow";
 import { SegmentedFilter, type Segment } from "./SegmentedFilter";
+import { BottomSheet } from "./BottomSheet";
 import { UndoToast, type ToastState } from "./UndoToast";
 
 const UNDO_MS = 5000;
 
-export function Feed() {
+export function Feed({
+  top,
+  openItemId,
+  onOpenItemConsumed,
+  onStats,
+}: {
+  top?: ReactNode;
+  openItemId?: string | null;
+  onOpenItemConsumed?: () => void;
+  onStats?: (stats: { open: number }) => void;
+}) {
   const { user, profile } = useAuth();
   const [notes, setNotes] = useState<Note[]>([]);
+  const [comments, setComments] = useState<Record<string, NoteComment[]>>({});
   const [itemOptions, setItemOptions] = useState<ItemOption[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [segment, setSegment] = useState<Segment>("open");
   const [category, setCategory] = useState<CategoryFilter>("Alle");
   const [openId, setOpenId] = useState<string | null>(null);
+  const [itemId, setItemId] = useState<string | null>(null);
+  const [itemSeg, setItemSeg] = useState<Segment>("open");
+  const [ask, setAsk] = useState<Note | null>(null);
+  const [pickNote, setPickNote] = useState<Note | null>(null);
   const [lingering, setLingering] = useState<Set<string>>(new Set());
   const [toast, setToast] = useState<ToastState>(null);
   const [composerH, setComposerH] = useState(72);
-  const [assignment, setAssignment] = useState<boolean | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const lingerTimers = useRef(new Map<string, ReturnType<typeof setTimeout>>());
   const toastSeq = useRef(0);
@@ -45,11 +66,11 @@ export function Feed() {
   const reload = useCallback(async () => {
     if (!teamId) return;
     const res = await loadNotes(teamId);
-    setAssignment(isAssignmentSupported());
     if (res.error) setLoadError(res.error);
     else {
       setLoadError(null);
       setNotes(res.notes);
+      setComments(await loadCommentsFor(res.notes.map((n) => n.id)));
     }
     setLoading(false);
   }, [teamId]);
@@ -80,6 +101,19 @@ export function Feed() {
       timers.forEach(clearTimeout);
     };
   }, [reload]);
+
+  const openCount = notes.filter((n) => !n.is_resolved).length;
+  useEffect(() => {
+    onStats?.({ open: openCount });
+  }, [openCount, onStats]);
+
+  useEffect(() => {
+    if (!openItemId) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setItemId(openItemId);
+    setItemSeg("open");
+    onOpenItemConsumed?.();
+  }, [openItemId, onOpenItemConsumed]);
 
   const showToast = useCallback((message: string, undo?: () => void) => {
     clearTimeout(toastTimer.current);
@@ -140,10 +174,7 @@ export function Feed() {
       return;
     }
     setSegment("open");
-    setOpenId(null);
   }
-
-  const showChips = assignment !== false;
 
   const inSegment = useMemo(
     () =>
@@ -156,6 +187,7 @@ export function Feed() {
   const counts = useMemo(() => {
     const c: Record<CategoryFilter, number> = {
       Alle: inSegment.length,
+      Termine: inSegment.filter((n) => n.due_at).length,
       Medikamente: 0,
       BTM: 0,
       Fahrzeug: 0,
@@ -164,103 +196,99 @@ export function Feed() {
     };
     inSegment.forEach((n) => {
       const k = noteCategory(n, items) as CategoryFilter;
-      if (k in c) c[k]++;
-      else c.Sonstiges++;
+      if (k in c && k !== "Alle" && k !== "Termine") c[k]++;
     });
     return c;
   }, [inSegment, items]);
 
-  const segCounts = useMemo(
-    () => ({
-      open: notes.filter((n) => !n.is_resolved || lingering.has(n.id)).length,
-      done: notes.filter((n) => n.is_resolved && !lingering.has(n.id)).length,
-    }),
-    [notes, lingering]
-  );
-
-  const activeCategory = showChips && counts[category] > 0 ? category : "Alle";
+  const activeCategory = counts[category] > 0 || category === "Alle" ? category : "Alle";
 
   const visible = useMemo(() => {
-    const list = inSegment.filter(
-      (n) => activeCategory === "Alle" || noteCategory(n, items) === activeCategory
-    );
-    const key = (n: Note) => (segment === "done" ? (n.resolved_at ?? n.created_at) : n.created_at);
-    return [...list].sort((a, b) => +new Date(key(b)) - +new Date(key(a)));
+    let list = inSegment.filter((n) => {
+      if (activeCategory === "Termine") return !!n.due_at;
+      if (activeCategory === "Alle") return true;
+      return noteCategory(n, items) === activeCategory;
+    });
+    if (segment === "done") {
+      list = [...list].sort(
+        (a, b) => +new Date(b.resolved_at ?? b.created_at) - +new Date(a.resolved_at ?? a.created_at)
+      );
+    } else if (activeCategory === "Termine") {
+      list = [...list].sort((a, b) => +new Date(a.due_at ?? 0) - +new Date(b.due_at ?? 0));
+    } else {
+      list = [...list].sort((a, b) => +new Date(b.created_at) - +new Date(a.created_at));
+    }
+    return list;
   }, [inSegment, activeCategory, items, segment]);
 
+  const grouped = segment === "open" && activeCategory !== "Termine";
+
   const groups = useMemo(() => {
+    if (!grouped) return [{ label: "", notes: visible }];
     const out: { label: string; notes: Note[] }[] = [];
     for (const n of visible) {
-      const label = dayLabel(segment === "done" ? (n.resolved_at ?? n.created_at) : n.created_at);
+      const label = dayLabel(n.created_at);
       const last = out[out.length - 1];
       if (last && last.label === label) last.notes.push(n);
       else out.push({ label, notes: [n] });
     }
     return out;
-  }, [visible, segment]);
+  }, [visible, grouped]);
 
   const openNote = notes.find((n) => n.id === openId) ?? null;
+  const item = itemId ? items.get(itemId) : undefined;
+  const itemNotes = itemId ? notes.filter((n) => n.item_id === itemId) : [];
+
+  function openRow(n: Note) {
+    if (n.item_id && items.has(n.item_id)) {
+      setItemId(n.item_id);
+      setItemSeg(n.is_resolved && !lingering.has(n.id) ? "done" : "open");
+      return;
+    }
+    setOpenId(n.id);
+  }
 
   return (
-    <div className="relative flex h-full flex-col">
-      <div className="shrink-0 pt-4 pb-1">
-        <h1 className="mb-3 px-4 text-[28px] leading-[34px] font-bold tracking-[-0.02em]">Notizen</h1>
-        <SegmentedFilter value={segment} onChange={setSegment} counts={segCounts} />
-      </div>
-      {showChips && (
-        <div className="shrink-0 border-b border-border">
+    <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
+      <div className="feed">
+        {top}
+        <SegmentedFilter value={segment} onChange={setSegment} />
+        {isAssignmentSupported() !== false && (
           <CategoryChips value={activeCategory} onChange={setCategory} counts={counts} />
-        </div>
-      )}
-
-      <div className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain pb-3">
+        )}
         {loading || !teamId ? (
-          <div className="flex justify-center py-16">
-            <div className="h-6 w-6 animate-spin rounded-full border-2 border-text-muted border-t-red" />
+          <div className="fempty">
+            <i className="spin" />
           </div>
         ) : loadError ? (
-          <div className="px-6 py-16 text-center text-sm text-text-muted">
+          <div className="fempty">
             Notizen konnten nicht geladen werden.
-            <button
-              type="button"
-              onClick={() => void reload()}
-              className="mt-2 block min-h-11 w-full font-medium text-text underline underline-offset-4"
-            >
+            <button type="button" className="more" onClick={() => void reload()}>
               Erneut versuchen
             </button>
           </div>
-        ) : groups.length === 0 ? (
-          <div className="px-6 py-16 text-center text-[15px] text-zinc-500">
-            {segment === "open"
-              ? activeCategory === "Alle"
-                ? "Keine offenen Notizen"
-                : `Keine offenen Notizen in ${activeCategory}`
-              : activeCategory === "Alle"
-                ? "Noch nichts erledigt"
-                : `Nichts erledigt in ${activeCategory}`}
+        ) : visible.length === 0 ? (
+          <div className="fempty">
+            {segment === "open" ? "Keine offenen Notizen" : "Noch keine erledigten Notizen"}
           </div>
         ) : (
           groups.map((g) => (
-            <div key={g.label}>
-              <div className="mx-4 mt-4 mb-1 flex items-center gap-3 text-[13px] font-medium text-zinc-500">
-                <span className="h-px flex-1 bg-border" />
-                {g.label}
-                <span className="h-px flex-1 bg-border" />
-              </div>
-              <div className="divide-y divide-border">
-                {g.notes.map((n) => (
-                  <NoteRow
-                    key={n.id}
-                    note={n}
-                    items={items}
-                    showChips={showChips}
-                    justDone={lingering.has(n.id)}
-                    segment={segment}
-                    onOpen={() => setOpenId(n.id)}
-                    onComplete={() => void complete(n)}
-                  />
-                ))}
-              </div>
+            <div key={g.label || "list"}>
+              {g.label && <div className="day">{g.label}</div>}
+              {g.notes.map((n) => (
+                <NoteRow
+                  key={n.id}
+                  note={n}
+                  items={items}
+                  filter={activeCategory}
+                  justDone={lingering.has(n.id)}
+                  replies={comments[n.id] ?? []}
+                  onOpen={() => openRow(n)}
+                  onPickMaterial={
+                    n.source === "raw" && !n.item_id ? () => setPickNote(n) : undefined
+                  }
+                />
+              ))}
             </div>
           ))
         )}
@@ -289,15 +317,88 @@ export function Feed() {
         <NoteDetail
           note={openNote}
           items={items}
-          showChips={showChips}
+          authorName={fullName}
           onClose={() => setOpenId(null)}
-          onComplete={() => {
-            void complete(openNote);
-            setOpenId(null);
-          }}
+          onAskDone={() => setAsk(openNote)}
           onReopen={() => void reopen(openNote)}
+          onChanged={() => void reload()}
+          onPickMaterial={
+            openNote.source === "raw" && !openNote.item_id ? () => setPickNote(openNote) : undefined
+          }
         />
       )}
+
+      {item && (
+        <ItemScreen
+          item={item}
+          notes={itemNotes}
+          comments={comments}
+          segment={itemSeg}
+          onSegment={setItemSeg}
+          authorName={fullName}
+          checkedAt={null}
+          onClose={() => setItemId(null)}
+          onAskDone={(n) => setAsk(n)}
+          onReopen={(n) => void reopen(n)}
+          onChanged={() => void reload()}
+        />
+      )}
+
+      <BottomSheet
+        open={!!ask}
+        onClose={() => setAsk(null)}
+        title="Notiz wirklich erledigt?"
+        hideClose
+        footer={
+          <>
+            <button
+              type="button"
+              className="btn btn-p"
+              onClick={() => {
+                if (ask) void complete(ask);
+                setAsk(null);
+              }}
+            >
+              Erledigt
+            </button>
+            <button type="button" className="btn btn-s" onClick={() => setAsk(null)}>
+              Abbrechen
+            </button>
+          </>
+        }
+      >
+        {ask && (
+          <>
+            <div className="dq">{ask.value}</div>
+            <div className="dqm">
+              {shortAuthor(ask.author_name)} · {rtime(ask.created_at)}
+            </div>
+          </>
+        )}
+      </BottomSheet>
+
+      <ItemPicker
+        open={!!pickNote}
+        items={itemOptions}
+        current={{
+          itemId: pickNote?.item_id ?? null,
+          category: (["Medikamente", "BTM", "Fahrzeug", "Ausrüstung", "Sonstiges"] as string[]).includes(
+            pickNote?.category ?? ""
+          )
+            ? (pickNote?.category as NoteCategory)
+            : "Sonstiges",
+        }}
+        onClose={() => setPickNote(null)}
+        onPick={(pk) => {
+          const n = pickNote;
+          setPickNote(null);
+          if (!n) return;
+          void assignNote(n.id, pk.itemId, pk.category).then((ok) => {
+            if (!ok) showToast("Konnte nicht gespeichert werden");
+            else void reload();
+          });
+        }}
+      />
     </div>
   );
 }
