@@ -20,7 +20,7 @@ async function handle(req: NextRequest, ids: { vehicleId?: unknown; protocolId?:
     const token = header.startsWith("Bearer ") ? header.slice(7).trim() : "";
     const auth = await authorizeSubmit(sb, token, { protocolId: ids.protocolId, vehicleId: ids.vehicleId });
     if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status });
-    const out = await run(sb, auth, { vehicleId: ids.vehicleId as string, protocolId: ids.protocolId as string });
+    const out = await run(sb, auth as { userId: string; teamId: string }, { vehicleId: ids.vehicleId as string, protocolId: ids.protocolId as string });
     if (!out.ok) return NextResponse.json({ error: out.error }, { status: out.status ?? 500 });
     return NextResponse.json(out);
   } catch {
