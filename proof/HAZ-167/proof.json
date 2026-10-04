@@ -4,7 +4,7 @@
   "kind": "nef-web",
   "proofKind": "ui",
   "branch": "florian/haz-166-haz-167-nef-protokoll-back-scroll-server-draft",
-  "commitSha": "f42e4dc84a733fb42242adfa5e6bdac671c429f3",
+  "commitSha": "f9c6b6d3801e78748c16fe202c4c3a5fcefb42b1",
   "pr": {
     "url": "https://github.com/florianthompson/nef-web/pull/15",
     "number": 15,
@@ -14,13 +14,13 @@
     "mergedAt": null
   },
   "urls": {
-    "preview": "https://nef-cdk20fi6t-florian-thompsons-projects-c1c41a9c.vercel.app",
+    "preview": "https://nef-6hsguz7d5-florian-thompsons-projects-c1c41a9c.vercel.app",
     "live": null
   },
   "console": {
     "errors": []
   },
-  "createdAt": "2026-10-04T07:53:56Z",
+  "createdAt": "2026-10-04T08:01:03Z",
   "createdBy": "Claude Code",
   "ticket": "HAZ-167",
   "screenshots": [

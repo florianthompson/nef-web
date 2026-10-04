@@ -1,4 +1,4 @@
-HAZ-167 resume proof, preview https://nef-cdk20fi6t-florian-thompsons-projects-c1c41a9c.vercel.app
+HAZ-167 resume proof, preview https://nef-6hsguz7d5-florian-thompsons-projects-c1c41a9c.vercel.app
 NOTE: public.protocol_drafts is NOT on prod (migration needs PM OK). Part 1 uses the real route (503, local queue).
 Part 2 STUBS /api/protocol-draft with an in-memory store shared by two contexts; the real server path is blocked on the migration OK.
 [desktop] LOCAL QUEUE (real route): before=7/93 7 checked open=['Ausrüstung', 'Fahrzeug'] scrollTop=700 | after reload=7/93 7 checked open=['Ausrüstung', 'Fahrzeug'] scrollTop=700 -> PASS

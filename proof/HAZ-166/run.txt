@@ -1,4 +1,4 @@
-HAZ-166 back keeps the Protokoll scroll, preview https://nef-cdk20fi6t-florian-thompsons-projects-c1c41a9c.vercel.app
+HAZ-166 back keeps the Protokoll scroll, preview https://nef-6hsguz7d5-florian-thompsons-projects-c1c41a9c.vercel.app
 [desktop] back=inapp   item=9c6cfacd before={'scrollTop': 1248, 'itemTop': 345, 'checked': 4, 'open': 4, 'progress': '4/93'} after={'scrollTop': 1248, 'itemTop': 345, 'checked': 4, 'open': 4, 'progress': '4/93'} itemTop delta=0.0px scrollTop delta=0.0px url unchanged=True history 2->3 protokoll visible=True -> PASS
 [desktop] back=inapp   history length after close=3 (entry stays as forward entry, no overlay open)
 [desktop] back=browser item=9c6cfacd before={'scrollTop': 1248, 'itemTop': 345, 'checked': 4, 'open': 4, 'progress': '4/93'} after={'scrollTop': 1248, 'itemTop': 345, 'checked': 4, 'open': 4, 'progress': '4/93'} itemTop delta=0.0px scrollTop delta=0.0px url unchanged=True history 2->3 protokoll visible=True -> PASS
