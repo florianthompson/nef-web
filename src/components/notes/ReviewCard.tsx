@@ -15,6 +15,12 @@ export type ReviewPart = {
   dueDate: string | null;
   dueText: string | null;
   manual?: boolean;
+  /** how sure the matcher is: high | medium | low | none */
+  confidence?: string;
+  /** item ids to pick from, best first */
+  candidates?: string[];
+  /** several items fit: the user must pick one (or "kein Artikel") before sending */
+  needsConfirm?: boolean;
 };
 
 function AutoTextarea({ value, onChange }: { value: string; onChange: (v: string) => void }) {
@@ -121,6 +127,7 @@ export function ReviewCard({
   const byId = new Map(items.map((i) => [i.id, i]));
   const multi = parts.length > 1;
   const valid = parts.filter((p) => p.text.trim()).length;
+  const unconfirmed = parts.filter((p) => p.text.trim() && p.needsConfirm).length;
 
   useLayoutEffect(() => {
     const o = origRef.current;
@@ -233,6 +240,40 @@ export function ReviewCard({
                     </button>
                   )}
                 </div>
+                {p.needsConfirm && (
+                  <div
+                    role="group"
+                    aria-label="Bitte bestätigen"
+                    className="mt-2 rounded-xl border border-amber-500/40 bg-amber-500/10 p-2.5"
+                  >
+                    <div className="mb-1.5 text-[13px] font-medium text-amber-300">Bitte bestätigen</div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {(p.candidates ?? []).flatMap((cid) => {
+                        const c = byId.get(cid);
+                        if (!c) return [];
+                        return [
+                          <button
+                            key={cid}
+                            type="button"
+                            onClick={() =>
+                              patch(p.key, { itemId: c.id, category: c.category, needsConfirm: false, manual: true })
+                            }
+                            className="cf-chip inline-flex min-h-9 max-w-full items-center px-3 text-[13px] font-medium"
+                          >
+                            <span className="truncate">{c.title}</span>
+                          </button>,
+                        ];
+                      })}
+                      <button
+                        type="button"
+                        onClick={() => patch(p.key, { itemId: null, needsConfirm: false })}
+                        className="cf-chip alt inline-flex min-h-9 items-center px-3 text-[13px] font-medium"
+                      >
+                        Kein Artikel
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
               {multi && (
                 <button
@@ -270,7 +311,12 @@ export function ReviewCard({
       </div>
 
       <div className="tr-f">
-        <button type="button" className="btn btn-p" onClick={onSend} disabled={!valid || sending}>
+        {unconfirmed > 0 && (
+          <p className="pb-2 text-center text-xs text-amber-300">
+            {unconfirmed === 1 ? "Noch 1 Artikel bestätigen" : `Noch ${unconfirmed} Artikel bestätigen`}
+          </p>
+        )}
+        <button type="button" className="btn btn-p" onClick={onSend} disabled={!valid || sending || unconfirmed > 0}>
           {multi ? `Senden (${valid})` : "Senden"}
         </button>
         <button type="button" className="tr-raw" onClick={onSendRaw} disabled={sending}>
@@ -284,7 +330,7 @@ export function ReviewCard({
         current={{ itemId: pickPart?.itemId ?? null, category: pickPart?.category ?? "Sonstiges" }}
         onClose={() => setPickFor(null)}
         onPick={(pk) => {
-          if (pickFor != null) patch(pickFor, { itemId: pk.itemId, category: pk.category, manual: true });
+          if (pickFor != null) patch(pickFor, { itemId: pk.itemId, category: pk.category, manual: true, needsConfirm: false });
           setPickFor(null);
         }}
       />

@@ -1,4 +1,5 @@
 import { NextRequest } from "next/server";
+import { buildTeamIndex, hintLines, resolveNote } from "@/lib/items";
 import { authorize, json, loadTeamItems, mapCategory, openaiBase } from "@/lib/server/notesApi";
 
 export const runtime = "nodejs";
@@ -40,7 +41,8 @@ const SYSTEM = `Du sortierst Notizen aus dem Rettungsdienst (Checkliste eines NE
 - Der Text jeder Notiz bleibt nah am Gesagten: nimm die Formulierung aus der Nachricht und mache nur eine leichte Bereinigung (Füllwörter wie "äh", "also", "dann" weg, Grammatik und Satzanfang glätten, keine Datumsangabe im Text).
 - Gerätenamen, Markennamen und Medikamentennamen bleiben genau so, wie sie gesagt wurden (z. B. "Corpuls" bleibt "Corpuls", nie "EKG" oder "EKG-Ladekabel"; "Rocu" darf "Rocuronium" werden). Die Zuordnung zur itemId ändert den Text nicht.
 - Füge keine Handlungen, Aufforderungen, Bewertungen oder Wörter hinzu, die nicht gesagt wurden (z. B. nicht "und muss nachgefüllt werden", wenn nur "ist leer" gesagt wurde). Gesagte Aufforderungen wie "bitte nachbestellen" bleiben erhalten.
-- Ordne jede Notiz genau einer itemId aus der Liste zu, wenn sie eindeutig darauf verweist (Synonyme und Markennamen sind erlaubt, z. B. "Rocu" = Rocuronium, "Ceftri" = Ceftriaxon). Verwende ausschließlich ids aus der Liste. Sonst itemId null und die passendste category, im Zweifel Sonstiges.
+- Ordne jede Notiz genau einer itemId aus der Liste zu, wenn sie eindeutig darauf verweist (Synonyme und Markennamen sind erlaubt, z. B. "Rocu" = Rocuronium, "Ceftri" = Ceftriaxon). Verwende ausschließlich ids aus der Liste. Sonst itemId null und die passendste category, im Zweifel Sonstiges. Erfinde nie einen Artikel: was nicht auf der Liste steht (z. B. Feuerlöscher), bekommt itemId null.
+- Unter "Treffer" stehen Zuordnungen, die eine feste Namenstabelle im Text gefunden hat. Nutze sie als Hilfe für die itemId. Bei "unklar" nenne nur dann eine itemId, wenn der Text oder Kontext (Stärke, Menge, Darreichung) eindeutig entscheidet, sonst null. Teile eine Nachricht, in der mehrere Gegenstände mit eigenem Problem vorkommen, in getrennte Notizen.
 - Löse Termine relativ zu "Jetzt" auf (Europe/Berlin). Ein Wochentag bedeutet das nächste Auftreten; derselbe Wochentag wie heute bedeutet nächste Woche. dueDate als 'YYYY-MM-DD' oder mit Uhrzeit 'YYYY-MM-DDTHH:MM', dueText ist die Original-Formulierung (z. B. "Donnerstag um 14 Uhr"). Ohne Termin beides null.`;
 
 function nowBerlin(): string {
@@ -107,7 +109,8 @@ type RawNote = {
 function clean(
   raw: { notes?: RawNote[] } | null,
   transcript: string,
-  itemsById: Map<string, { id: string; category: string }>
+  itemsById: Map<string, { id: string; category: string }>,
+  index: ReturnType<typeof buildTeamIndex>
 ) {
   const textNorm = norm(transcript);
   const textTokens = textNorm ? textNorm.split(" ") : [];
@@ -118,6 +121,9 @@ function clean(
     category: string;
     dueDate: string | null;
     dueText: string | null;
+    confidence: string;
+    candidates: string[];
+    needsConfirm: boolean;
   }[] = [];
   for (const n of raw && Array.isArray(raw.notes) ? raw.notes : []) {
     if (out.length >= 30) break;
@@ -128,9 +134,12 @@ function clean(
       dropped++;
       continue;
     }
-    const item = typeof n.itemId === "string" ? itemsById.get(n.itemId) : undefined;
-    const category = item
-      ? mapCategory(item.category)
+    // deterministic matcher + model pick; every id is validated against the team's list
+    const res = resolveNote({ text, quote }, typeof n.itemId === "string" ? n.itemId : null, index);
+    const item = res.itemId ? itemsById.get(res.itemId) : undefined;
+    const lead = item ?? (res.candidates[0] ? itemsById.get(res.candidates[0]) : undefined);
+    const category = lead
+      ? mapCategory(lead.category)
       : typeof n.category === "string" && CATS.includes(n.category)
         ? n.category
         : "Sonstiges";
@@ -139,7 +148,16 @@ function clean(
       dueDate && typeof n.dueText === "string" && n.dueText.trim()
         ? n.dueText.trim().slice(0, 80)
         : null;
-    out.push({ text, itemId: item ? item.id : null, category, dueDate, dueText });
+    out.push({
+      text,
+      itemId: item ? item.id : null,
+      category,
+      dueDate,
+      dueText,
+      confidence: res.confidence,
+      candidates: res.candidates.filter((c) => itemsById.has(c)),
+      needsConfirm: res.needsConfirm,
+    });
   }
   return { notes: out, dropped };
 }
@@ -196,13 +214,16 @@ export async function POST(req: NextRequest) {
     // parse still works without a catalogue (all notes become unassigned)
   }
   const itemsById = new Map(items.map((i) => [i.id, i]));
+  const index = buildTeamIndex(items);
   const itemLines = items.map((i) => `${i.id}|${i.title}|${mapCategory(i.category)}`).join("\n");
+  const found = hintLines(text, index);
+  const hints = found.length ? `\n\nTreffer (Text -> Artikel):\n${found.join("\n")}` : "";
 
   const messages = [
     { role: "system", content: SYSTEM },
     {
       role: "user",
-      content: `Jetzt: ${nowBerlin()}\n\nItems (id|name|category):\n${itemLines}\n\nText:\n${text.trim()}`,
+      content: `Jetzt: ${nowBerlin()}\n\nItems (id|name|category):\n${itemLines}${hints}\n\nText:\n${text.trim()}`,
     },
   ];
 
@@ -233,7 +254,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const j = await r.up.json();
-    const out = clean(JSON.parse(j.choices[0].message.content), text, itemsById);
+    const out = clean(JSON.parse(j.choices[0].message.content), text, itemsById, index);
     return json(200, { notes: out.notes, dropped: out.dropped, model });
   } catch {
     return json(502, { error: "upstream", status: r.up.status });

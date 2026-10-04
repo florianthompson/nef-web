@@ -132,6 +132,9 @@
 .v19 .sp-skip{flex:none;min-height:44px;margin:-10px 0 -10px auto;padding:0 0 0 4px;font-size:13px;font-weight:500;color:#d4d4d8;text-decoration:underline;text-underline-offset:3px;white-space:nowrap}
 .v19 .tray{flex:none;display:none;flex-direction:column;max-height:74vh;max-height:74dvh;background:var(--card);border:1px solid var(--border);border-bottom:0;border-radius:14px 14px 0 0;box-shadow:0 -8px 24px rgba(0,0,0,.35)}
 .v19 .tray.show{display:flex}
+.v19 .cf-chip{background:#27272a;color:#fafafa;border-radius:999px}
+.v19 .cf-chip.alt{background:none;color:#a1a1aa;border:1px solid #3f3f46}
+.v19 .cf-chip:active{background:#3f3f46}
 .v19 .tr-h{flex:none;display:flex;align-items:center;min-height:52px;padding:0 4px 0 16px}
 .v19 .tr-h b{font-size:17px;font-weight:600}
 .v19 .tr-h .x{margin:0 0 0 auto}
