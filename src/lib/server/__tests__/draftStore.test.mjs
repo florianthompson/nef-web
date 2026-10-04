@@ -61,7 +61,8 @@ test("put rejects a draft for another vehicle or garbage", async () => {
 
 test("get returns null for an expired draft, delete issues a scoped delete", async () => {
   const old = mk(["a"], 1);
-  assert.equal((await getDraft(sb({ row: old }), auth, ids, { now: 13 * 3600 * 1000 })).draft, null);
+  assert.ok((await getDraft(sb({ row: old }), auth, ids, { now: 23 * 3600 * 1000 })).draft, "23 h old is still served");
+  assert.equal((await getDraft(sb({ row: old }), auth, ids, { now: 25 * 3600 * 1000 })).draft, null);
   const c = sb();
   assert.equal((await deleteDraft(c, auth, ids)).ok, true);
   assert.equal(c.state.deletes, 1);

@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { createDraftSync, draftKey } from "../draftSync.mjs";
-import { applySnapshot, checkedIdsOf, emptyDraft, fromLegacy, mergeDrafts, normalizeDraft } from "../draftModel.mjs";
+import { DRAFT_MAX_AGE_MS, applySnapshot, checkedIdsOf, emptyDraft, fromLegacy, mergeDrafts, normalizeDraft } from "../draftModel.mjs";
 import { createHttpTransport } from "../draftTransport.mjs";
 
 const U = "u1";
@@ -306,13 +306,16 @@ test("legacy localStorage draft is migrated into the queue and synced", async ()
   assert.equal(fromLegacy({ protocolId: P, vehicleId: "v1", shiftNote: "n", checkedIds: [], savedAt: 7 }).shiftNote.at, 7);
 });
 
-test("expired drafts (older than 12 h) do not resurface", async () => {
-  const server = fakeServer();
-  const old = applySnapshot(emptyDraft({ protocolId: P, vehicleId: "v1" }), snap(["a"]), 1).draft;
-  server.rows.set("u1:v1:p1", old);
-  const { sync, clk } = setup({ server });
-  clk.advance(13 * 3600 * 1000);
-  assert.deepEqual(checkedIdsOf(await sync.resume(ctx())), []);
+test("drafts expire after 24 h: 23 h old resumes, 25 h old does not resurface", async () => {
+  assert.equal(DRAFT_MAX_AGE_MS, 24 * 3600 * 1000);
+  for (const [hours, expected] of [[23, ["a"]], [25, []]]) {
+    const server = fakeServer();
+    const old = applySnapshot(emptyDraft({ protocolId: P, vehicleId: "v1" }), snap(["a"]), 1).draft;
+    server.rows.set("u1:v1:p1", old);
+    const { sync, clk } = setup({ server });
+    clk.advance(hours * 3600 * 1000);
+    assert.deepEqual(checkedIdsOf(await sync.resume(ctx())), expected, `${hours} h`);
+  }
 });
 
 test("normalizeDraft rejects other vehicles, bad versions and junk", () => {

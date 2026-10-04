@@ -6,7 +6,7 @@
 
 export const DRAFT_VERSION = 1;
 /** a previous shift's draft must not resurface */
-export const DRAFT_MAX_AGE_MS = 12 * 60 * 60 * 1000;
+export const DRAFT_MAX_AGE_MS = 24 * 60 * 60 * 1000;
 
 const MAX_IDS = 2000;
 const MAX_TEXT = 20000;

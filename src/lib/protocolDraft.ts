@@ -12,7 +12,7 @@ export type ProtocolDraft = {
 };
 
 // Discard drafts older than this, so a previous shift's draft doesn't resurface.
-const MAX_AGE_MS = 12 * 60 * 60 * 1000;
+const MAX_AGE_MS = 24 * 60 * 60 * 1000; // same expiry as DRAFT_MAX_AGE_MS (HAZ-167)
 
 const keyFor = (userId: string) => `nef:protocol-draft:${userId}`;
 
