@@ -40,7 +40,7 @@ type FeedState = {
 export function Feed({
   top,
   openItemId,
-  onOpenItemConsumed,
+  onRequestClose,
   onStats,
   vehicleId,
   legacyVehicleId,
@@ -50,8 +50,10 @@ export function Feed({
   /** the vehicle that also shows legacy notes without vehicle_id */
   legacyVehicleId?: string | null;
   top?: ReactNode;
+  /** item opened from outside (the Protokoll); null closes it again */
   openItemId?: string | null;
-  onOpenItemConsumed?: () => void;
+  /** close asked inside the screen while openItemId is set; the owner decides (history back) */
+  onRequestClose?: () => void;
   onStats?: (stats: { open: number }) => void;
 }) {
   const { user, profile } = useAuth();
@@ -154,12 +156,16 @@ export function Feed({
   }, [openCount, onStats]);
 
   useEffect(() => {
-    if (!openItemId) return;
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (!openItemId) {
+      // closed from outside (popstate): drop whatever the Protokoll opened
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setItemId(null);
+      setOpenId(null);
+      return;
+    }
     setItemId(openItemId);
     setItemSeg("open");
-    onOpenItemConsumed?.();
-  }, [openItemId, onOpenItemConsumed]);
+  }, [openItemId]);
 
   const showToast = useCallback((message: string, undo?: () => void) => {
     clearTimeout(toastTimer.current);
@@ -365,7 +371,7 @@ export function Feed({
           note={openNote}
           items={items}
           authorName={fullName}
-          onClose={() => setOpenId(null)}
+          onClose={() => (openItemId && onRequestClose ? onRequestClose() : setOpenId(null))}
           onAskDone={() => setAsk(openNote)}
           onReopen={() => void reopen(openNote)}
           onChanged={() => void reload()}
@@ -384,7 +390,7 @@ export function Feed({
           onSegment={setItemSeg}
           authorName={fullName}
           checkedAt={null}
-          onClose={() => setItemId(null)}
+          onClose={() => (openItemId && onRequestClose ? onRequestClose() : setItemId(null))}
           onAskDone={(n) => setAsk(n)}
           onReopen={(n) => void reopen(n)}
           onChanged={() => void reload()}

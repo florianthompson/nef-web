@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAuth } from "@/lib/auth";
 import { supabase } from "@/lib/supabase";
 import {
@@ -22,6 +22,7 @@ import {
   type Vehicle,
 } from "@/lib/protocol";
 import { legacyNoteVehicleId } from "@/lib/vehicleNotes.mjs";
+import { createOverlayNav, makeOrigin, restoreTop } from "@/lib/overlayHistory.mjs";
 import { shortAuthor } from "./format";
 import { AvatarMenu } from "@/components/app/AvatarMenu";
 import { Checklist } from "./Checklist";
@@ -31,6 +32,18 @@ import { ProtocolCard } from "./ProtocolCard";
 import { SubmitSheet } from "./SubmitSheet";
 
 const NO_COUNTS: Record<string, number> = {};
+
+const CHECK_SCROLL = "#checklist .nv-b";
+
+function checkScroller(): HTMLElement | null {
+  return document.querySelector<HTMLElement>(CHECK_SCROLL);
+}
+
+function anchorTopOf(id: string | null): number | null {
+  const sc = checkScroller();
+  const el = id ? sc?.querySelector<HTMLElement>(`[data-item-id="${CSS.escape(id)}"]`) : null;
+  return sc && el ? el.getBoundingClientRect().top - sc.getBoundingClientRect().top : null;
+}
 
 export function NotesScreen() {
   const { user, profile, loading: authLoading } = useAuth();
@@ -145,7 +158,49 @@ export function NotesScreen() {
   }, [checklistLocked, latest, protocol]);
 
   const onStats = useCallback((stats: { open: number }) => setOpenNotes(stats.open), []);
-  const consumeItem = useCallback(() => setOpenItemId(null), []);
+
+  // Item or note opened from the Protokoll: the Protokoll stays mounted underneath, one shallow
+  // history entry is pushed, and in-app back and browser/swipe back both end in popstate.
+  const navRef = useRef<ReturnType<typeof createOverlayNav> | null>(null);
+  useEffect(() => {
+    const nav = createOverlayNav(window.history);
+    navRef.current = nav;
+    nav.sanitize();
+    const onPop = () => {
+      const from = nav.handlePopState();
+      if (!from) return;
+      setOpenItemId(null);
+      // restore by anchor after layout (the Protokoll never unmounted, so this is normally a no-op)
+      requestAnimationFrame(() => {
+        const sc = checkScroller();
+        if (!sc) return;
+        const top = restoreTop(from, sc.scrollTop, anchorTopOf(from.anchorId));
+        if (Math.abs(top - sc.scrollTop) > 1) sc.scrollTop = top;
+      });
+    };
+    window.addEventListener("popstate", onPop);
+    return () => {
+      window.removeEventListener("popstate", onPop);
+      navRef.current = null;
+    };
+  }, []);
+  const requestOverlayClose = useCallback(() => {
+    if (!navRef.current?.requestClose()) setOpenItemId(null);
+  }, []);
+  const openFromCheck = useCallback((id: string) => {
+    const sc = checkScroller();
+    const anchor = anchorTopOf(id);
+    navRef.current?.open(
+      makeOrigin({ view: "check", scrollTop: sc?.scrollTop ?? 0, anchorId: anchor === null ? null : id, anchorOffset: anchor ?? 0 }),
+    );
+    setOpenItemId(id);
+  }, []);
+
+  // a vehicle switch closes the Feed overlay, so the history entry goes with it
+  const vehicleKey = vehicle?.id;
+  useEffect(() => {
+    if (navRef.current?.isOpen) navRef.current.requestClose();
+  }, [vehicleKey]);
 
   function startNewShift() {
     if (user) clearDraft(user.id);
@@ -252,7 +307,7 @@ export function NotesScreen() {
         vehicleId={feedVehicleId}
         legacyVehicleId={legacyVehicleId}
         openItemId={openItemId}
-        onOpenItemConsumed={consumeItem}
+        onRequestClose={requestOverlayClose}
         onStats={onStats}
       />
 
@@ -272,10 +327,7 @@ export function NotesScreen() {
             if (checklistLocked) return;
             setProtocol((p) => (p ? markCategoryOk(p, id) : p));
           }}
-          onOpenItem={(id) => {
-            setOpenItemId(id);
-            setView("feed");
-          }}
+          onOpenItem={openFromCheck}
           onSubmit={() => setSubmitOpen(true)}
           onNewShift={startNewShift}
         />

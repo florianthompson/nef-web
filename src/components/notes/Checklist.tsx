@@ -112,7 +112,7 @@ export function Checklist({
                     return (
                       <div key={row.id}>
                         {showGroup && <div className="lbl">{row.group}</div>}
-                        <div className={`it${row.done ? " on" : ""}${cnt ? " has" : ""}`}>
+                        <div data-item-id={row.id} className={`it${row.done ? " on" : ""}${cnt ? " has" : ""}`}>
                           <button
                             type="button"
                             className="cb"
