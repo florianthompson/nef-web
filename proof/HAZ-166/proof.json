@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "repo": "florianthompson/nef-web",
+  "kind": "nef-web",
+  "proofKind": "ui",
+  "branch": "florian/haz-166-haz-167-nef-protokoll-back-scroll-server-draft",
+  "commitSha": "f42e4dc84a733fb42242adfa5e6bdac671c429f3",
+  "pr": {
+    "url": "https://github.com/florianthompson/nef-web/pull/15",
+    "number": 15,
+    "state": "OPEN",
+    "isDraft": true,
+    "merged": false,
+    "mergedAt": null
+  },
+  "urls": {
+    "preview": "https://nef-cdk20fi6t-florian-thompsons-projects-c1c41a9c.vercel.app",
+    "live": null
+  },
+  "console": {
+    "errors": []
+  },
+  "createdAt": "2026-10-04T07:53:56Z",
+  "createdBy": "Claude Code",
+  "ticket": "HAZ-166",
+  "screenshots": [
+    {
+      "path": "protokoll-scrolled-desktop.png",
+      "viewport": "desktop",
+      "width": 2880,
+      "height": 1800,
+      "deviceScaleFactor": 2,
+      "route": "/app Protokoll (Chromium 1440)"
+    },
+    {
+      "path": "protokoll-scrolled-390.png",
+      "viewport": "mobile390",
+      "width": 780,
+      "height": 1328,
+      "deviceScaleFactor": 2,
+      "route": "/app Protokoll (WebKit iPhone 13)"
+    },
+    {
+      "path": "item-note-open-desktop.png",
+      "viewport": "desktop",
+      "width": 2880,
+      "height": 1800,
+      "deviceScaleFactor": 2,
+      "route": "/app Protokoll (Chromium 1440)"
+    },
+    {
+      "path": "item-note-open-390.png",
+      "viewport": "mobile390",
+      "width": 780,
+      "height": 1328,
+      "deviceScaleFactor": 2,
+      "route": "/app Protokoll (WebKit iPhone 13)"
+    },
+    {
+      "path": "back-same-spot-desktop.png",
+      "viewport": "desktop",
+      "width": 2880,
+      "height": 1800,
+      "deviceScaleFactor": 2,
+      "route": "/app Protokoll (Chromium 1440)"
+    },
+    {
+      "path": "back-same-spot-390.png",
+      "viewport": "mobile390",
+      "width": 780,
+      "height": 1328,
+      "deviceScaleFactor": 2,
+      "route": "/app Protokoll (WebKit iPhone 13)"
+    }
+  ],
+  "checks": [
+    {
+      "name": "unit tests (npm test)",
+      "command": "npm test",
+      "exitCode": 0,
+      "durationMs": 1000,
+      "summary": "tests 129, pass 128, fail 0, skipped 1"
+    },
+    {
+      "name": "typecheck",
+      "command": "npx tsc --noEmit",
+      "exitCode": 0,
+      "durationMs": 1000,
+      "summary": "no errors"
+    },
+    {
+      "name": "build",
+      "command": "npm run build",
+      "exitCode": 0,
+      "durationMs": 1000,
+      "summary": "next build ok"
+    },
+    {
+      "name": "no dashes",
+      "command": "npm run check:dashes",
+      "exitCode": 0,
+      "durationMs": 1000,
+      "summary": "no em or en dash in UI source"
+    },
+    {
+      "name": "back keeps scroll, chromium 1440 and webkit 390",
+      "command": "python3 proof/HAZ-166/back_scroll.py <preview> proof/HAZ-166",
+      "exitCode": 0,
+      "durationMs": 1000,
+      "summary": "in-app back and browser back both return to the same item at 0.0 px offset delta, checks unchanged, see proof/HAZ-166/run.txt"
+    }
+  ]
+}
