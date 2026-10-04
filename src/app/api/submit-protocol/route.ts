@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextRequest, NextResponse } from "next/server";
 import { authorizeSubmit } from "@/lib/server/submitAuth.mjs";
+import { deleteDraft } from "@/lib/server/draftStore.mjs";
 
 function getSupabaseAdmin() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -144,6 +145,10 @@ export async function POST(req: NextRequest) {
         vehicle_id: vehicleId,
       });
     }
+
+    // HAZ-167: the Protokoll is complete, the in-progress server draft goes. Best effort: a missing
+    // protocol_drafts table or a failed delete never fails a submit that already succeeded.
+    await deleteDraft(supabaseAdmin, { userId }, { vehicleId, protocolId }).catch(() => undefined);
 
     return NextResponse.json({ success: true, id: up.id });
   } catch (e: any) {
