@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useLayoutEffect, useRef } from "react";
 import { CheckIcon, ChevronDownIcon, ChevronLeftIcon, StickyNoteIcon } from "lucide-react";
 import type { CheckSection } from "@/lib/protocol";
 import { hm } from "./format";
@@ -17,6 +17,10 @@ export function Checklist({
   onOpenItem,
   onSubmit,
   onNewShift,
+  open: openCats,
+  onOpenChange,
+  onScrollAnchor,
+  restore,
 }: {
   sections: CheckSection[];
   locked: boolean;
@@ -29,8 +33,53 @@ export function Checklist({
   onOpenItem: (id: string) => void;
   onSubmit: () => void;
   onNewShift: () => void;
+  /** open category ids, owned by the parent so they survive leaving the Protokoll and are saved with the draft */
+  open: string[];
+  onOpenChange: (next: string[]) => void;
+  /** topmost visible item and its offset in the scroll container (raw scrollTop when none), throttled */
+  onScrollAnchor?: (a: { anchorId: string | null; offset: number }) => void;
+  /** scroll position to restore (draft resume), applied after layout; nonce makes repeats fire */
+  restore?: { anchorId: string | null; offset: number; nonce: number } | null;
 }) {
-  const [open, setOpen] = useState<Set<string>>(new Set());
+  const open = new Set(openCats);
+  const bodyRef = useRef<HTMLDivElement>(null);
+  const raf = useRef(0);
+
+  function anchorOf(): { anchorId: string | null; offset: number } {
+    const sc = bodyRef.current;
+    if (!sc) return { anchorId: null, offset: 0 };
+    const top = sc.getBoundingClientRect().top;
+    for (const el of sc.querySelectorAll<HTMLElement>("[data-item-id]")) {
+      const r = el.getBoundingClientRect();
+      if (r.bottom > top + 1) return { anchorId: el.dataset.itemId ?? null, offset: Math.round(r.top - top) };
+    }
+    return { anchorId: null, offset: Math.round(sc.scrollTop) };
+  }
+
+  function onScroll() {
+    if (!onScrollAnchor || raf.current) return;
+    raf.current = window.setTimeout(() => {
+      raf.current = 0;
+      onScrollAnchor(anchorOf());
+    }, 250);
+  }
+
+  const restoreNonce = restore?.nonce;
+  useLayoutEffect(() => {
+    if (!restore) return;
+    const apply = () => {
+      const sc = bodyRef.current;
+      if (!sc) return;
+      const el = restore.anchorId ? sc.querySelector<HTMLElement>(`[data-item-id="${CSS.escape(restore.anchorId)}"]`) : null;
+      if (el) sc.scrollTop += el.getBoundingClientRect().top - sc.getBoundingClientRect().top - restore.offset;
+      else sc.scrollTop = restore.offset;
+    };
+    apply();
+    const id = requestAnimationFrame(apply); // again after fonts and layout settle
+    return () => cancelAnimationFrame(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [restoreNonce]);
+
   const total = sections.reduce((s, c) => s + c.rows.length, 0);
   const checked = sections.reduce((s, c) => s + c.rows.filter((r) => r.done).length, 0);
   const pct = total > 0 ? (checked / total) * 100 : 0;
@@ -43,7 +92,7 @@ export function Checklist({
         </button>
         <h1>Schichtprotokoll</h1>
       </div>
-      <div className="nv-b">
+      <div className="nv-b" ref={bodyRef} onScroll={onScroll}>
         {locked && (
           <div className="banner">
             <CheckIcon className="ic" />
@@ -78,12 +127,7 @@ export function Checklist({
                 type="button"
                 className="sec-h"
                 onClick={() =>
-                  setOpen((prev) => {
-                    const next = new Set(prev);
-                    if (next.has(cat.id)) next.delete(cat.id);
-                    else next.add(cat.id);
-                    return next;
-                  })
+                  onOpenChange(opn ? openCats.filter((x) => x !== cat.id) : [...openCats, cat.id])
                 }
               >
                 <span className="n">{cat.title}</span>
@@ -112,7 +156,7 @@ export function Checklist({
                     return (
                       <div key={row.id}>
                         {showGroup && <div className="lbl">{row.group}</div>}
-                        <div className={`it${row.done ? " on" : ""}${cnt ? " has" : ""}`}>
+                        <div data-item-id={row.id} className={`it${row.done ? " on" : ""}${cnt ? " has" : ""}`}>
                           <button
                             type="button"
                             className="cb"

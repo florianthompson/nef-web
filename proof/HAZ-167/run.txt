@@ -1,0 +1,12 @@
+HAZ-167 resume proof, preview https://nef-6hsguz7d5-florian-thompsons-projects-c1c41a9c.vercel.app
+NOTE: public.protocol_drafts is NOT on prod (migration needs PM OK). Part 1 uses the real route (503, local queue).
+Part 2 STUBS /api/protocol-draft with an in-memory store shared by two contexts; the real server path is blocked on the migration OK.
+[desktop] LOCAL QUEUE (real route): before=7/93 7 checked open=['Ausrüstung', 'Fahrzeug'] scrollTop=700 | after reload=7/93 7 checked open=['Ausrüstung', 'Fahrzeug'] scrollTop=700 -> PASS
+[desktop]   /api/protocol-draft responses on the real preview: [('GET', 503), ('PUT', 503)] (503 = table missing, fell back to the local queue; writes blocked: none)
+[desktop] CROSS SESSION (stubbed server): device A 7/93 PUTs=1 stored checked=7
+[desktop]   device B (fresh browser context, so empty storage by construction): 7/93 7 checked open=['Ausrüstung', 'Fahrzeug'] scrollTop=700 GET calls=2 -> PASS; writes blocked: none
+[390] LOCAL QUEUE (real route): before=7/93 7 checked open=['Ausrüstung', 'Fahrzeug'] scrollTop=700 | after reload=7/93 7 checked open=['Ausrüstung', 'Fahrzeug'] scrollTop=700 -> PASS
+[390]   /api/protocol-draft responses on the real preview: [('GET', 503), ('PUT', 503)] (503 = table missing, fell back to the local queue; writes blocked: none)
+[390] CROSS SESSION (stubbed server): device A 7/93 PUTs=1 stored checked=7
+[390]   device B (fresh browser context, so empty storage by construction): 7/93 7 checked open=['Ausrüstung', 'Fahrzeug'] scrollTop=700 GET calls=2 -> PASS; writes blocked: none
+OVERALL PASS

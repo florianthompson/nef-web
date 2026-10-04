@@ -229,6 +229,25 @@ export function applyDraft(protocol: Protocol, userId: string): { shiftNote: str
   return { shiftNote: draft.shiftNote, vehicleId: draft.vehicleId };
 }
 
+/** Pure counterpart of applyDraft: the checked state of every item and sub item comes from `ids`. */
+export function applyCheckedIds(protocol: Protocol, ids: Iterable<string>): Protocol {
+  const on = new Set(ids);
+  return {
+    ...protocol,
+    categories: protocol.categories.map((cat) => ({
+      ...cat,
+      items: cat.items.map((item) => {
+        const subItems = item.subItems.map((sub) => ({ ...sub, is_completed: on.has(sub.id) }));
+        return {
+          ...item,
+          subItems,
+          is_completed: subItems.length ? subItems.every((s) => s.is_completed) : on.has(item.id),
+        };
+      }),
+    })),
+  };
+}
+
 export function collectChecked(protocol: Protocol): string[] {
   const ids: string[] = [];
   for (const cat of protocol.categories) {

@@ -1,0 +1,15 @@
+migration 20261004100000_protocol_drafts.sql applied on throwaway Postgres: OK
+PASS  u1 inserts own row for own team vehicle  ->  affected=1
+PASS  u1 inserts for a vehicle of another team is blocked  ->  error: new row violates row-level security policy for table "protocol_drafts"
+PASS  u1 inserts with another team id is blocked  ->  error: new row violates row-level security policy for table "protocol_drafts"
+PASS  u1 inserts a row for u2 is blocked  ->  error: new row violates row-level security policy for table "protocol_drafts"
+PASS  duplicate (user, vehicle, protocol) violates unique  ->  error: duplicate key value violates unique constraint "protocol_drafts_user_id_vehicle_id_protocol_id_key"
+PASS  u1 sees own row  ->  rows={"n":1}
+PASS  u1 updates own row  ->  affected=1
+PASS  u2 (same team) sees no row  ->  rows={"n":0}
+PASS  u2 cannot update u1 row  ->  affected=0
+PASS  u2 cannot delete u1 row  ->  affected=0
+PASS  u3 (other team) sees no row  ->  rows={"n":0}
+PASS  anon has no access  ->  error: permission denied for table protocol_drafts
+PASS  u1 deletes own row  ->  affected=1
+ALL PASS
