@@ -1,0 +1,27 @@
+   [resp] 200 https://nef-jjp7ec2wk-florian-thompsons-projects-c1c41a9c.vercel.app/api/notes/parse
+[desktop] typed: TEST HAZ-164 bitte ignorieren: Rocu fehlt, Nora nur noch eine, Adrenalin nachfüllen
+[desktop] parsed note: 'Rocu fehlt.' itemId=c836d2f1-0fc0-45ad-8c2b-9157d7ba5937 confidence=high needsConfirm=False candidates=1
+[desktop] parsed note: 'Nora nur noch eine.' itemId=f2bdc9c7-7e46-4f94-aa3c-f800c9747295 confidence=high needsConfirm=False candidates=1
+[desktop] parsed note: 'Adrenalin nachfüllen.' itemId=None confidence=low needsConfirm=True candidates=2
+[desktop] model=gpt-6-luna dropped=0
+[desktop] confirm prompts: 1
+[desktop] picked: Epinephrin - 1 mg/1 ml
+[desktop] saving one note: 'TEST HAZ-164 bitte ignorieren: Adrenalin nachfüllen.'
+[desktop] insert status 201
+[desktop] saved note visible after reload: 'TEST HAZ-164 bitte ignorieren: Adrenalin nachfüllen.'
+[desktop] writes let through: 1, blocked: none
+   [resp] 200 https://nef-jjp7ec2wk-florian-thompsons-projects-c1c41a9c.vercel.app/api/notes/parse
+   [resp] 200 https://nef-jjp7ec2wk-florian-thompsons-projects-c1c41a9c.vercel.app/api/notes/parse
+[390] typed: TEST HAZ-164 bitte ignorieren: Rocu fehlt, Nora nur noch eine, Adrenalin nachfüllen
+[390] parsed note: 'Rocu fehlt.' itemId=c836d2f1-0fc0-45ad-8c2b-9157d7ba5937 confidence=high needsConfirm=False candidates=1
+[390] parsed note: 'Nora nur noch eine.' itemId=f2bdc9c7-7e46-4f94-aa3c-f800c9747295 confidence=high needsConfirm=False candidates=1
+[390] parsed note: 'Adrenalin nachfüllen.' itemId=None confidence=low needsConfirm=True candidates=2
+[390] model=gpt-6-luna dropped=0
+[390] confirm prompts: 1
+[390] picked: Epinephrin - 1 mg/1 ml
+[390] saved note visible after reload: 'TEST HAZ-164 bitte ignorieren: Adrenalin nachfüllen.'
+[390] writes let through: 0, blocked: none
+saved test note (read back): {"id": "0785b072-489b-4d5d-9e5d-5969f78ab4f9", "value": "TEST HAZ-164 bitte ignorieren: Adrenalin nachfüllen.", "item_id": "132a2bc2-8df1-4ffe-b154-553fae7b1894", "category": "Medikamente", "created_at": "2026-10-04T08:22:50.903701+00:00"}
+note: the Vercel preview has no OPENAI_API_KEY (503 not_configured), so page.route sent /api/notes/parse of the preview page to the same commit built and started locally (real matcher, real model, same Supabase auth). Everything else ran on the preview.
+saved test note id 0785b072-489b-4d5d-9e5d-5969f78ab4f9, item_id 132a2bc2-8df1-4ffe-b154-553fae7b1894 (Epinephrin - 1 mg/1 ml), text "TEST HAZ-164 bitte ignorieren: Adrenalin nachfüllen."
+mapping summary: "Rocu fehlt." -> Rocuronium (high); "Nora nur noch eine." -> Noradrenalin (high); "Adrenalin nachfüllen." -> needs confirmation, candidates Epinephrin 1 mg/1 ml | 25 mg/25 ml, picked 1 mg/1 ml.

@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "repo": "florianthompson/nef-web",
+  "kind": "nef-web",
+  "proofKind": "ui",
+  "branch": "florian/haz-164-nef-map-voice-notes-to-real-inventory-items-bestand",
+  "commitSha": "440e64f47e6192189769951a5ba2e6e7f25ad30a",
+  "pr": {
+    "url": "https://github.com/florianthompson/nef-web/pull/16",
+    "number": 16,
+    "state": "OPEN",
+    "isDraft": true,
+    "merged": false,
+    "mergedAt": null
+  },
+  "urls": {
+    "preview": "https://nef-jjp7ec2wk-florian-thompsons-projects-c1c41a9c.vercel.app",
+    "live": null
+  },
+  "console": {
+    "errors": []
+  },
+  "createdAt": "2026-10-04T08:24:36Z",
+  "createdBy": "Claude Code",
+  "ticket": "HAZ-164",
+  "screenshots": [
+    {
+      "path": "review-mapped-desktop.png",
+      "viewport": "desktop",
+      "width": 2880,
+      "height": 1800,
+      "deviceScaleFactor": 2,
+      "route": "/app (Chromium 1440x900)"
+    },
+    {
+      "path": "review-mapped-390.png",
+      "viewport": "mobile390",
+      "width": 780,
+      "height": 1328,
+      "deviceScaleFactor": 2,
+      "route": "/app (WebKit iPhone 13)"
+    },
+    {
+      "path": "confirm-pick-desktop.png",
+      "viewport": "desktop",
+      "width": 2880,
+      "height": 1800,
+      "deviceScaleFactor": 2,
+      "route": "/app (Chromium 1440x900)"
+    },
+    {
+      "path": "confirm-pick-390.png",
+      "viewport": "mobile390",
+      "width": 780,
+      "height": 1328,
+      "deviceScaleFactor": 2,
+      "route": "/app (WebKit iPhone 13)"
+    },
+    {
+      "path": "saved-after-reload-desktop.png",
+      "viewport": "desktop",
+      "width": 2880,
+      "height": 1800,
+      "deviceScaleFactor": 2,
+      "route": "/app (Chromium 1440x900)"
+    },
+    {
+      "path": "saved-after-reload-390.png",
+      "viewport": "mobile390",
+      "width": 780,
+      "height": 1328,
+      "deviceScaleFactor": 2,
+      "route": "/app (WebKit iPhone 13)"
+    }
+  ],
+  "checks": [
+    {
+      "name": "unit tests (npm test)",
+      "command": "npm test",
+      "exitCode": 0,
+      "durationMs": 1000,
+      "summary": "tests 107, pass 106, fail 0 (items matcher 8/8: all 23 Fehlt notes, short names and brands, STT spellings, ambiguous cases, never invent)"
+    },
+    {
+      "name": "typecheck",
+      "command": "npx tsc --noEmit",
+      "exitCode": 0,
+      "durationMs": 1000,
+      "summary": "no errors"
+    },
+    {
+      "name": "build",
+      "command": "npm run build",
+      "exitCode": 0,
+      "durationMs": 1000,
+      "summary": "next build ok"
+    },
+    {
+      "name": "no dashes",
+      "command": "npm run check:dashes",
+      "exitCode": 0,
+      "durationMs": 1000,
+      "summary": "no em or en dash in UI source"
+    },
+    {
+      "name": "voice note to items, chromium 1440 and webkit 390",
+      "command": "python3 proof/HAZ-164/voice_items.py <preview> --engine chromium --save | --engine webkit",
+      "exitCode": 0,
+      "durationMs": 1000,
+      "summary": "real /api/notes/parse: Rocu and Nora high, Adrenalin asks Bitte bestaetigen, pick Epinephrin 1 mg; one test note saved (desktop), reload shows chip; 390 saved nothing, see run.txt"
+    }
+  ]
+}

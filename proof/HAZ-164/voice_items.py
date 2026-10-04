@@ -76,7 +76,7 @@ def main():
         chip = confirm.first.get_by_role("button", name=re.compile(r"Epinephrin - 1 mg"))
         chip.click(); pg.wait_for_timeout(500)
         print(f"[{tag}] picked: Epinephrin - 1 mg/1 ml")
-        tray.get_by_role("button", name=re.compile(r"Epinephrin - 1 mg")).first.evaluate("e => e.scrollIntoView({ block: 'center' })"); pg.wait_for_timeout(300)
+        tray.locator("textarea").nth(0 if tag == "desktop" else 1).evaluate("e => e.scrollIntoView({ block: 'start' })"); pg.wait_for_timeout(300)
         pg.screenshot(path=f"{a.outdir}/confirm-pick-{tag}.png")
         if a.save:
             # one test note only: keep the Adrenalin part, remove the others, make sure it starts with the TEST marker
@@ -94,8 +94,10 @@ def main():
             body = ri.value.text()
             print(f"[{tag}] insert status {ri.value.status}")
         pg.wait_for_timeout(1200)
+        if not a.save:
+            tray.get_by_role("button", name="Verwerfen, Text behalten").click(); ta.fill(""); pg.wait_for_timeout(400)
         pg.reload(wait_until="networkidle"); pg.add_style_tag(content=HIDE)
-        row = pg.locator("main, body").locator(":not(textarea):not(script)").get_by_text("TEST HAZ-164 bitte ignorieren", exact=False).last
+        row = pg.get_by_text("TEST HAZ-164 bitte ignorieren: Adrenalin", exact=False).first
         try:
             row.wait_for(timeout=20000); row.scroll_into_view_if_needed(); pg.wait_for_timeout(600)
             print(f"[{tag}] saved note visible after reload: {row.inner_text()[:120]!r}")
