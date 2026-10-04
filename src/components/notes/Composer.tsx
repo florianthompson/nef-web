@@ -42,6 +42,9 @@ type ParseResponse = {
     category: string;
     dueDate: string | null;
     dueText: string | null;
+    confidence?: string;
+    candidates?: string[];
+    needsConfirm?: boolean;
   }[];
 };
 
@@ -351,6 +354,9 @@ export function Composer({
         category: (CATS as string[]).includes(n.category) ? (n.category as NoteCategory) : "Sonstiges",
         dueDate: n.dueDate,
         dueText: n.dueDate ? n.dueText : null,
+        confidence: n.confidence,
+        candidates: Array.isArray(n.candidates) ? n.candidates : [],
+        needsConfirm: !!n.needsConfirm && !n.itemId && Array.isArray(n.candidates) && n.candidates.length > 0,
       }));
     } catch (e) {
       failure = sd.skipped ? "skipped" : (e as ApiError)?.status === 429 ? "busy" : "error";

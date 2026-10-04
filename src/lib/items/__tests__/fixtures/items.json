@@ -1,0 +1,467 @@
+[
+ {
+  "id": "f0dc1069-1e2e-47d6-b592-d2cc4d2f5e68",
+  "title": "EKG",
+  "category": "Ausrüstung"
+ },
+ {
+  "id": "00357b79-fbcd-4b9c-af9a-35d1c4eb889b",
+  "title": "Medumat",
+  "category": "Ausrüstung"
+ },
+ {
+  "id": "13e0b6ca-1608-4230-af3e-70f610cbcd3c",
+  "title": "Sauerstoff / Ersatzflasche",
+  "category": "Ausrüstung"
+ },
+ {
+  "id": "a4f927ac-5d9a-46ee-b719-388b5da76cd4",
+  "title": "Absauger",
+  "category": "Ausrüstung"
+ },
+ {
+  "id": "447e9b80-c218-48ce-817a-b5ccd564b38e",
+  "title": "Videolaryngoskop",
+  "category": "Ausrüstung"
+ },
+ {
+  "id": "e81564b3-debf-42d6-83c3-d461ff25bfeb",
+  "title": "Ozo-Bohrer",
+  "category": "Ausrüstung"
+ },
+ {
+  "id": "ce1afee2-32ad-4000-86b0-887120bba104",
+  "title": "Perfusor",
+  "category": "Ausrüstung"
+ },
+ {
+  "id": "ecba903e-e3c7-4dd5-a9e4-9b9e807b028a",
+  "title": "Ladekabel",
+  "category": "Ausrüstung"
+ },
+ {
+  "id": "0b1d56dc-4833-4575-9e43-b43edeaa6bf8",
+  "title": "Lukas",
+  "category": "Ausrüstung"
+ },
+ {
+  "id": "a7c91186-cb7c-481a-84ee-17579253ee13",
+  "title": "REBEL-Tasche",
+  "category": "Ausrüstung"
+ },
+ {
+  "id": "5b23ff30-baa1-4779-b0cf-d0b630e3b566",
+  "title": "Thoraxdrainage-Set",
+  "category": "Ausrüstung"
+ },
+ {
+  "id": "de5a4e8c-d723-4002-900a-4bccb5256a5c",
+  "title": "Beckenschlinge",
+  "category": "Ausrüstung"
+ },
+ {
+  "id": "edf25079-6b07-4992-a1ec-75c7fe27f3bc",
+  "title": "Fahrtenbuchmappe",
+  "category": "Fahrzeug"
+ },
+ {
+  "id": "5961bd86-11b6-46b0-8696-d06c6d625df1",
+  "title": "Telefon",
+  "category": "Fahrzeug"
+ },
+ {
+  "id": "c78dd0fe-b1e3-4431-920f-0c211d0487f1",
+  "title": "Piepser",
+  "category": "Fahrzeug"
+ },
+ {
+  "id": "5bb0bee1-ad91-4f39-ba29-839c83c6a144",
+  "title": "Handfunk",
+  "category": "Fahrzeug"
+ },
+ {
+  "id": "5e648582-1869-4010-b5d7-3be672c87df5",
+  "title": "Tankkarte",
+  "category": "Fahrzeug"
+ },
+ {
+  "id": "c765b588-23b8-4740-af37-5b2d4f81b6da",
+  "title": "Handschuhe",
+  "category": "Fahrzeug"
+ },
+ {
+  "id": "1b2801c2-8773-4480-9cd1-2612aad8b97a",
+  "title": "Helm",
+  "category": "Fahrzeug"
+ },
+ {
+  "id": "1e9d9366-93ed-4243-93b9-148902df9109",
+  "title": "Schutzanzug",
+  "category": "Fahrzeug"
+ },
+ {
+  "id": "0b384758-54d3-4a68-8ae0-50454efda297",
+  "title": "Acetylsalicylsäure",
+  "category": "Medikamente"
+ },
+ {
+  "id": "0d6ab9f0-550d-485d-a4be-65da0a90d25a",
+  "title": "Adenosin",
+  "category": "Medikamente"
+ },
+ {
+  "id": "be3d10c4-38fc-4fd8-8d97-2a538fa87164",
+  "title": "Amiodaron",
+  "category": "Medikamente"
+ },
+ {
+  "id": "de1432d9-63f5-435a-a30b-457b6e9e510b",
+  "title": "Aqua ad injectabilia",
+  "category": "Medikamente"
+ },
+ {
+  "id": "ae00aea9-082a-466a-a5eb-850489bb7562",
+  "title": "Atropin",
+  "category": "Medikamente"
+ },
+ {
+  "id": "c14377a7-0f07-4660-8ade-7f38035b7ac0",
+  "title": "Atropinsulfat",
+  "category": "Medikamente"
+ },
+ {
+  "id": "5460cea3-55c5-4027-9bd6-e9dda3a4b4a5",
+  "title": "Balancierte Elektrolytlösung",
+  "category": "Medikamente"
+ },
+ {
+  "id": "9662985b-9113-45dc-a3e4-501f40eb74fe",
+  "title": "Butylscopolamin",
+  "category": "Medikamente"
+ },
+ {
+  "id": "f183d821-0b94-439e-81d8-a9fdf6dcff96",
+  "title": "Cafedrin/Theodrenalin",
+  "category": "Medikamente"
+ },
+ {
+  "id": "faa42f8c-f8a4-47ab-93d7-ecdf799bb6bf",
+  "title": "Calciumgluconat 10 %",
+  "category": "Medikamente"
+ },
+ {
+  "id": "3127a88c-402d-467b-828d-666461714eca",
+  "title": "Calciumgluconat-Gel 2,5 %",
+  "category": "Medikamente"
+ },
+ {
+  "id": "9088d599-1297-4395-a0f8-0627fec87d72",
+  "title": "Captopril",
+  "category": "Medikamente"
+ },
+ {
+  "id": "15296f70-5896-4433-b3da-7ba0ccf71033",
+  "title": "Ceftriaxon",
+  "category": "Medikamente"
+ },
+ {
+  "id": "7be26645-c2b1-4cff-a89d-303f8e08b3a4",
+  "title": "Diazepam",
+  "category": "Medikamente"
+ },
+ {
+  "id": "c2186d9e-9b81-469b-9c22-134a4977e2db",
+  "title": "Dimenhydrinat",
+  "category": "Medikamente"
+ },
+ {
+  "id": "18ca1d20-0f53-4014-9761-c3a343de5d27",
+  "title": "Dimetindenmaleat",
+  "category": "Medikamente"
+ },
+ {
+  "id": "9c6cfacd-dec8-4ba7-bd4a-c77b5fc08713",
+  "title": "4-DMAP",
+  "category": "Medikamente"
+ },
+ {
+  "id": "132a2bc2-8df1-4ffe-b154-553fae7b1894",
+  "title": "Epinephrin - 1 mg/1 ml",
+  "category": "Medikamente"
+ },
+ {
+  "id": "96031474-12bb-4908-8130-cb92277d5f72",
+  "title": "Epinephrin - 25 mg/25 ml",
+  "category": "Medikamente"
+ },
+ {
+  "id": "79790bac-51f7-43d5-811e-7ee8009c27b1",
+  "title": "Esketamin",
+  "category": "Medikamente"
+ },
+ {
+  "id": "67c9f8d9-dde9-40f5-8966-ef7bb0db7730",
+  "title": "Fenoterol",
+  "category": "Medikamente"
+ },
+ {
+  "id": "7ea3d57a-a051-4592-af47-a4cd2405799e",
+  "title": "Flumazenil",
+  "category": "Medikamente"
+ },
+ {
+  "id": "9449944f-dbfc-4445-8ff9-61d55b80acf1",
+  "title": "Furosemid",
+  "category": "Medikamente"
+ },
+ {
+  "id": "1f5f9d11-edaf-46b9-ab2e-b30348fad6d7",
+  "title": "Gelatinelösung 4 %",
+  "category": "Medikamente"
+ },
+ {
+  "id": "1fbeea29-b5c1-49c3-a596-f3a8b420b6a0",
+  "title": "Glucose 5 %",
+  "category": "Medikamente"
+ },
+ {
+  "id": "0f576e66-9625-43a9-9c3f-873511949cd0",
+  "title": "Glucose 10 %",
+  "category": "Medikamente"
+ },
+ {
+  "id": "a9c081e7-d0a1-4ca4-933a-213e890104e5",
+  "title": "Glucose 40 %",
+  "category": "Medikamente"
+ },
+ {
+  "id": "df53a349-1789-4497-916d-9cc8e5d962f6",
+  "title": "Glyceroltrinitrat",
+  "category": "Medikamente"
+ },
+ {
+  "id": "04afb1e5-31ec-4dca-b626-c8c2d401ffbc",
+  "title": "Haloperidol",
+  "category": "Medikamente"
+ },
+ {
+  "id": "bb83c04c-f99e-4a29-827c-f97d71b3e811",
+  "title": "Heparin",
+  "category": "Medikamente"
+ },
+ {
+  "id": "816ecab7-718d-4cbe-988e-eeba056b6e07",
+  "title": "Hydroxocobalamin",
+  "category": "Medikamente"
+ },
+ {
+  "id": "b9f3b23d-47ea-458a-9a88-347621388ae0",
+  "title": "Ipratropiumbromid",
+  "category": "Medikamente"
+ },
+ {
+  "id": "a5152fdb-0352-4af8-aaaa-e086ac469b61",
+  "title": "Levetiracetam",
+  "category": "Medikamente"
+ },
+ {
+  "id": "18436aed-f194-4264-aea3-fb83ab5c1446",
+  "title": "Lidocain 2 %",
+  "category": "Medikamente"
+ },
+ {
+  "id": "88227430-9de9-47d7-a930-97e96b9fb33d",
+  "title": "Lorazepam",
+  "category": "Medikamente"
+ },
+ {
+  "id": "54340a0b-1e54-4bd1-9b9e-d63ccbb044a5",
+  "title": "Magnesiumsulfat 20 %",
+  "category": "Medikamente"
+ },
+ {
+  "id": "04163db8-5a39-40b2-a860-1985c2f6f433",
+  "title": "Medizinische Kohle",
+  "category": "Medikamente"
+ },
+ {
+  "id": "4b2bd551-37fe-4f3f-924d-61ab250eb173",
+  "title": "Metamizol",
+  "category": "Medikamente"
+ },
+ {
+  "id": "ed8d2c35-c169-47cb-a47f-3960af79685e",
+  "title": "Methylthioniniumchlorid",
+  "category": "Medikamente"
+ },
+ {
+  "id": "13d7f0f6-a9c1-4522-bee1-50dfe20d8e7d",
+  "title": "Metoprolol",
+  "category": "Medikamente"
+ },
+ {
+  "id": "2e06d819-5580-47b6-822f-97096ea5571e",
+  "title": "Midazolam",
+  "category": "Medikamente"
+ },
+ {
+  "id": "0b8a5b47-a710-49f5-81e5-87a983057f22",
+  "title": "NaCl 0,9 % - 10 ml",
+  "category": "Medikamente"
+ },
+ {
+  "id": "95107c39-b7ef-47cc-b5b1-c07e2a60f24f",
+  "title": "NaCl 0,9 % - 100 ml",
+  "category": "Medikamente"
+ },
+ {
+  "id": "cd77fb22-fe1e-4926-8bab-5d20d52d1814",
+  "title": "Naloxon",
+  "category": "Medikamente"
+ },
+ {
+  "id": "62f015cd-9b52-46cc-b17f-b53262495e9e",
+  "title": "Naloxon nasal",
+  "category": "Medikamente"
+ },
+ {
+  "id": "cbc6ece2-8ddd-4788-8d73-b1a69ab2a776",
+  "title": "Natriumchlorid 10 %",
+  "category": "Medikamente"
+ },
+ {
+  "id": "697b5be8-c770-4233-b8a0-65e6eb6a31f7",
+  "title": "Natriumhydrogencarbonat 8,4 %",
+  "category": "Medikamente"
+ },
+ {
+  "id": "a8937fdf-4f83-4c66-8ec9-691f30dd067d",
+  "title": "Natriumthiosulfat 10 %",
+  "category": "Medikamente"
+ },
+ {
+  "id": "f2bdc9c7-7e46-4f94-aa3c-f800c9747295",
+  "title": "Noradrenalin",
+  "category": "Medikamente"
+ },
+ {
+  "id": "974540e9-526d-456c-9280-0cb8275bc518",
+  "title": "Obidoxim",
+  "category": "Medikamente"
+ },
+ {
+  "id": "446da51c-2234-4d1b-a2a1-778283d2e1b5",
+  "title": "Ondansetron",
+  "category": "Medikamente"
+ },
+ {
+  "id": "0d9cccb9-04a9-4af6-9f42-b4f07966ae59",
+  "title": "Oxymetazolin",
+  "category": "Medikamente"
+ },
+ {
+  "id": "474a3df3-09cf-4e1b-b080-4c90d7e90423",
+  "title": "Oxytocin",
+  "category": "Medikamente"
+ },
+ {
+  "id": "0eb21d19-4d72-4e5c-a0bb-de970edd3abb",
+  "title": "Paracetamol - 75 mg Suppositorium",
+  "category": "Medikamente"
+ },
+ {
+  "id": "41dad70f-724f-41da-826f-8b6331df7996",
+  "title": "Paracetamol - 125 mg Suppositorium",
+  "category": "Medikamente"
+ },
+ {
+  "id": "f31a7d80-946d-43af-af08-7f6f9490e1ac",
+  "title": "Paracetamol - 250 mg Suppositorium",
+  "category": "Medikamente"
+ },
+ {
+  "id": "4e4cc72a-b98c-4d83-b9df-28d8295f9147",
+  "title": "Paracetamol - 500 mg",
+  "category": "Medikamente"
+ },
+ {
+  "id": "6e5b8257-c28f-4e68-a4cc-032c6c0a0ca8",
+  "title": "Prednisolon",
+  "category": "Medikamente"
+ },
+ {
+  "id": "8f37df3b-ee84-43e7-83a4-8a0e54739c3f",
+  "title": "Prednison",
+  "category": "Medikamente"
+ },
+ {
+  "id": "dca12eb4-9b72-4713-8cd6-80236015eb40",
+  "title": "Promethazin",
+  "category": "Medikamente"
+ },
+ {
+  "id": "287cc7e7-6192-4770-8049-f41e35b8970d",
+  "title": "Propofol",
+  "category": "Medikamente"
+ },
+ {
+  "id": "40e6d9fe-cbf4-4a45-9138-4232f4054c91",
+  "title": "Reproterol",
+  "category": "Medikamente"
+ },
+ {
+  "id": "c836d2f1-0fc0-45ad-8c2b-9157d7ba5937",
+  "title": "Rocuronium",
+  "category": "Medikamente"
+ },
+ {
+  "id": "8e294065-54d7-42ad-8c8a-188324dcc63f",
+  "title": "Salbutamol",
+  "category": "Medikamente"
+ },
+ {
+  "id": "2b610bed-c717-4ceb-bae0-a027af608ad6",
+  "title": "Simeticon",
+  "category": "Medikamente"
+ },
+ {
+  "id": "ed28fc10-a366-4c97-bfea-003f2477d002",
+  "title": "Tenecteplase",
+  "category": "Medikamente"
+ },
+ {
+  "id": "2213f7f0-d3bb-4f05-8caf-f13c466fa9a4",
+  "title": "Thiamin",
+  "category": "Medikamente"
+ },
+ {
+  "id": "c87ff63c-f490-49dc-b16b-afb57da6b70a",
+  "title": "Tranexamsäure",
+  "category": "Medikamente"
+ },
+ {
+  "id": "9e20ecef-5d39-4879-a844-cf179f879d03",
+  "title": "Urapidil",
+  "category": "Medikamente"
+ },
+ {
+  "id": "44bd4fb8-0fe9-4c47-b9bb-0268a1577516",
+  "title": "Xylometazolin",
+  "category": "Medikamente"
+ },
+ {
+  "id": "740a1e54-1067-4f76-bca0-ed1b7401b600",
+  "title": "Morphin",
+  "category": "Betäubungsmittel"
+ },
+ {
+  "id": "589f0662-245f-470b-bba5-296978ce2f22",
+  "title": "Fentanyl",
+  "category": "Betäubungsmittel"
+ },
+ {
+  "id": "8fec3d39-53e7-4e50-be79-c9e1641a441d",
+  "title": "Piritramid",
+  "category": "Betäubungsmittel"
+ }
+]
