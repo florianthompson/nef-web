@@ -258,7 +258,7 @@ export function ReviewCard({
                             onClick={() =>
                               patch(p.key, { itemId: c.id, category: c.category, needsConfirm: false, manual: true })
                             }
-                            className="inline-flex min-h-9 max-w-full items-center rounded-full bg-zinc-800 px-3 text-[13px] font-medium text-zinc-100 active:bg-zinc-700"
+                            className="cf-chip inline-flex min-h-9 max-w-full items-center px-3 text-[13px] font-medium"
                           >
                             <span className="truncate">{c.title}</span>
                           </button>,
@@ -267,7 +267,7 @@ export function ReviewCard({
                       <button
                         type="button"
                         onClick={() => patch(p.key, { itemId: null, needsConfirm: false })}
-                        className="inline-flex min-h-9 items-center rounded-full border border-zinc-700 px-3 text-[13px] font-medium text-zinc-400"
+                        className="cf-chip alt inline-flex min-h-9 items-center px-3 text-[13px] font-medium"
                       >
                         Kein Artikel
                       </button>
