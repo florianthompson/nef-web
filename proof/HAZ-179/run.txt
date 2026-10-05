@@ -1,0 +1,13 @@
+HAZ-179 CO-Warner proof, preview https://nef-k84iekz4o-florian-thompsons-projects-c1c41a9c.vercel.app
+NOTE: CATALOG-INJECTED. The CO-Warner seed (supabase/migrations/20261005120000_haz_179_co_warner.sql) is NOT applied on prod (needs PM OK).
+The page loads the real catalog via GET /rest/v1/protocols?select=*,categories(*,items(*)); Playwright page.route fetches that real response and adds one
+item 3c7a5d52-179c-4e0a-9b2f-c0c0c0179c0f "CO-Warner" (cloned from the last Fahrzeug leaf, position = max+1) to the Fahrzeug category. Nothing else is stubbed.
+Mark = click the checkbox of that row; the existing local draft path (autosave debounce 1.8s) stores it; reload = page.reload in the same context.
+No submit; every REST POST/PATCH/PUT/DELETE is aborted. Test login: staff storage state, not printed.
+[desktop] injected into 1 catalog response(s); CO-Warner present=True in section='Fahrzeug'; sections with it: ['Fahrzeug'] (Ausruestung has it: False); marked before click=False; progress=0/94
+[desktop] after click: marked=True progress=1/94
+[desktop] after reload: present=True section='Fahrzeug' marked=True progress=1/94; blocked writes: none
+[390] injected into 1 catalog response(s); CO-Warner present=True in section='Fahrzeug'; sections with it: ['Fahrzeug'] (Ausruestung has it: False); marked before click=False; progress=0/94
+[390] after click: marked=True progress=1/94
+[390] after reload: present=True section='Fahrzeug' marked=True progress=1/94; blocked writes: none
+OVERALL PASS
