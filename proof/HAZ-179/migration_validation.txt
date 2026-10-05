@@ -1,0 +1,10 @@
+PASS  CO-Warner absent before
+PASS  one row after first run  ->  [{"cat":"Fahrzeug","position":6,"type":"select","parent_item_id":null,"can_override":false,"is_required":false,"show_category_title":true}]
+PASS  row is in Fahrzeug, not Ausrüstung
+PASS  position is max top-level + 1 (6 for the snapshot)
+PASS  type select, parent null
+PASS  second run is a no-op (idempotent)
+PASS  rollback removes it
+PASS  other items untouched (95 before)  ->  n=95
+ALL PASS
+(Use `node --trace-warnings ...` to show where the warning was created)
